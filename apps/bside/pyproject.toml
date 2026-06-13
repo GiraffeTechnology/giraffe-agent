@@ -1,0 +1,10 @@
+[project]
+name = "giraffe-agent-bside"
+version = "0.1.0-mvp"
+description = "Giraffe Agent B-side — AI Buyer pre-confirmation decision support"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["../../"]
+addopts = "-q"

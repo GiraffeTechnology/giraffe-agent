@@ -1,0 +1,9 @@
+{
+  "exception_type": "material_shortage",
+  "severity": "high",
+  "description": "Fabric delayed by 3 days due to supplier production issue",
+  "proposed_options": [
+    {"description": "Wait 3 extra days for original fabric"},
+    {"description": "Switch to backup fabric from F2 (available immediately)"}
+  ]
+}

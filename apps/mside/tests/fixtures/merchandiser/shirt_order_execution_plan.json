@@ -1,0 +1,15 @@
+{
+  "category": "apparel",
+  "product_summary": "Men's polo shirt 100 pcs",
+  "expected_milestones": [
+    "material_arrival", "cutting", "assembly", "in_process_qc",
+    "final_qc", "packaging", "logistics_handover", "delivery"
+  ],
+  "expected_task_types_m_side": [
+    "supplier_acceptance", "material_confirmation", "production_start",
+    "milestone_media_upload", "qc_update", "packaging_update", "logistics_handover"
+  ],
+  "expected_task_types_b_side": [
+    "buyer_milestone_review", "tracking_update", "buyer_signoff"
+  ]
+}

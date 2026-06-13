@@ -1,0 +1,7 @@
+{
+  "milling_endmill": {"quantity": 20, "diameters_mm": [6, 8, 10, 12, 16, 20]},
+  "drilling": {"quantity": 15, "tap_sizes": ["M4", "M5", "M6", "M8", "M10"]},
+  "boring_bar": {"quantity": 4, "diameter_range_mm": [20, 80]},
+  "face_mill": {"quantity": 3, "diameters_mm": [50, 80, 125]},
+  "reamer": {"quantity": 5}
+}

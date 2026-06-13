@@ -1,0 +1,10 @@
+{
+  "scenario": "gap_external_qc",
+  "description": "Tight tolerance steel part requires CMM inspection which is outsourced",
+  "expected": {
+    "can_make_in_house": false,
+    "tolerance_fit": "marginal",
+    "qc_fit": "external_qc_required",
+    "required_upstream_dependencies_contains": ["qc_testing"]
+  }
+}

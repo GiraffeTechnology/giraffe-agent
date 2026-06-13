@@ -1,0 +1,21 @@
+{
+  "machine_id": "MACH-5AXIS-001",
+  "actor_id": "actor_manufacturer_cnc",
+  "machine_name": "DMG Mori NMV 5000 DCG 5-Axis",
+  "machine_type": "5_axis_machining_center",
+  "axis_count": 5,
+  "travel_x_mm": 730,
+  "travel_y_mm": 580,
+  "travel_z_mm": 560,
+  "max_part_weight_kg": 400,
+  "spindle_speed_rpm": 20000,
+  "spindle_power_kw": 18.5,
+  "tool_magazine_capacity": 40,
+  "supported_materials": ["aluminum", "steel", "titanium", "titanium_grade5", "aluminum_6061", "stainless_steel", "inconel"],
+  "typical_tolerance_mm": 0.03,
+  "best_tolerance_mm": 0.01,
+  "surface_finish_capability": ["standard", "fine", "mirror"],
+  "available_operations": ["5-axis machining", "simultaneous_5", "complex_contour", "cnc_milling", "face_milling", "pocket_milling", "drilling"],
+  "schedule_status": "limited",
+  "earliest_start_date": "2024-02-20"
+}

@@ -1,0 +1,15 @@
+{
+  "tracking_number": "SF123456789012",
+  "carrier_code": "SF",
+  "events": [
+    {
+      "provider_event_id": "WH-EVT-001",
+      "tracking_number": "SF123456789012",
+      "event_time": "2026-05-26T12:00:00Z",
+      "status_code": "DELIVERED",
+      "status_text": "已签收",
+      "location": "Buyer address",
+      "description": "Webhook: delivered and signed"
+    }
+  ]
+}

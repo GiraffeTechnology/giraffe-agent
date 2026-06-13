@@ -1,0 +1,17 @@
+{
+  "part_name": "bearing_housing",
+  "source_types": ["step", "pdf"],
+  "part_summary": "Steel bearing housing with tight bore tolerance, CMM inspection required",
+  "material": "steel_4140",
+  "quantity": 5,
+  "dimensions": {"length_mm": 200, "width_mm": 150, "height_mm": 80},
+  "tolerance_requirements": {"general_mm": 0.02, "tolerance": "±0.02mm", "bore_tolerance": "H7"},
+  "surface_finish_requirements": {"finish": "fine", "ra_um": 1.6},
+  "thread_requirements": {},
+  "heat_treatment_requirements": {"required": false},
+  "operation_requirements": ["cnc_milling", "cnc_turning", "boring", "reaming"],
+  "qc_requirements": {"types": ["cmm_inspection", "dimensional_check"], "external_required": true},
+  "packaging_requirements": {"type": "protective"},
+  "delivery_deadline": "2024-03-20",
+  "file_refs": ["bearing_housing.step"]
+}

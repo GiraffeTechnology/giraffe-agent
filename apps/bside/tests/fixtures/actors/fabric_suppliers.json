@@ -1,0 +1,35 @@
+[
+  {
+    "actor_id": "actor_fabric_supplier_1",
+    "name": "Fabric Supplier F1",
+    "actor_type": "fabric_supplier",
+    "contact_channels": [
+      {"channel_type": "openclaw", "handle": "fabric_f1_openclaw", "external_user_id": "fab_f1_001"}
+    ],
+    "capabilities": ["cotton", "polyester", "woven", "knit", "dyeing"],
+    "default_language": "zh",
+    "metadata": {"fixture": true, "location": "Guangdong"}
+  },
+  {
+    "actor_id": "actor_fabric_supplier_2",
+    "name": "Fabric Supplier F2",
+    "actor_type": "fabric_supplier",
+    "contact_channels": [
+      {"channel_type": "wechat", "handle": "fabric_f2_wechat", "external_user_id": null}
+    ],
+    "capabilities": ["cotton", "linen", "fast_delivery"],
+    "default_language": "zh",
+    "metadata": {"fixture": true, "location": "Jiangsu"}
+  },
+  {
+    "actor_id": "actor_fabric_supplier_3",
+    "name": "Fabric Supplier F3",
+    "actor_type": "fabric_supplier",
+    "contact_channels": [
+      {"channel_type": "web", "handle": null, "external_user_id": "fab_f3_web"}
+    ],
+    "capabilities": ["cotton", "organic", "certified"],
+    "default_language": "en",
+    "metadata": {"fixture": true, "location": "Zhejiang"}
+  }
+]

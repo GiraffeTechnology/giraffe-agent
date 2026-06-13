@@ -1,0 +1,13 @@
+[
+  {
+    "actor_id": "actor_packaging_supplier_1",
+    "name": "Packaging Supplier P1",
+    "actor_type": "packaging_supplier",
+    "contact_channels": [
+      {"channel_type": "openclaw", "handle": "pkg_p1_openclaw", "external_user_id": "pkg_p1_001"}
+    ],
+    "capabilities": ["polybag", "carton", "hangtag", "custom_print"],
+    "default_language": "zh",
+    "metadata": {"fixture": true}
+  }
+]

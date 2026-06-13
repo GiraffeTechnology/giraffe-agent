@@ -1,0 +1,39 @@
+{
+  "actor_id": "actor_manufacturer_cnc",
+  "machines": [
+    {
+      "machine_id": "MACH-3AXIS-002",
+      "actor_id": "actor_manufacturer_cnc",
+      "machine_name": "Haas VF-2 3-Axis VMC (Unit 2)",
+      "machine_type": "cnc_milling",
+      "axis_count": 3,
+      "travel_x_mm": 508,
+      "travel_y_mm": 406,
+      "travel_z_mm": 508,
+      "max_part_weight_kg": 700,
+      "spindle_speed_rpm": 8100,
+      "spindle_power_kw": 22.4,
+      "tool_magazine_capacity": 20,
+      "supported_materials": ["aluminum", "steel", "aluminum_6061", "steel_4140", "plastic"],
+      "typical_tolerance_mm": 0.05,
+      "best_tolerance_mm": 0.02,
+      "surface_finish_capability": ["standard"],
+      "available_operations": ["cnc_milling", "face_milling", "drilling"],
+      "schedule_status": "limited",
+      "earliest_start_date": "2024-03-01"
+    }
+  ],
+  "tooling_inventory": {
+    "milling_endmill": {"quantity": 10}
+  },
+  "qc_equipment": [
+    {"equipment_id": "QC-003", "name": "Vernier Caliper", "capability": "dimensional_check", "resolution_mm": 0.02}
+  ],
+  "in_house_processes": ["cnc_milling", "drilling"],
+  "outsourced_processes": ["heat_treatment", "surface_treatment", "cmm_inspection", "cnc_turning"],
+  "material_inventory": {
+    "aluminum_6061": 5,
+    "steel_4140": 0
+  },
+  "schedule_summary": {"status": "limited", "next_available_slot": "2024-03-01", "note": "Machine busy until March"}
+}

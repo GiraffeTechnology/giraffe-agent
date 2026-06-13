@@ -1,0 +1,20 @@
+[
+  {
+    "supplier_id": "actor_fabric_supplier_f1",
+    "supplier_name": "F1 Textile Co.",
+    "message": "可以供货，32支纯棉，价格 RMB 12.5/米，起订量 500 米，交期 15 天。GFR-TOKEN-DEP-FABRIC-01",
+    "can_supply": true,
+    "price_text": "RMB 12.5/m",
+    "lead_time_days": 15,
+    "moq": 500
+  },
+  {
+    "supplier_id": "actor_fabric_supplier_f2",
+    "supplier_name": "F2 Fabric Ltd.",
+    "message": "We can supply. USD 1.8/m, MOQ 300m, lead time 12 days.",
+    "can_supply": true,
+    "price_text": "USD 1.8/m",
+    "lead_time_days": 12,
+    "moq": 300
+  }
+]

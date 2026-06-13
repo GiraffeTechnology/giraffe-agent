@@ -1,0 +1,33 @@
+{
+  "tracking_number": "SF123456789012",
+  "carrier_code": "SF",
+  "events": [
+    {
+      "provider_event_id": "EVT-001",
+      "tracking_number": "SF123456789012",
+      "event_time": "2026-05-23T10:00:00Z",
+      "status_code": "LABEL_CREATED",
+      "status_text": "label created",
+      "location": "Shenzhen warehouse",
+      "description": "Shipping label created"
+    },
+    {
+      "provider_event_id": "EVT-002",
+      "tracking_number": "SF123456789012",
+      "event_time": "2026-05-24T08:30:00Z",
+      "status_code": "PICKED_UP",
+      "status_text": "已揽收",
+      "location": "Shenzhen sorting center",
+      "description": "Parcel picked up"
+    },
+    {
+      "provider_event_id": "EVT-003",
+      "tracking_number": "SF123456789012",
+      "event_time": "2026-05-25T14:00:00Z",
+      "status_code": "IN_TRANSIT",
+      "status_text": "运输中",
+      "location": "Guangzhou transit hub",
+      "description": "Departed Shenzhen sorting center"
+    }
+  ]
+}

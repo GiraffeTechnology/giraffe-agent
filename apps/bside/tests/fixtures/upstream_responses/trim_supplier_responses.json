@@ -1,0 +1,10 @@
+[
+  {
+    "upstream_actor_id": "actor_trim_supplier_1",
+    "raw_message": "您好，我们可以供货。白色衬衫纽扣现货充足，MOQ 200粒，价格RMB 0.15每粒。配套缝纫线现货，价格RMB 2.5每卷。交货周期：2天。最早发货日期：2024-02-04。"
+  },
+  {
+    "upstream_actor_id": "actor_trim_supplier_2",
+    "raw_message": "Can supply buttons and labels. White shirt buttons in stock, MOQ 100 pcs, price USD 0.02 per piece. Lead time: 3 days. Dispatch by 2024-02-05."
+  }
+]

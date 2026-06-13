@@ -1,0 +1,14 @@
+{
+  "project_id": "PROJ-SHIRT100TEST",
+  "original_buyer_actor_id": "actor_buyer_b",
+  "main_supplier_actor_id": "actor_manufacturer_m",
+  "b_workspace_id": "bw_shirt100test",
+  "product_summary": "100 plain white cotton shirts, size M, standard collar",
+  "category": "apparel",
+  "quantity": 100,
+  "status": "CREATED",
+  "metadata": {
+    "fixture": true,
+    "test": "run_role_switching_mvp"
+  }
+}

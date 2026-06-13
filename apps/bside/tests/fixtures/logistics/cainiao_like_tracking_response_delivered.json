@@ -1,0 +1,15 @@
+{
+  "tracking_number": "SF123456789012",
+  "carrier_code": "SF",
+  "events": [
+    {
+      "provider_event_id": "EVT-004",
+      "tracking_number": "SF123456789012",
+      "event_time": "2026-05-26T11:00:00Z",
+      "status_code": "DELIVERED",
+      "status_text": "已签收",
+      "location": "Destination",
+      "description": "Delivered successfully. Signed by recipient."
+    }
+  ]
+}

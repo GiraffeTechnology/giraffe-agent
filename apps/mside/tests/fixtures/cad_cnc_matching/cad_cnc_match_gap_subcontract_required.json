@@ -1,0 +1,9 @@
+{
+  "scenario": "gap_subcontract_5axis",
+  "description": "5-axis titanium impeller requires subcontract machining — shop only has 3-axis",
+  "expected": {
+    "can_make_in_house": false,
+    "work_envelope_fit": "fit",
+    "required_subcontract_dependencies_contains": ["5_axis_machining"]
+  }
+}

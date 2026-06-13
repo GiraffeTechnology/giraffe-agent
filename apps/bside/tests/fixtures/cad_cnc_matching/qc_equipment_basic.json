@@ -1,0 +1,6 @@
+[
+  {"equipment_id": "QC-001", "name": "Vernier Caliper 0-300mm", "capability": "dimensional_check", "resolution_mm": 0.02},
+  {"equipment_id": "QC-002", "name": "Outside Micrometer Set 0-100mm", "capability": "dimensional_check", "resolution_mm": 0.001},
+  {"equipment_id": "QC-003", "name": "Dial Test Indicator", "capability": "dimensional_check", "resolution_mm": 0.001},
+  {"equipment_id": "QC-004", "name": "Surface Roughness Tester", "capability": "surface_finish_check", "resolution_mm": null}
+]

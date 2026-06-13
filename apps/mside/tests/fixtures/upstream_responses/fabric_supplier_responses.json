@@ -1,0 +1,14 @@
+[
+  {
+    "upstream_actor_id": "actor_fabric_supplier_1",
+    "raw_message": "您好！我们可以供货。面料类型：32S纯棉平纹布，克重160g/m²。现货库存500米，MOQ 100米。价格：RMB 12.5每米。颜色：白色、浅灰现货，其他颜色需要染色。缩水率约3%，品质稳定。最早发货日期：2024-02-05。交货周期：3天。可以支持买家截止日期。"
+  },
+  {
+    "upstream_actor_id": "actor_fabric_supplier_2",
+    "raw_message": "Hello, we can supply cotton fabric. Type: 100% cotton poplin, 140g/m2. Stock available: 300 meters. MOQ: 50 meters. Price: USD 1.8 per meter. Colors: white, off-white. Lead time: 2 days for in-stock. Earliest dispatch date: 2024-02-04. Shrinkage: <3%. Can meet buyer deadline."
+  },
+  {
+    "upstream_actor_id": "actor_fabric_supplier_3",
+    "raw_message": "我们目前白色棉布暂时没有库存，缺货。可以提供替代品：涤棉混纺65/35，价格RMB 9.8每米，库存充足，交货周期5天。如有需要请告知。"
+  }
+]

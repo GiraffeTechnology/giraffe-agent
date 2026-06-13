@@ -1,0 +1,16 @@
+{
+  "description": "Second fetch of same events — all should be deduplicated",
+  "tracking_number": "SF123456789012",
+  "carrier_code": "SF",
+  "events": [
+    {
+      "provider_event_id": "EVT-001",
+      "tracking_number": "SF123456789012",
+      "event_time": "2026-05-23T10:00:00Z",
+      "status_code": "LABEL_CREATED",
+      "status_text": "label created",
+      "location": "Shenzhen warehouse",
+      "description": "Shipping label created"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "part_name": "bracket_simple",
+  "source_types": ["step"],
+  "part_summary": "Simple aluminum bracket, 3-axis milling, standard tolerance",
+  "material": "aluminum_6061",
+  "quantity": 10,
+  "dimensions": {"length_mm": 120, "width_mm": 80, "height_mm": 40},
+  "tolerance_requirements": {"general_mm": 0.1, "tolerance": "±0.1mm"},
+  "surface_finish_requirements": {"finish": "standard", "ra_um": 3.2},
+  "thread_requirements": {"type": "M6", "count": 4, "size": "M6x1.0"},
+  "heat_treatment_requirements": {"required": false},
+  "operation_requirements": ["cnc_milling", "face_milling", "pocket_milling", "drilling"],
+  "qc_requirements": {"types": ["dimensional_check"], "external_required": false},
+  "packaging_requirements": {"type": "standard"},
+  "delivery_deadline": "2024-03-15",
+  "file_refs": ["bracket_simple.step"]
+}

@@ -1,0 +1,8 @@
+{
+  "milestone_type": "cutting",
+  "media_uploads": [
+    {"media_type": "image", "description": "Front view of cutting stage"},
+    {"media_type": "image", "description": "Back view of cutting stage"},
+    {"media_type": "image", "description": "Detail close-up"}
+  ]
+}

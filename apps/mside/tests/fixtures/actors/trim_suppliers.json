@@ -1,0 +1,24 @@
+[
+  {
+    "actor_id": "actor_trim_supplier_1",
+    "name": "Trim Supplier T1",
+    "actor_type": "trim_supplier",
+    "contact_channels": [
+      {"channel_type": "openclaw", "handle": "trim_t1_openclaw", "external_user_id": "trim_t1_001"}
+    ],
+    "capabilities": ["buttons", "zippers", "labels", "threads"],
+    "default_language": "zh",
+    "metadata": {"fixture": true}
+  },
+  {
+    "actor_id": "actor_trim_supplier_2",
+    "name": "Trim Supplier T2",
+    "actor_type": "trim_supplier",
+    "contact_channels": [
+      {"channel_type": "wechat", "handle": "trim_t2_wechat", "external_user_id": null}
+    ],
+    "capabilities": ["buttons", "labels", "patches"],
+    "default_language": "zh",
+    "metadata": {"fixture": true}
+  }
+]

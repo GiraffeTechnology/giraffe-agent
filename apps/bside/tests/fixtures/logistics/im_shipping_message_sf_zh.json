@@ -1,0 +1,8 @@
+{
+  "raw_message": "已发顺丰，单号 SF123456789012，今天下午发出",
+  "expected": {
+    "carrier_name": "顺丰",
+    "carrier_code": "SF",
+    "tracking_number": "SF123456789012"
+  }
+}

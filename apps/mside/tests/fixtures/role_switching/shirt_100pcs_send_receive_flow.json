@@ -1,0 +1,14 @@
+{
+  "scenario": "shirt_100pcs_send_receive",
+  "buyer_actor_id": "actor_buyer_b",
+  "manufacturer_actor_id": "actor_manufacturer_m",
+  "product_summary": "Men's polo shirt, 100% cotton, 100 pcs",
+  "category": "apparel",
+  "quantity": 100,
+  "expected_flow": [
+    "MAIN_M_SIDE_INBOUND",
+    "UPSTREAM_B_SIDE_OUTBOUND",
+    "UPSTREAM_B_SIDE_INBOUND",
+    "MAIN_M_SIDE_OUTBOUND"
+  ]
+}

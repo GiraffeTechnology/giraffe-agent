@@ -1,0 +1,8 @@
+{
+  "raw_message": "DHL shipped today, tracking no. 1234567890123",
+  "expected": {
+    "carrier_name": "DHL",
+    "carrier_code": "DHL",
+    "tracking_number": "1234567890123"
+  }
+}

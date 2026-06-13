@@ -1,0 +1,15 @@
+{
+  "tracking_number": "SF999999999999",
+  "carrier_code": "SF",
+  "events": [
+    {
+      "provider_event_id": "EVT-ERR-001",
+      "tracking_number": "SF999999999999",
+      "event_time": "2026-05-25T09:00:00Z",
+      "status_code": "EXCEPTION",
+      "status_text": "异常",
+      "location": "Guangzhou customs",
+      "description": "Delivery exception: address not found"
+    }
+  ]
+}

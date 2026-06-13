@@ -1,0 +1,12 @@
+{
+  "actor_id": "actor_buyer_b",
+  "name": "Buyer B",
+  "actor_type": "buyer",
+  "contact_channels": [
+    {"channel_type": "openclaw", "handle": "buyer_b_openclaw", "external_user_id": "buyer_b_001"},
+    {"channel_type": "wechat", "handle": "buyer_b_wechat", "external_user_id": null}
+  ],
+  "capabilities": ["rfq", "order_confirmation"],
+  "default_language": "en",
+  "metadata": {"fixture": true}
+}

@@ -1,0 +1,13 @@
+{
+  "scenario": "success",
+  "description": "Simple aluminum bracket fits 3-axis CNC, material in stock after purchase",
+  "expected": {
+    "can_make_in_house": true,
+    "work_envelope_fit": "fit",
+    "material_fit": "purchasable",
+    "tolerance_fit": "fit",
+    "surface_finish_fit": "fit",
+    "qc_fit": "fit",
+    "schedule_fit": "fit"
+  }
+}

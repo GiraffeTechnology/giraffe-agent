@@ -1,0 +1,17 @@
+{
+  "part_name": "impeller_complex",
+  "source_types": ["step"],
+  "part_summary": "Titanium impeller with complex curved surfaces requiring 5-axis simultaneous machining",
+  "material": "titanium_grade5",
+  "quantity": 2,
+  "dimensions": {"length_mm": 180, "width_mm": 180, "height_mm": 120},
+  "tolerance_requirements": {"general_mm": 0.05, "tolerance": "±0.05mm"},
+  "surface_finish_requirements": {"finish": "fine", "ra_um": 1.6},
+  "thread_requirements": {},
+  "heat_treatment_requirements": {"required": false},
+  "operation_requirements": ["5-axis machining", "simultaneous_5", "complex_contour", "cnc_milling"],
+  "qc_requirements": {"types": ["cmm_inspection"], "external_required": false},
+  "packaging_requirements": {"type": "custom_foam"},
+  "delivery_deadline": "2024-04-01",
+  "file_refs": ["impeller.step"]
+}

@@ -1,0 +1,44 @@
+{
+  "actor_id": "actor_manufacturer_cnc",
+  "machines": [
+    {
+      "machine_id": "MACH-3AXIS-001",
+      "actor_id": "actor_manufacturer_cnc",
+      "machine_name": "Haas VF-2 3-Axis VMC",
+      "machine_type": "cnc_milling",
+      "axis_count": 3,
+      "travel_x_mm": 508,
+      "travel_y_mm": 406,
+      "travel_z_mm": 508,
+      "max_part_weight_kg": 700,
+      "spindle_speed_rpm": 8100,
+      "spindle_power_kw": 22.4,
+      "tool_magazine_capacity": 20,
+      "supported_materials": ["aluminum", "steel", "aluminum_6061", "steel_4140", "plastic", "brass"],
+      "typical_tolerance_mm": 0.05,
+      "best_tolerance_mm": 0.02,
+      "surface_finish_capability": ["standard", "fine"],
+      "available_operations": ["face_milling", "pocket_milling", "drilling", "boring", "reaming", "cnc_milling"],
+      "schedule_status": "available",
+      "earliest_start_date": "2024-02-10"
+    }
+  ],
+  "tooling_inventory": {
+    "milling_endmill": {"quantity": 20, "diameters": [6, 8, 10, 12, 16, 20]},
+    "drilling": {"quantity": 15, "sizes": ["M4", "M5", "M6", "M8", "M10"]},
+    "boring_bar": {"quantity": 4}
+  },
+  "qc_equipment": [
+    {"equipment_id": "QC-001", "name": "Vernier Caliper", "capability": "dimensional_check", "resolution_mm": 0.02},
+    {"equipment_id": "QC-002", "name": "Micrometer Set", "capability": "dimensional_check", "resolution_mm": 0.001}
+  ],
+  "in_house_processes": ["cnc_milling", "cnc_turning", "drilling", "tapping", "deburring"],
+  "outsourced_processes": ["heat_treatment", "surface_treatment", "electroplating", "anodizing", "cmm_inspection"],
+  "material_inventory": {
+    "aluminum_6061": 0,
+    "aluminum_bar_stock": 50,
+    "steel_4140": 20,
+    "plastic_pom": 10
+  },
+  "schedule_summary": {"status": "available", "next_available_slot": "2024-02-10"}
+}

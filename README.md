@@ -3,7 +3,7 @@
 > **Project-aware, role-switching procurement execution agent for SMEs.**
 > AI Buyer + AI Merchandiser + Industrial Execution Graph.
 
-[![Python 3.14](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green.svg)](https://fastapi.tiangolo.com/)
 [![Pydantic v2](https://img.shields.io/badge/pydantic-v2-orange.svg)](https://docs.pydantic.dev/)
 [![uv](https://img.shields.io/badge/package_manager-uv-purple.svg)](https://docs.astral.sh/uv/)
@@ -133,7 +133,7 @@ flowchart TD
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/your-org/giraffe-agent.git
+git clone https://github.com/GiraffeTechnology/giraffe-agent.git
 cd giraffe-agent
 
 # 2. Install dependencies
@@ -183,7 +183,34 @@ uv run python scripts/run_integrated_post_confirmation_mvp.py
 ### Unit Tests
 
 ```bash
-uv run pytest
+# B-side integration tests (33 scenarios)
+python apps/bside/run_tests.py
+
+# B-side pytest suite
+pytest apps/bside/tests/ -q
+
+# M-side pytest suite
+pytest apps/mside/tests/ -q
+```
+
+MVP baseline results:
+- B-side run_tests.py: 33/33 passed
+- B-side pytest: 222/222 passed
+- M-side pytest: 177/177 passed
+- HTTP E2E: 3 consecutive runs passed
+
+See `docs/E2E_TEST_REPORT.md` for the full test report.
+
+---
+
+## FastAPI Entry Point
+
+The FastAPI application entry point is `api.main:app`. The root `main.py` is
+only a lightweight helper for local developer guidance.
+
+```bash
+uv run uvicorn api.main:app --reload
+# http://localhost:8000/docs
 ```
 
 ---
@@ -291,7 +318,7 @@ These are non-negotiable product invariants — don't work around them:
 
 | Component | Choice |
 |-----------|--------|
-| Language | Python 3.14 |
+| Language | Python 3.11+ |
 | API framework | FastAPI + Uvicorn |
 | Data validation | Pydantic v2 |
 | ORM | SQLAlchemy 2.x |

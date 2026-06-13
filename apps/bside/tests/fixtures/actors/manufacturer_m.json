@@ -1,0 +1,12 @@
+{
+  "actor_id": "actor_manufacturer_m",
+  "name": "Manufacturer M",
+  "actor_type": "manufacturer",
+  "contact_channels": [
+    {"channel_type": "openclaw", "handle": "manufacturer_m_openclaw", "external_user_id": "mfg_m_001"},
+    {"channel_type": "wechat", "handle": "manufacturer_m_wechat", "external_user_id": null}
+  ],
+  "capabilities": ["cutting", "sewing", "finishing", "packaging", "apparel", "shirt", "garment"],
+  "default_language": "zh",
+  "metadata": {"fixture": true, "capacity_shirts_per_day": 50}
+}

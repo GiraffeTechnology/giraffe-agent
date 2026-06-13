@@ -58,3 +58,15 @@ logs/
 
 # OS
 Thumbs.db
+
+# Runtime data artifacts (preserved as .gitkeep directories)
+data/**/*.json
+data/**/*.jsonl
+!data/**/.gitkeep
+
+# ZIP archives
+*.zip
+
+# Local E2E output
+e2e_output/
+e2e_results/

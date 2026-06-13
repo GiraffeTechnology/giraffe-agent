@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "claude/**"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  bside:
+    name: B-side Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/bside
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pydantic pydantic-settings fastapi uvicorn sqlalchemy \
+                      alembic aiosqlite python-dotenv httpx pytest
+
+      - name: Run B-side integration tests (run_tests.py)
+        run: |
+          cd ../../
+          python apps/bside/run_tests.py
+
+      - name: Run B-side pytest suite
+        run: |
+          cd ../../
+          pytest apps/bside/tests/ -q --tb=short
+
+  mside:
+    name: M-side Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mside
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pydantic pydantic-settings fastapi uvicorn sqlalchemy \
+                      alembic aiosqlite python-dotenv httpx pytest
+
+      - name: Run M-side pytest suite
+        run: |
+          cd ../../
+          pytest apps/mside/tests/ -q --tb=short

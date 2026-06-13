@@ -4,6 +4,50 @@ All notable changes to Giraffe Agent are recorded here.
 
 ---
 
+## [BM_DB_INTEGRATION_V1_1_HARDENING] — 2026-06-13
+
+### Tag candidate
+`BM_DB_INTEGRATION_V1_1_HARDENING`
+
+### Classification
+BM DB Integration Baseline v1 is a reproducible integration baseline, not yet a
+production-hardening release.  v1.1 adds targeted stability proofs — no new
+product features.
+
+### Summary
+8/8 hardening suites pass, including a Baseline v1 regression guard that runs
+`verify_integration.py --runs 5` as a sub-process before each hardening run.
+One bug was found and fixed (see below).
+
+### Added
+- `bm_db_hardening.py` — 8-suite hardening runner (Baseline v1 regression guard
+  + 7 new suites)
+- `bm_db_adapter.py` — new query helpers: `list_project_responses`,
+  `list_inquiry_responses`, `list_project_events`, `list_project_inquiries`,
+  `list_project_edges`, `check_graph_consistency`
+- `BM_DB_INTEGRATION_V1_1_HARDENING_REPORT.md` — full hardening report
+
+### Fixed
+- **Idempotency test used absolute counts on shared DB**: Suite 1 initially
+  failed because it asserted `actors == 2` (absolute) against a DB that already
+  had rows from the Baseline v1 Regression guard.  Fixed by switching to delta
+  counts (snapshot before test, assert zero growth on second same-key run).
+
+### Verified (all 8 suites)
+
+| Suite | Result |
+|-------|--------|
+| Baseline v1 Regression (verify_integration --runs 5) | PASS |
+| 1. Idempotency | PASS |
+| 2. Incomplete Supplier Reply | PASS |
+| 3. Conflicting Supplier Reply | PASS |
+| 4. Full Order Lifecycle | PASS |
+| 5. Procurement Graph Consistency | PASS |
+| 6. DB-off / DB-on Parity | PASS |
+| 7. Five-run Reproducibility | PASS |
+
+---
+
 ## [BM_DB_INTEGRATION_BASELINE_V1] — 2026-06-13
 
 ### Tag

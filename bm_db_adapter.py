@@ -602,6 +602,190 @@ class BMDbAdapter:
             }
 
     # ------------------------------------------------------------------
+    # Query helpers (used by hardening suite)
+    # ------------------------------------------------------------------
+
+    def list_project_responses(self, project_id: str) -> List[dict]:
+        """All supplier responses for a project (all revisions included)."""
+        if self._mode == "on":
+            from src.db.models.response import SupplierResponse
+
+            rows = (
+                self._session.query(SupplierResponse)
+                .filter(SupplierResponse.project_id == project_id)
+                .all()
+            )
+            return [
+                {
+                    "response_id": r.response_id,
+                    "inquiry_id": r.inquiry_id,
+                    "edge_id": r.edge_id,
+                    "can_supply": r.can_supply,
+                    "price": r.price,
+                    "currency": r.currency,
+                    "lead_time_days": r.lead_time_days,
+                    "risk_flags_json": r.risk_flags_json,
+                    "raw_message": r.raw_message,
+                }
+                for r in rows
+            ]
+        else:
+            return [
+                r for r in self._mem.responses.values()
+                if r.get("project_id") == project_id
+            ]
+
+    def list_inquiry_responses(self, inquiry_id: str) -> List[dict]:
+        """All responses linked to a specific inquiry (for revision tracking)."""
+        if self._mode == "on":
+            from src.db.models.response import SupplierResponse
+
+            rows = (
+                self._session.query(SupplierResponse)
+                .filter(SupplierResponse.inquiry_id == inquiry_id)
+                .all()
+            )
+            return [
+                {
+                    "response_id": r.response_id,
+                    "inquiry_id": r.inquiry_id,
+                    "price": r.price,
+                    "lead_time_days": r.lead_time_days,
+                    "raw_message": r.raw_message,
+                }
+                for r in rows
+            ]
+        else:
+            return [
+                r for r in self._mem.responses.values()
+                if r.get("inquiry_id") == inquiry_id
+            ]
+
+    def list_project_events(self, project_id: str) -> List[dict]:
+        """All execution events for a project in chronological order."""
+        if self._mode == "on":
+            from src.db.models.execution_event import ExecutionEvent
+
+            rows = (
+                self._session.query(ExecutionEvent)
+                .filter(ExecutionEvent.project_id == project_id)
+                .order_by(ExecutionEvent.created_at)
+                .all()
+            )
+            return [
+                {
+                    "event_id": e.event_id,
+                    "event_type": e.event_type,
+                    "project_id": e.project_id,
+                    "actor_id": e.actor_id,
+                    "edge_id": e.edge_id,
+                    "payload_json": e.payload_json,
+                }
+                for e in rows
+            ]
+        else:
+            return [
+                e for e in self._mem.events
+                if e.get("project_id") == project_id
+            ]
+
+    def list_project_inquiries(self, project_id: str) -> List[dict]:
+        """All supplier inquiries for a project."""
+        if self._mode == "on":
+            from src.db.models.inquiry import SupplierInquiry
+
+            rows = (
+                self._session.query(SupplierInquiry)
+                .filter(SupplierInquiry.project_id == project_id)
+                .all()
+            )
+            return [
+                {
+                    "inquiry_id": i.inquiry_id,
+                    "edge_id": i.edge_id,
+                    "from_actor_id": i.from_actor_id,
+                    "to_actor_id": i.to_actor_id,
+                    "status": i.status,
+                }
+                for i in rows
+            ]
+        else:
+            return [
+                i for i in self._mem.inquiries.values()
+                if i.get("project_id") == project_id
+            ]
+
+    def list_project_edges(self, project_id: str) -> List[dict]:
+        """All procurement edges for a project."""
+        if self._mode == "on":
+            edges = self._graph_repo.get_project_edges(project_id)
+            return [
+                {
+                    "edge_id": e.edge_id,
+                    "edge_type": e.edge_type,
+                    "inquiry_id": e.inquiry_id,
+                    "response_id": e.response_id,
+                    "status": e.status,
+                }
+                for e in edges
+            ]
+        else:
+            return [
+                e for e in self._mem.edges.values()
+                if e.get("project_id") == project_id
+            ]
+
+    def check_graph_consistency(self, project_id: str) -> List[str]:
+        """Return a list of consistency issues for *project_id*.
+
+        Empty list means the procurement graph is consistent.
+
+        Checks:
+          - Every supplier_inquiry.edge_id exists in procurement_edges.
+          - Every supplier_response.inquiry_id exists in supplier_inquiries.
+          - Every APPROVED / RESPONDED edge has inquiry_id set.
+          - Every APPROVED edge has response_id set.
+        """
+        issues: List[str] = []
+
+        inquiries = self.list_project_inquiries(project_id)
+        responses = self.list_project_responses(project_id)
+        edges = self.list_project_edges(project_id)
+
+        edge_ids = {e["edge_id"] for e in edges}
+        inquiry_ids = {i["inquiry_id"] for i in inquiries}
+
+        for inq in inquiries:
+            if inq["edge_id"] not in edge_ids:
+                issues.append(
+                    f"inquiry {inq['inquiry_id'][:8]} references missing edge "
+                    f"{inq['edge_id'][:8]}"
+                )
+
+        for resp in responses:
+            if resp.get("inquiry_id") and resp["inquiry_id"] not in inquiry_ids:
+                issues.append(
+                    f"response {resp['response_id'][:8]} references missing inquiry "
+                    f"{resp['inquiry_id'][:8]}"
+                )
+
+        for edge in edges:
+            if edge["status"] in ("SENT", "RESPONDED", "APPROVED"):
+                if not edge.get("inquiry_id"):
+                    issues.append(
+                        f"edge {edge['edge_id'][:8]} status={edge['status']} "
+                        f"but inquiry_id is unset"
+                    )
+            if edge["status"] == "APPROVED":
+                if not edge.get("response_id"):
+                    issues.append(
+                        f"edge {edge['edge_id'][:8]} status=APPROVED "
+                        f"but response_id is unset"
+                    )
+
+        return issues
+
+    # ------------------------------------------------------------------
     # DB health checks (on-mode only; noop in off-mode)
     # ------------------------------------------------------------------
 

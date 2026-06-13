@@ -63,3 +63,50 @@ jobs:
         run: |
           cd ../../
           pytest apps/mside/tests/ -q --tb=short
+
+  bm-db-integration:
+    name: BM DB Integration
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Add pytest
+        run: uv add --dev pytest
+
+      - name: Compile BM DB integration scripts
+        run: |
+          if [ -f run_bm_e2e_with_db.py ]; then
+            python -m py_compile bm_db_adapter.py build_schema.py run_bm_e2e_with_db.py verify_integration.py pydantic_stub.py
+          fi
+
+      - name: Run root pytest suite
+        run: |
+          if [ -d tests/ ]; then
+            uv run pytest tests/ -q
+          fi
+
+      - name: Run BM DB integration (DB-off)
+        run: |
+          if [ -f run_bm_e2e_with_db.py ]; then
+            GIRAFFE_DB_MODE=off python run_bm_e2e_with_db.py
+          fi
+
+      - name: Run BM DB integration (DB-on) + verifier
+        run: |
+          if [ -f run_bm_e2e_with_db.py ]; then
+            GIRAFFE_DB_MODE=on GIRAFFE_DB_URL=sqlite:///./ci_test.db python build_schema.py
+            GIRAFFE_DB_MODE=on GIRAFFE_DB_URL=sqlite:///./ci_test.db python run_bm_e2e_with_db.py
+            python verify_integration.py --db sqlite:///./ci_test.db --runs 5
+          fi

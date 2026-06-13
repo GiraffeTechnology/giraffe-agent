@@ -8,7 +8,7 @@
 |Document version     |**MVP PRD v1.0 (Consolidated)**                                                                                                                         |
 |Date                 |2026-05-23                                                                                                                                              |
 |Status               |Source of truth for B-side MVP, M-side MVP, M-side Role-Switching Agent, Professional Free CAD↔CNC, AI Merchandiser, Logistics Ingestion, Database Layer|
-|Tech stack           |Python 3.14 · FastAPI · Pydantic v2 · SQLAlchemy 2.x · Alembic · SQLite → PostgreSQL · uv                                                               |
+|Tech stack           |Python 3.11+ · FastAPI · Pydantic v2 · SQLAlchemy 2.x · Alembic · SQLite → PostgreSQL · uv                                                              |
 |Primary channels     |OpenClaw · WeChat · WhatsApp · Web fallback                                                                                                             |
 |Patent owner         |Giraffe Technology Holding Limited                                                                                                                      |
 |Authorization contact|**mich@giraffe.technology**                                                                                                                             |
@@ -1274,7 +1274,7 @@ giraffe-agent/
 ├── README.md
 ├── LICENSE_NOTICE.md
 ├── PATENT_NOTICE.md
-├── pyproject.toml                       # uv / Python 3.14
+├── pyproject.toml                       # uv / Python 3.11+
 ├── alembic/
 │   ├── env.py
 │   └── versions/
@@ -2027,7 +2027,7 @@ Marketplace listings · Payment / escrow / wallet · Admin panel · Production-g
 ### 22.1 Prerequisites
 
 ```bash
-# Python 3.14, uv package manager
+# Python 3.11+, uv package manager
 # SQLite (bundled), optionally PostgreSQL for prod migration test
 ```
 

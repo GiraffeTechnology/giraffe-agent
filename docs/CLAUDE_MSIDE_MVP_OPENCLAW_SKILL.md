@@ -10,7 +10,7 @@
 
 ## 0. Read This First
 
-You are working inside the existing Giraffe Agent repository (`giraffe-agent`, Python 3.14, FastAPI + Pydantic v2, uv package manager).
+You are working inside the existing Giraffe Agent repository (`giraffe-agent`, Python 3.11+, FastAPI + Pydantic v2, uv package manager).
 
 The B-side MVP has already been specified as an OpenClaw-compatible AI Buyer skill. This M-side MVP must extend that architecture and create the supplier-side product layer.
 

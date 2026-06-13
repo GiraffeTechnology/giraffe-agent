@@ -3,7 +3,7 @@
 > **Project-aware, role-switching procurement execution agent for SMEs.**
 > AI Buyer + AI Merchandiser + Industrial Execution Graph.
 
-[![Python 3.14](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green.svg)](https://fastapi.tiangolo.com/)
 [![Pydantic v2](https://img.shields.io/badge/pydantic-v2-orange.svg)](https://docs.pydantic.dev/)
 [![uv](https://img.shields.io/badge/package_manager-uv-purple.svg)](https://docs.astral.sh/uv/)
@@ -133,7 +133,7 @@ flowchart TD
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/your-org/giraffe-agent.git
+git clone https://github.com/GiraffeTechnology/giraffe-agent.git
 cd giraffe-agent
 
 # 2. Install dependencies
@@ -189,6 +189,8 @@ uv run pytest
 ---
 
 ## API Overview
+
+The FastAPI application entry point is `api.main:app`; the root `main.py` is only a lightweight helper for local developer guidance.
 
 The FastAPI server exposes the following route groups:
 
@@ -291,7 +293,7 @@ These are non-negotiable product invariants — don't work around them:
 
 | Component | Choice |
 |-----------|--------|
-| Language | Python 3.14 |
+| Language | Python 3.11+ |
 | API framework | FastAPI + Uvicorn |
 | Data validation | Pydantic v2 |
 | ORM | SQLAlchemy 2.x |

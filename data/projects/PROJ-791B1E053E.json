@@ -1,0 +1,13 @@
+{
+  "project_id": "PROJ-791B1E053E",
+  "original_buyer_actor_id": "actor_buyer_merch_test",
+  "main_supplier_actor_id": "actor_manufacturer_merch_test",
+  "b_workspace_id": "bw_add09cd699a9",
+  "product_summary": "Men's polo shirt 100pcs",
+  "category": "apparel",
+  "quantity": 100,
+  "status": "ORDER_CONFIRMED",
+  "created_at": "2026-06-13T13:13:17.500853Z",
+  "updated_at": "2026-06-13T13:13:17.501079Z",
+  "metadata": {}
+}

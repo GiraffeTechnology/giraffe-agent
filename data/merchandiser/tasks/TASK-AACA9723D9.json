@@ -1,0 +1,15 @@
+{
+  "task_id": "TASK-AACA9723D9",
+  "project_id": "PROJ-791B1E053E",
+  "order_id": null,
+  "assigned_side": "B_SIDE",
+  "assigned_actor_id": "actor_buyer_merch_test",
+  "role_context_id": null,
+  "task_type": "buyer_signoff",
+  "due_at": null,
+  "status": "PENDING",
+  "priority": "high",
+  "payload": {},
+  "created_at": "2026-06-13T13:13:17.503156+00:00",
+  "updated_at": "2026-06-13T13:13:17.503172+00:00"
+}

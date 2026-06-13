@@ -1,0 +1,15 @@
+{
+  "task_id": "TASK-EE6A082FCE",
+  "project_id": "PROJ-791B1E053E",
+  "order_id": null,
+  "assigned_side": "B_SIDE",
+  "assigned_actor_id": "actor_buyer_merch_test",
+  "role_context_id": null,
+  "task_type": "tracking_update",
+  "due_at": null,
+  "status": "PENDING",
+  "priority": "low",
+  "payload": {},
+  "created_at": "2026-06-13T13:13:17.503015+00:00",
+  "updated_at": "2026-06-13T13:13:17.503033+00:00"
+}

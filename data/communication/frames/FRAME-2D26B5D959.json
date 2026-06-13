@@ -1,0 +1,14 @@
+{
+  "frame_id": "FRAME-2D26B5D959",
+  "project_id": "PROJ-E03B0658A7",
+  "actor_id": "actor_manufacturer_integrated",
+  "counterparty_actor_id": "actor_buyer_integrated",
+  "edge_id": "EDGE-CA5EFBF3AB",
+  "role_context_id": "rc-main-in",
+  "business_role": "MAIN_M_SIDE",
+  "communication_direction": "INBOUND",
+  "message_purpose": "buyer_inquiry_received",
+  "conversation_thread_id": "THREAD-3373DD7989",
+  "parent_frame_id": null,
+  "created_at": "2026-06-13T13:13:30.765829+00:00"
+}

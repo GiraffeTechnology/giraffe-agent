@@ -1,0 +1,84 @@
+{
+  "order_execution_id": "OE-4EF834090B",
+  "b_workspace_id": "bw_467dd9458ce0",
+  "m_workspace_id": "mw_a26bd2131b0c",
+  "supplier_id": "sup_cnc_strong_001",
+  "selected_path_id": "PATH-2360F525",
+  "status": "shipped",
+  "milestones": [
+    {
+      "milestone_id": "MS-C33135",
+      "name": "order_acknowledgement",
+      "expected_date": null,
+      "status": "completed",
+      "evidence_required": false,
+      "notes": "确认接单，按报价执行，预计6月20日完成。"
+    },
+    {
+      "milestone_id": "MS-C3A947",
+      "name": "material_confirmation",
+      "expected_date": null,
+      "status": "in_progress",
+      "evidence_required": false,
+      "notes": "材料已到，明天开机。生产进度40%。"
+    },
+    {
+      "milestone_id": "MS-048EE2",
+      "name": "production_start",
+      "expected_date": null,
+      "status": "in_progress",
+      "evidence_required": false,
+      "notes": "材料已到，明天开机。生产进度40%。"
+    },
+    {
+      "milestone_id": "MS-7CA3BA",
+      "name": "mid_production_update",
+      "expected_date": null,
+      "status": "in_progress",
+      "evidence_required": false,
+      "notes": "材料已到，明天开机。生产进度40%。"
+    },
+    {
+      "milestone_id": "MS-8D194C",
+      "name": "qc_confirmation",
+      "expected_date": null,
+      "status": "completed",
+      "evidence_required": true,
+      "notes": "QC完成，尺寸合格，上传照片。"
+    },
+    {
+      "milestone_id": "MS-5A56DE",
+      "name": "packaging_ready",
+      "expected_date": null,
+      "status": "pending",
+      "evidence_required": false,
+      "notes": null
+    },
+    {
+      "milestone_id": "MS-632B34",
+      "name": "logistics_handover",
+      "expected_date": null,
+      "status": "completed",
+      "evidence_required": false,
+      "notes": "Tracking: SF1234567890"
+    },
+    {
+      "milestone_id": "MS-8F901F",
+      "name": "shipped",
+      "expected_date": null,
+      "status": "pending",
+      "evidence_required": true,
+      "notes": null
+    },
+    {
+      "milestone_id": "MS-DA2237",
+      "name": "completed",
+      "expected_date": "6月20",
+      "status": "pending",
+      "evidence_required": true,
+      "notes": null
+    }
+  ],
+  "created_at": "2026-06-13T13:14:08.741172Z",
+  "updated_at": "2026-06-13T13:14:08.746541Z"
+}

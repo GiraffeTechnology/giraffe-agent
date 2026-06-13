@@ -1,0 +1,15 @@
+{
+  "task_id": "TASK-6A7A3EE5AB",
+  "project_id": "PROJ-E03B0658A7",
+  "order_id": null,
+  "assigned_side": "B_SIDE",
+  "assigned_actor_id": "actor_buyer_integrated",
+  "role_context_id": null,
+  "task_type": "tracking_update",
+  "due_at": null,
+  "status": "PENDING",
+  "priority": "low",
+  "payload": {},
+  "created_at": "2026-06-13T13:13:30.774701+00:00",
+  "updated_at": "2026-06-13T13:13:30.774761+00:00"
+}

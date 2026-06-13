@@ -1,0 +1,14 @@
+{
+  "thread_id": "THREAD-3373DD7989",
+  "project_id": "PROJ-E03B0658A7",
+  "edge_id": "EDGE-CA5EFBF3AB",
+  "from_actor_id": "actor_buyer_integrated",
+  "to_actor_id": "actor_manufacturer_integrated",
+  "channel_type": "mock",
+  "thread_type": "buyer_main_supplier",
+  "active_role_context_id": "rc-main",
+  "status": "OPEN",
+  "correlation_token": null,
+  "created_at": "2026-06-13T13:13:30.765601+00:00",
+  "updated_at": "2026-06-13T13:13:30.765621+00:00"
+}

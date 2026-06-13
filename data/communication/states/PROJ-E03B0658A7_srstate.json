@@ -1,0 +1,117 @@
+{
+  "machine_id": "SRM-4FB6E42A04",
+  "project_id": "PROJ-E03B0658A7",
+  "current_state": "CLOSED",
+  "history": [
+    {
+      "from": "WAITING_FOR_BUYER_INQUIRY",
+      "to": "BUYER_INQUIRY_RECEIVED",
+      "reason": "buyer sent inquiry",
+      "at": "2026-06-13T13:13:30.765045+00:00"
+    },
+    {
+      "from": "BUYER_INQUIRY_RECEIVED",
+      "to": "PREPARING_UPSTREAM_INQUIRIES",
+      "reason": "deps planned",
+      "at": "2026-06-13T13:13:30.768349+00:00"
+    },
+    {
+      "from": "PREPARING_UPSTREAM_INQUIRIES",
+      "to": "AWAITING_MAIN_SUPPLIER_SEND_APPROVAL",
+      "reason": "ready to send",
+      "at": "2026-06-13T13:13:30.768665+00:00"
+    },
+    {
+      "from": "AWAITING_MAIN_SUPPLIER_SEND_APPROVAL",
+      "to": "SENDING_UPSTREAM_INQUIRIES",
+      "reason": "approved",
+      "at": "2026-06-13T13:13:30.768927+00:00"
+    },
+    {
+      "from": "SENDING_UPSTREAM_INQUIRIES",
+      "to": "WAITING_FOR_UPSTREAM_RESPONSES",
+      "reason": "sent",
+      "at": "2026-06-13T13:13:30.769184+00:00"
+    },
+    {
+      "from": "WAITING_FOR_UPSTREAM_RESPONSES",
+      "to": "UPSTREAM_RESPONSES_RECEIVED",
+      "reason": "F1 replied",
+      "at": "2026-06-13T13:13:30.769436+00:00"
+    },
+    {
+      "from": "UPSTREAM_RESPONSES_RECEIVED",
+      "to": "PREPARING_UPSTREAM_OPTIONS",
+      "reason": "options ready",
+      "at": "2026-06-13T13:13:30.770471+00:00"
+    },
+    {
+      "from": "PREPARING_UPSTREAM_OPTIONS",
+      "to": "AWAITING_OPTION_APPROVAL",
+      "reason": "approval requested",
+      "at": "2026-06-13T13:13:30.770881+00:00"
+    },
+    {
+      "from": "AWAITING_OPTION_APPROVAL",
+      "to": "GENERATING_BUYER_ROLLUP",
+      "reason": "option approved",
+      "at": "2026-06-13T13:13:30.771143+00:00"
+    },
+    {
+      "from": "GENERATING_BUYER_ROLLUP",
+      "to": "AWAITING_ROLLUP_APPROVAL",
+      "reason": "rollup generated",
+      "at": "2026-06-13T13:13:30.771412+00:00"
+    },
+    {
+      "from": "AWAITING_ROLLUP_APPROVAL",
+      "to": "SENDING_ROLLUP_TO_BUYER",
+      "reason": "rollup approved",
+      "at": "2026-06-13T13:13:30.771729+00:00"
+    },
+    {
+      "from": "SENDING_ROLLUP_TO_BUYER",
+      "to": "WAITING_FOR_BUYER_CONFIRMATION",
+      "reason": "rollup sent",
+      "at": "2026-06-13T13:13:30.772727+00:00"
+    },
+    {
+      "from": "WAITING_FOR_BUYER_CONFIRMATION",
+      "to": "ORDER_CONFIRMED",
+      "reason": "buyer confirmed",
+      "at": "2026-06-13T13:13:30.772995+00:00"
+    },
+    {
+      "from": "ORDER_CONFIRMED",
+      "to": "EXECUTION_IN_PROGRESS",
+      "reason": "execution plan created",
+      "at": "2026-06-13T13:13:30.777232+00:00"
+    },
+    {
+      "from": "EXECUTION_IN_PROGRESS",
+      "to": "LOGISTICS_HANDOVER_PENDING",
+      "reason": "handover message sent",
+      "at": "2026-06-13T13:13:30.782210+00:00"
+    },
+    {
+      "from": "LOGISTICS_HANDOVER_PENDING",
+      "to": "LOGISTICS_TRACKING_ACTIVE",
+      "reason": "tracking events received",
+      "at": "2026-06-13T13:13:30.786830+00:00"
+    },
+    {
+      "from": "LOGISTICS_TRACKING_ACTIVE",
+      "to": "BUYER_SIGNOFF_PENDING",
+      "reason": "delivered — sign-off pending",
+      "at": "2026-06-13T13:13:30.789041+00:00"
+    },
+    {
+      "from": "BUYER_SIGNOFF_PENDING",
+      "to": "CLOSED",
+      "reason": "order closed",
+      "at": "2026-06-13T13:13:30.795225+00:00"
+    }
+  ],
+  "created_at": "2026-06-13T13:13:30.764853+00:00",
+  "updated_at": "2026-06-13T13:13:30.795233+00:00"
+}

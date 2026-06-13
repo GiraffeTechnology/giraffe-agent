@@ -1,0 +1,34 @@
+{
+  "plan_id": "EXECPLAN-05A051B7B5",
+  "project_id": "PROJ-791B1E053E",
+  "order_id": null,
+  "supplier_actor_id": "actor_manufacturer_merch_test",
+  "buyer_actor_id": "actor_buyer_merch_test",
+  "category": "apparel",
+  "current_order_state": "BUYER_SIGNED_OFF",
+  "task_ids": [
+    "TASK-BA30F48F9D",
+    "TASK-1339E547C2",
+    "TASK-D3050F21D1",
+    "TASK-9D6F249F04",
+    "TASK-0BE0FE7328",
+    "TASK-436783E31E",
+    "TASK-FF65C86E93",
+    "TASK-CEEC6D896D",
+    "TASK-EE6A082FCE",
+    "TASK-AACA9723D9",
+    "TASK-FE5E249E09"
+  ],
+  "milestone_ids": [
+    "MILE-19F31C983F",
+    "MILE-0495D9A1F5",
+    "MILE-87B74D062A",
+    "MILE-A32FC683E4",
+    "MILE-E1021AAA3C",
+    "MILE-74BD87C45F",
+    "MILE-5DC067BA1F",
+    "MILE-F910569298"
+  ],
+  "created_at": "2026-06-13T13:13:17.501535+00:00",
+  "updated_at": "2026-06-13T13:13:17.528600+00:00"
+}

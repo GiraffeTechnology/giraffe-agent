@@ -1,0 +1,19 @@
+{
+  "milestone_id": "MILE-EF6E8F60EB",
+  "project_id": "PROJ-E03B0658A7",
+  "order_id": null,
+  "milestone_type": "logistics_handover",
+  "sequence_no": 7,
+  "expected_at": null,
+  "actual_at": null,
+  "status": "PENDING",
+  "evidence_required": false,
+  "required_media_types": [
+    "shipping_label"
+  ],
+  "assigned_actor_id": "actor_manufacturer_integrated",
+  "buyer_confirmation_required": false,
+  "metadata": {},
+  "created_at": "2026-06-13T13:13:30.776634+00:00",
+  "updated_at": "2026-06-13T13:13:30.776656+00:00"
+}

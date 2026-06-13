@@ -1,0 +1,55 @@
+{
+  "b_workspace_id": "bw_0fd56c700933",
+  "rfq_id": "RFQ-AFD43E81",
+  "raw_requirement": "I need 100 plain white cotton shirts, size M, standard collar. Deadline: 30 days.",
+  "buyer_requirement": null,
+  "supplier_inquiry_draft": null,
+  "supplier_responses": [
+    {
+      "response_id": "ROLLUP-RESP-DCFA0877",
+      "rfq_id": "bw_0fd56c700933",
+      "b_workspace_id": "bw_0fd56c700933",
+      "supplier_id": "actor_manufacturer_m",
+      "supplier_name": "Manufacturer M",
+      "can_make": true,
+      "capacity_available": true,
+      "material_available": true,
+      "estimated_lead_time_days": 4,
+      "unit_price": 1.8,
+      "total_price": 180.0,
+      "currency": "USD",
+      "qc_available": false,
+      "logistics_notes": null,
+      "red_flags": [],
+      "completeness_score": 0.7,
+      "confidence_score": 0.7,
+      "raw_response": "We can support the 100 pcs order for 100 plain white cotton shirts, size M, standard collar based on approved upstream options.\n\nFabric: actor_fabric_supplier_2 — USD 1.80, dispatch in 2 days.\nTrims: actor_trim_supplier_2.\nPackaging: confirmed.\nQC: standard QC.\nLogistics: TBC.\n\nEstimated total lead time: 12 days (fabric 2d + sewing ~7d + logistics 0d + 3d buffer).\n\nWe recommend confirming color and fabric option before final order acknowledgement.",
+      "submitted_at": "2026-06-13T13:13:13.606667Z"
+    }
+  ],
+  "feasibility_report": {
+    "rfq_id": "RFQ-AFD43E81",
+    "b_workspace_id": "bw_0fd56c700933",
+    "paths": [
+      {
+        "path_id": "PATH-0084EDF1",
+        "rfq_id": "RFQ-AFD43E81",
+        "supplier_id": "actor_manufacturer_m",
+        "supplier_name": "Manufacturer M",
+        "lead_time_days": 4,
+        "unit_price": 1.8,
+        "currency": "USD",
+        "total_price": 180.0,
+        "risk_score": 0.0,
+        "confidence_score": 0.7,
+        "notes": null,
+        "rank": 1
+      }
+    ],
+    "generated_at": "2026-06-13T13:13:13.607794Z",
+    "selected_path_id": "PATH-0084EDF1"
+  },
+  "status": "feasibility_complete",
+  "created_at": "2026-06-13T13:13:13.597315Z",
+  "updated_at": "2026-06-13T13:13:13.607829Z"
+}

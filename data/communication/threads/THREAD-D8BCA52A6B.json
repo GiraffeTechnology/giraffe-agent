@@ -1,0 +1,14 @@
+{
+  "thread_id": "THREAD-D8BCA52A6B",
+  "project_id": "PROJ-E03B0658A7",
+  "edge_id": "EDGE-6D9E64DB4B",
+  "from_actor_id": "actor_manufacturer_integrated",
+  "to_actor_id": "actor_fabric_integrated_f1",
+  "channel_type": "mock",
+  "thread_type": "main_supplier_upstream",
+  "active_role_context_id": "rc-upstream",
+  "status": "OPEN",
+  "correlation_token": "GFR-E03B0658-DEP-92A458C0-EDG-6D9E64",
+  "created_at": "2026-06-13T13:13:30.766877+00:00",
+  "updated_at": "2026-06-13T13:13:30.766903+00:00"
+}

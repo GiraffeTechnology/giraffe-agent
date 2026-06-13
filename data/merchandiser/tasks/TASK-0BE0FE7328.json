@@ -1,0 +1,15 @@
+{
+  "task_id": "TASK-0BE0FE7328",
+  "project_id": "PROJ-791B1E053E",
+  "order_id": null,
+  "assigned_side": "M_SIDE",
+  "assigned_actor_id": "actor_manufacturer_merch_test",
+  "role_context_id": null,
+  "task_type": "qc_update",
+  "due_at": null,
+  "status": "PENDING",
+  "priority": "medium",
+  "payload": {},
+  "created_at": "2026-06-13T13:13:17.502278+00:00",
+  "updated_at": "2026-06-13T13:13:17.502293+00:00"
+}

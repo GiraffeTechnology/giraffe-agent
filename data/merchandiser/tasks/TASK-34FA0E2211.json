@@ -1,0 +1,15 @@
+{
+  "task_id": "TASK-34FA0E2211",
+  "project_id": "PROJ-E03B0658A7",
+  "order_id": null,
+  "assigned_side": "SYSTEM",
+  "assigned_actor_id": null,
+  "role_context_id": null,
+  "task_type": "supplier_memory_update",
+  "due_at": null,
+  "status": "PENDING",
+  "priority": "low",
+  "payload": {},
+  "created_at": "2026-06-13T13:13:30.775249+00:00",
+  "updated_at": "2026-06-13T13:13:30.775268+00:00"
+}

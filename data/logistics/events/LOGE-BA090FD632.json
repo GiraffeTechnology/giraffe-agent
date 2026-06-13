@@ -1,0 +1,29 @@
+{
+  "logistics_event_id": "LOGE-BA090FD632",
+  "shipment_id": "SHIP-81108A393E",
+  "project_id": "PROJ-E03B0658A7",
+  "provider_name": "mock",
+  "provider_event_id": "EVT-002-SF200100300400",
+  "carrier_name": "顺丰",
+  "tracking_number": "SF200100300400",
+  "event_time": "2026-06-11T13:13:30.783353+00:00",
+  "status": "已揽收",
+  "raw_status_code": "PICKED_UP",
+  "normalized_status": "picked_up",
+  "location": "Shenzhen sorting center",
+  "description": "Parcel picked up",
+  "raw_payload": {
+    "provider_event_id": "EVT-002-SF200100300400",
+    "tracking_number": "SF200100300400",
+    "carrier_code": "SF",
+    "event_time": "2026-06-11T13:13:30.783353+00:00",
+    "status_code": "PICKED_UP",
+    "status_text": "已揽收",
+    "location": "Shenzhen sorting center",
+    "description": "Parcel picked up"
+  },
+  "source": "api",
+  "event_hash": "1d44f0497a650926c0e6ba33",
+  "is_duplicate": false,
+  "created_at": "2026-06-13T13:13:30.785221+00:00"
+}

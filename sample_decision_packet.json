@@ -1,0 +1,72 @@
+{
+  "project_id": "e2f71a01-5d5b-43ea-a578-5c0a787d3fef",
+  "rfq_summary": {
+    "requirement_id": "b624542b-c0e4-408b-b97e-79efc18bb481",
+    "category": "Apparel",
+    "quantity": 300,
+    "material": "Cotton",
+    "deadline": "2026-09-30",
+    "destination": "New York",
+    "specs_json": {},
+    "missing_fields_json": {},
+    "confidence_score": 0.91
+  },
+  "supplier_comparison": [
+    {
+      "response_id": "5697e8cb-cf09-47d7-b622-2c34d1570e3d",
+      "inquiry_id": "6fc11529-b793-4178-a389-6d752bd01549",
+      "edge_id": "3f7b8fd4-dfcb-4897-9372-b2a8a67d40d3",
+      "supplier_id": "f322b95c-2a8e-4308-ad2b-f24b8f63964d",
+      "can_supply": true,
+      "price": 8.5,
+      "currency": "USD",
+      "lead_time_days": 30,
+      "moq": 100.0,
+      "available_quantity": 500.0,
+      "confidence_score": 0.88,
+      "completeness_score": 1.0,
+      "risk_flags_json": {},
+      "raw_message": null
+    }
+  ],
+  "top_3_options": [
+    {
+      "rank": 1,
+      "response_id": "5697e8cb-cf09-47d7-b622-2c34d1570e3d",
+      "supplier_id": "f322b95c-2a8e-4308-ad2b-f24b8f63964d",
+      "inquiry_id": "6fc11529-b793-4178-a389-6d752bd01549",
+      "edge_id": "3f7b8fd4-dfcb-4897-9372-b2a8a67d40d3",
+      "edge_status": "APPROVED",
+      "can_supply": true,
+      "price": 8.5,
+      "currency": "USD",
+      "lead_time_days": 30,
+      "confidence_score": 0.88,
+      "completeness_score": 1.0,
+      "data_label": "supplier-stated",
+      "evidence_links": {
+        "supplier_response_id": "5697e8cb-cf09-47d7-b622-2c34d1570e3d",
+        "inquiry_id": "6fc11529-b793-4178-a389-6d752bd01549",
+        "edge_id": "3f7b8fd4-dfcb-4897-9372-b2a8a67d40d3"
+      }
+    }
+  ],
+  "recommended_option": {
+    "status": "recommended",
+    "response_id": "5697e8cb-cf09-47d7-b622-2c34d1570e3d",
+    "supplier_id": "f322b95c-2a8e-4308-ad2b-f24b8f63964d",
+    "inquiry_id": "6fc11529-b793-4178-a389-6d752bd01549",
+    "edge_id": "3f7b8fd4-dfcb-4897-9372-b2a8a67d40d3",
+    "price": 8.5,
+    "currency": "USD",
+    "lead_time_days": 30,
+    "confidence_score": 0.88,
+    "completeness_score": 1.0,
+    "evidence_note": "Cheapest complete option. Source: response_id=5697e8cb-cf09-47d7-b622-2c34d1570e3d, inquiry_id=6fc11529-b793-4178-a389-6d752bd01549, edge_id=3f7b8fd4-dfcb-4897-9372-b2a8a67d40d3. Data labelled 'supplier-stated'. NOT verified by Giraffe."
+  },
+  "risk_flags": [],
+  "missing_fields": [],
+  "human_confirmation_required": true,
+  "confirmation_note": "This packet is AI-generated from structured supplier data recorded in the Giraffe procurement database. It is NOT a legal or commercial commitment. All figures (price, lead time, quantity, etc.) are supplier-stated or AI-normalised \u2014 they have NOT been independently verified. A human buyer MUST review and confirm this packet before placing any order. Do not treat any recommendation herein as final or binding.",
+  "generated_at": "2026-06-13T18:01:08.888065+00:00"
+}

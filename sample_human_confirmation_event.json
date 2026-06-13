@@ -1,0 +1,12 @@
+{
+  "event_type": "HUMAN_CONFIRMATION_RECEIVED",
+  "project_id": "e0353e6b-cae5-41ea-b671-31d5e818d999",
+  "edge_id": "396134c9-7a09-44d3-b11e-d99db688c2de",
+  "confirming_actor_id": "611d6cda-89d1-41e2-9e5e-bdd792d24337",
+  "is_confirmed": true,
+  "overrides": [],
+  "events_written": [
+    "af4c3a86-1987-4e82-93c4-76c0f1e4211c"
+  ],
+  "edge_approved": true
+}

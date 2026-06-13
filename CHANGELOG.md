@@ -4,6 +4,71 @@ All notable changes to Giraffe Agent are recorded here.
 
 ---
 
+## [BM_DB_INTEGRATION_V1_3_TRUST_BOUNDARY] — 2026-06-13
+
+### Tag candidate
+`BM_DB_INTEGRATION_V1_3_TRUST_BOUNDARY`
+
+### Classification
+v1.3 adds the trust boundary and rule integrity layer.  No new product features.
+
+### Summary
+8/8 trust suites pass, including regression guards for all prior layers (v1.0 baseline,
+v1.1 hardening, v1.2 replay/decision packet) and 5 new trust-specific suites.
+
+### Added
+- `rule_packet_registry.py` — immutable, SHA-256-hashed rule packets for 7 lifecycle phases; fails closed on missing/deprecated/hash-mismatch
+- `evidence_guard.py` — validates supplier response fields against source evidence; flags placeholders, ai_inferred without risk flags, missing fields; writes `AI_OUTPUT_EVIDENCE_GAP` events
+- `human_confirmation.py` — manages `HUMAN_CONFIRMATION_REQUIRED`, `HUMAN_CONFIRMATION_RECEIVED`, `HUMAN_OVERRIDE_DETECTED` execution events; gates edge APPROVED
+- `bm_db_v13_trust_test.py` — 8-suite trust runner (v1.0/v1.1/v1.2 regression + 5 new suites)
+- `BM_DB_INTEGRATION_V1_3_TRUST_BOUNDARY_REPORT.md` — full trust report
+- Sample artifacts: `sample_rule_packet.json`, `sample_human_confirmation_event.json`, `sample_override_detection_event.json`, `sample_decision_packet_with_evidence.md`
+
+### Verified (all 8 suites)
+
+| Suite | Result |
+|-------|--------|
+| Baseline v1.0 Regression (verify_integration --runs 5) | PASS |
+| v1.1 Hardening Regression (bm_db_hardening) | PASS |
+| v1.2 Replay + Decision Packet Regression | PASS |
+| T1. Rule Packet Registry | PASS |
+| T2. Evidence Guard | PASS |
+| T3. Human Confirmation & Override Detection | PASS |
+| T4. Rule Packet + Evidence Guard Integration | PASS |
+| T5. Five-run Reproducibility (v1.3 full stack) | PASS |
+
+---
+
+## [BM_DB_INTEGRATION_V1_2_REPLAY_DECISION_PACKET] — 2026-06-13
+
+### Tag candidate
+`BM_DB_INTEGRATION_V1_2_REPLAY_DECISION_PACKET`
+
+### Classification
+v1.2 adds the first buyer-facing output layer.  No new product features.
+
+### Summary
+4/4 suites pass on a fresh DB, including 5-run reproducibility.  Baseline v1 and v1.1
+hardening both pass as regression guards inside the v1.3 suite.
+
+### Added
+- `execution_graph_replay.py` — `replay_project(db_url, project_id) → dict`; reconstructs full B/M-side execution graph with event timeline; CLI with `--format json|md`
+- `decision_packet_generator.py` — `generate_packet(db_url, project_id) → dict`; buyer-facing decision packet with evidence links; `human_confirmation_required=True` always; CLI with `--output file.json|md`
+- `bm_db_v12_replay_test.py` — 4-suite test runner
+- `BM_DB_INTEGRATION_V1_2_REPLAY_DECISION_PACKET_REPORT.md` — full v1.2 report
+- Sample artifacts: `sample_execution_graph.json`, `sample_execution_graph.md`, `sample_decision_packet.json`, `sample_decision_packet.md`
+
+### Verified (all 4 suites)
+
+| Suite | Result |
+|-------|--------|
+| 1. Execution Graph Replay — Output Shape | PASS |
+| 2. Decision Packet — Output Shape + Evidence Rules | PASS |
+| 3. Markdown Rendering | PASS |
+| 4. Five-run Reproducibility | PASS |
+
+---
+
 ## [BM_DB_INTEGRATION_V1_1_HARDENING] — 2026-06-13
 
 ### Tag candidate

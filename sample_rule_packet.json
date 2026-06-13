@@ -1,0 +1,46 @@
+{
+  "rule_packet_id": "fccc172f-c4fd-5b95-9b7e-f32b2aaa2280",
+  "rule_packet_type": "supplier_response_normalization",
+  "version": "1.0",
+  "effective_at": "2026-06-13T00:00:00Z",
+  "rule_hash": "1ca0948787de3d6df4ab352764709747af9ce2cb2bbedc9eca019f5d461f4cb7",
+  "source_file": "rule_packet_registry.py",
+  "created_by": "system",
+  "status": "active",
+  "rule_content_json": {
+    "commercial_fields": [
+      "price",
+      "currency",
+      "moq",
+      "lead_time_days",
+      "available_quantity",
+      "earliest_dispatch_date"
+    ],
+    "field_source_options": [
+      "supplier_stated",
+      "ai_normalized",
+      "ai_inferred",
+      "missing"
+    ],
+    "missing_field_handling": "store_as_null_with_risk_flag",
+    "placeholder_values_forbidden": [
+      999,
+      -1,
+      0,
+      "TBD",
+      "N/A"
+    ],
+    "ai_normalization_allowed": [
+      "unit_conversion",
+      "date_parsing",
+      "currency_standardization"
+    ],
+    "rules": [
+      "price=None means supplier did not state a price. Do not fill with 999.",
+      "lead_time_days=None means supplier did not state lead time. Do not invent.",
+      "If can_supply=True but price=None, add missing_fields risk flag.",
+      "AI may normalize units (e.g. '2 weeks' \u2192 14 days) but must record field_source as ai_normalized.",
+      "AI may never invent a commercial commitment."
+    ]
+  }
+}

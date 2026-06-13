@@ -1,0 +1,17 @@
+{
+  "event_type": "HUMAN_OVERRIDE_DETECTED",
+  "project_id": "6036407b-ff86-4fa8-9e94-3de8b00038c6",
+  "edge_id": "13d362fe-537d-44a7-bc6e-ce7c65dad95f",
+  "overrides": [
+    {
+      "field": "confirmed_price",
+      "supplier_stated": 7.2,
+      "human_confirmed": 6.0,
+      "note": "Human confirmed confirmed_price=6.0 but supplier stated price=7.2. HUMAN_OVERRIDE_DETECTED event recorded."
+    }
+  ],
+  "events_written": [
+    "26c1f2db-7d73-42bd-a254-71ce197dd837",
+    "eadbd76b-b536-4f10-8306-1aacf57f5542"
+  ]
+}

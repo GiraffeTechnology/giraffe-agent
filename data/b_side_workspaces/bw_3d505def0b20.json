@@ -1,0 +1,55 @@
+{
+  "b_workspace_id": "bw_3d505def0b20",
+  "rfq_id": "RFQ-DF64229E",
+  "raw_requirement": "100 cotton shirts",
+  "buyer_requirement": null,
+  "supplier_inquiry_draft": null,
+  "supplier_responses": [
+    {
+      "response_id": "ROLLUP-RESP-B8EB4E39",
+      "rfq_id": "bw_3d505def0b20",
+      "b_workspace_id": "bw_3d505def0b20",
+      "supplier_id": "actor_manufacturer_m",
+      "supplier_name": "Manufacturer M",
+      "can_make": true,
+      "capacity_available": true,
+      "material_available": true,
+      "estimated_lead_time_days": 7,
+      "unit_price": 2.5,
+      "total_price": 250.0,
+      "currency": "USD",
+      "qc_available": false,
+      "logistics_notes": null,
+      "red_flags": [],
+      "completeness_score": 0.45,
+      "confidence_score": 0.45,
+      "raw_response": "We can support the 100 pcs order for 100 cotton shirts based on approved upstream options.\n\nFabric: actor_fabric_s1 — USD 2.50, dispatch in 7 days.\nTrims: confirmed supplier.\nPackaging: standard packaging.\nQC: standard QC.\nLogistics: TBC.\n\nEstimated total lead time: 17 days (fabric 7d + sewing ~7d + logistics 0d + 3d buffer).\n\nWe recommend confirming color and fabric option before final order acknowledgement.",
+      "submitted_at": "2026-06-14T03:31:24.979000Z"
+    }
+  ],
+  "feasibility_report": {
+    "rfq_id": "RFQ-DF64229E",
+    "b_workspace_id": "bw_3d505def0b20",
+    "paths": [
+      {
+        "path_id": "PATH-F5E76E46",
+        "rfq_id": "RFQ-DF64229E",
+        "supplier_id": "actor_manufacturer_m",
+        "supplier_name": "Manufacturer M",
+        "lead_time_days": 7,
+        "unit_price": 2.5,
+        "currency": "USD",
+        "total_price": 250.0,
+        "risk_score": 0.0,
+        "confidence_score": 0.45,
+        "notes": null,
+        "rank": 1
+      }
+    ],
+    "generated_at": "2026-06-14T03:31:24.979507Z",
+    "selected_path_id": "PATH-F5E76E46"
+  },
+  "status": "feasibility_complete",
+  "created_at": "2026-06-14T03:31:24.978886Z",
+  "updated_at": "2026-06-14T03:31:24.979540Z"
+}

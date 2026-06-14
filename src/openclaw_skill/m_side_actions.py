@@ -2,7 +2,11 @@
 M-side OpenClaw skill action handlers.
 """
 
-from src.m_side.supplier_workspace import get_m_workspace
+from src.m_side.supplier_workspace import (
+    get_m_workspace,
+    find_workspace_by_rfq_id,
+    find_active_workspace_for_supplier_and_rfq,
+)
 from src.m_side.response_collector import append_supplier_message, build_response_packet_from_messages
 from src.m_side.supplier_clarification import next_supplier_question
 from src.m_side.order_acknowledger import acknowledge_order
@@ -10,12 +14,90 @@ from src.m_side.production_update import submit_production_update
 from src.m_side.qc_update import submit_qc_update
 from src.m_side.logistics_update import submit_logistics_update
 from src.m_side.exception_handler import submit_exception_report
+from src.m_side.m_event_logger import log_m_event
 from src.openclaw_skill.m_side_response_formatter import (
     format_m_workspace,
     format_response_packet_preview,
     format_order_execution,
 )
 from src.openclaw_skill.response_formatter import format_ok, format_error
+
+
+def _resolve_m_workspace(params: dict):
+    """
+    Resolve M-side workspace from action params.
+
+    Lookup priority:
+    1. Explicit m_workspace_id — use directly.
+    2. rfq_id + channel identity (sender_id / channel) — most specific RFQ lookup.
+    3. project_id treated as rfq_id — fallback when only project_id is provided.
+
+    Returns (workspace, None) on success.
+    Returns (None, error_dict) on failure (not found, ambiguous, or missing required params).
+    """
+    m_workspace_id = params.get("m_workspace_id")
+
+    # Priority 1: explicit workspace id
+    if m_workspace_id:
+        try:
+            ws = get_m_workspace(m_workspace_id)
+            return ws, None
+        except FileNotFoundError:
+            return None, {
+                "ok": False,
+                "status": "m_workspace_not_found",
+                "reply_text": (
+                    f"未找到 workspace {m_workspace_id}。请确认工作区编号。"
+                ),
+                "missing_fields": [],
+                "message_drafts": [],
+                "outbound_messages": [],
+            }
+
+    # Priority 2 & 3: resolve by rfq_id (project_id is the RFQ id returned by B-side)
+    rfq_id = params.get("rfq_id") or params.get("project_id")
+    if not rfq_id:
+        return None, {
+            "ok": False,
+            "status": "m_workspace_not_found",
+            "reply_text": (
+                "未找到与该 RFQ / 项目对应的供应商工作区。请确认项目编号或供应商身份。"
+            ),
+            "missing_fields": ["m_workspace_id_or_supplier_binding"],
+            "message_drafts": [],
+            "outbound_messages": [],
+        }
+
+    channel = params.get("channel")
+    sender_id = params.get("sender_id") or params.get("external_user_id")
+
+    try:
+        ws = find_active_workspace_for_supplier_and_rfq(channel, sender_id, rfq_id)
+    except ValueError:
+        # Multiple workspaces share the same rfq_id — cannot pick one safely
+        return None, {
+            "ok": False,
+            "status": "ambiguous_m_workspace",
+            "reply_text": (
+                "找到多个可能的供应商工作区。请指定供应商或 inquiry/workspace id。"
+            ),
+            "message_drafts": [],
+            "outbound_messages": [],
+        }
+
+    if ws is None:
+        return None, {
+            "ok": False,
+            "status": "m_workspace_not_found",
+            "reply_text": (
+                "未找到与该 RFQ / 项目对应的供应商工作区。请确认项目编号或供应商身份。"
+            ),
+            "missing_fields": ["m_workspace_id_or_supplier_binding"],
+            "message_drafts": [],
+            "outbound_messages": [],
+        }
+
+    return ws, None
 
 
 def handle_m_side_receive_inquiry(params: dict) -> dict:
@@ -31,15 +113,32 @@ def handle_m_side_receive_inquiry(params: dict) -> dict:
 
 
 def handle_m_side_submit_supplier_response(params: dict) -> dict:
-    """Handler: m_side_submit_supplier_response — append message and build response packet."""
-    m_workspace_id = params.get("m_workspace_id")
-    message = params.get("message")
-    if not m_workspace_id or not message:
-        return format_error("m_workspace_id and message are required")
+    """
+    Handler: m_side_submit_supplier_response — append supplier message and build response packet.
+
+    Accepts workspace identification via:
+    - m_workspace_id (explicit, highest priority)
+    - project_id (treated as rfq_id from the B-side flow) + optional sender_id/channel
+    - rfq_id + optional sender_id/channel
+
+    Returns status="supplier_response_received" only after the message is actually appended.
+    Returns status="m_workspace_not_found" or "ambiguous_m_workspace" if lookup fails.
+    """
+    # Accept both "message" and "message_text" (OpenClaw event field name)
+    message = params.get("message") or params.get("message_text")
+    if not message:
+        return format_error("message or message_text is required")
+
+    workspace, error = _resolve_m_workspace(params)
+    if error is not None:
+        return error
+
+    m_workspace_id = workspace.m_workspace_id
+    attachments = params.get("attachments", [])
 
     try:
-        # Append message
-        workspace = append_supplier_message(m_workspace_id, message)
+        # Append message — this is the critical action; must succeed before returning success
+        workspace = append_supplier_message(m_workspace_id, message, attachments)
 
         # Build response packet
         packet = build_response_packet_from_messages(m_workspace_id)
@@ -53,12 +152,23 @@ def handle_m_side_submit_supplier_response(params: dict) -> dict:
             else '已整理为结构化供应商响应。请确认是否提交给买方：回复"确认提交"。'
         )
 
-        return format_ok({
+        log_m_event(
+            event_type="M_SUPPLIER_RESPONSE_HANDLER_COMPLETED",
+            m_workspace_id=m_workspace_id,
+            b_workspace_id=workspace.b_workspace_id,
+            supplier_id=workspace.supplier_id,
+            rfq_id=workspace.rfq_id,
+            payload={"message_count": len(workspace.raw_supplier_messages)},
+        )
+
+        return {
+            "ok": True,
+            "status": "supplier_response_received",
             "m_workspace_id": m_workspace_id,
-            "status": workspace.status,
+            "workspace_status": workspace.status,
             "response_packet_preview": format_response_packet_preview(packet),
             "next_message": next_msg,
-        })
+        }
     except Exception as e:
         return format_error(str(e))
 

@@ -26,3 +26,9 @@ packages = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.0",
+    "sqlalchemy>=2.0.50",
+]

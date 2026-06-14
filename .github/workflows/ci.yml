@@ -6,7 +6,8 @@ on:
   pull_request:
 
 jobs:
-  test:
+  b-side-tests:
+    name: B-side Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -29,8 +30,59 @@ jobs:
       - name: Compile Python files
         run: uv run python -m py_compile *.py
 
-      - name: Run tests
-        run: uv run pytest tests/ -q
+      - name: Run B-side and DB tests
+        run: uv run pytest tests/db/ -q
+
+  mside-role-switching-tests:
+    name: M-side Role-Switching Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Add pytest
+        run: uv add --dev pytest
+
+      - name: Compile Python files
+        run: uv run python -m py_compile *.py
+
+      - name: Run M-side role-switching tests
+        run: uv run pytest tests/test_mside_role_switching.py -q
+
+      - name: Run role-switching E2E script
+        run: uv run python scripts/run_role_switching_mvp.py
+
+  bm-db-integration:
+    name: BM DB Integration
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Add pytest
+        run: uv add --dev pytest
 
       - name: Run BM DB integration verifier (DB-off)
         run: GIRAFFE_DB_MODE=off uv run python run_bm_e2e_with_db.py

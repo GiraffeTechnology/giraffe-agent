@@ -22,15 +22,66 @@ def health():
 # ─── OpenClaw Skill Invocation ─────────────────────────────────────────────────
 
 class SkillInvokeRequest(BaseModel):
-    action: str
+    # Legacy action-based invocation
+    action: str | None = None
     channel: str | None = None
     external_user_id: str | None = None
     params: dict = {}
 
+    # OpenClaw normalized channel event fields
+    source: str | None = None
+    channel_account_id: str | None = None
+    conversation_id: str | None = None
+    sender_id: str | None = None
+    sender_display_name: str | None = None
+    message_text: str | None = None
+    message_type: str | None = None
+    attachments: list = []
+    timestamp: str | None = None
+    project_id: str | None = None
+    procurement_edge_id: str | None = None
+    actor_id: str | None = None
+    role_context: str | None = None
+    mode: str | None = None
+
 
 @app.post("/api/skill/invoke")
 def invoke_skill(request: SkillInvokeRequest):
-    """OpenClaw skill invocation endpoint — routes to B-side or M-side handlers."""
+    """
+    OpenClaw skill invocation endpoint.
+
+    Supports two formats:
+    1. Legacy action-based: { "action": "m_side_receive_inquiry", "params": {...} }
+    2. OpenClaw normalized event: { "source": "openclaw", "channel": "openclaw-weixin", ... }
+    """
+    # Detect OpenClaw normalized event format
+    if request.source == "openclaw" or (
+        request.action is None and request.conversation_id is not None
+    ):
+        from src.openclaw_skill.openclaw_event_adapter import adapt_openclaw_event
+        event_data = {
+            "source": request.source or "openclaw",
+            "channel": request.channel or "openclaw-unknown",
+            "channel_account_id": request.channel_account_id or "",
+            "conversation_id": request.conversation_id or "",
+            "sender_id": request.sender_id or "",
+            "sender_display_name": request.sender_display_name,
+            "message_text": request.message_text or "",
+            "message_type": request.message_type or "text",
+            "attachments": request.attachments or [],
+            "timestamp": request.timestamp,
+            "project_id": request.project_id,
+            "procurement_edge_id": request.procurement_edge_id,
+            "actor_id": request.actor_id,
+            "role_context": request.role_context,
+            "mode": request.mode,
+        }
+        return adapt_openclaw_event(event_data)
+
+    # Legacy action-based invocation
+    if not request.action:
+        return {"ok": False, "error": "Either 'action' or OpenClaw event fields are required"}
+
     from src.openclaw_skill.skill_router import route_action
     params = dict(request.params)
     if request.external_user_id:

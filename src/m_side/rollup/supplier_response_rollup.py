@@ -55,6 +55,18 @@ class SupplierResponseRollup(BaseModel):
     recommended_machine_ids: list[str] = Field(default_factory=list)
     capability_gaps: list[str] = Field(default_factory=list)
     upstream_dependency_basis: dict = Field(default_factory=dict)
+    # NEW: structured lead time components for B-side consumption
+    calculated_total_lead_time_days: int | None = None
+    lead_time_components: list[dict] = Field(default_factory=list)
+    lead_time_evidence_refs: list[str] = Field(default_factory=list)
+    lead_time_risk_flags: list[str] = Field(default_factory=list)
+    material_ready_days: int | None = None
+    production_days: int | None = None
+    qc_days_estimate: int | None = None
+    packaging_days_estimate: int | None = None
+    logistics_days_estimate: int | None = None
+    risk_buffer_days: int | None = None
+    supplier_stated_total_lead_time_days: int | None = None
 
 
 def _extract_lead_days(lead_summary: str) -> int | None:
@@ -241,8 +253,47 @@ def generate_supplier_response_rollup(
         response_en = cap_line_en + response_en
         response_zh = cap_line_zh + response_zh
 
+    rollup_id = f"ROLLUP-{uuid.uuid4().hex[:10].upper()}"
+
+    # Calculate lead time using the canonical Lead Time Path Model
+    from src.lead_time.lead_time_calculator import calculate_lead_time_path
+    from src.lead_time.models import ProductionCapacity
+
+    lt_fabric_days = lead_time_basis.get("fabric", {}).get("days")
+    lt_trim_days = lead_time_basis.get("trim", {}).get("days") or lead_time_basis.get("raw_material", {}).get("days")
+    lt_packaging_days = lead_time_basis.get("packaging", {}).get("days")
+    lt_logistics_days = lead_time_basis.get("logistics", {}).get("days")
+    lt_qc_days = lead_time_basis.get("qc_testing", {}).get("days")
+
+    cap = ProductionCapacity(
+        actor_id=main_supplier_actor_id,
+        daily_capacity_units=max(1, (quantity or 100) // 2),
+        setup_days=1.0,
+        queue_days=0.0,
+        confidence_score=0.7 if main_capacity_available else 0.3,
+    )
+
+    lt_path = calculate_lead_time_path(
+        supplier_response_id=f"ROLLUP-{rollup_id}",
+        supplier_id=main_supplier_actor_id,
+        supplier_name=main_capacity_note,
+        project_id=project_id,
+        quantity=quantity,
+        fabric_days=lt_fabric_days,
+        trim_days=lt_trim_days,
+        packaging_material_days=None,
+        subcontract_days=None,
+        qc_days=lt_qc_days,
+        packaging_days=lt_packaging_days,
+        logistics_days=lt_logistics_days,
+        production_capacity=cap,
+        risk_flags=all_risk_flags,
+        confidence_score=confidence_score,
+        completeness_score=completeness_score,
+    )
+
     rollup = SupplierResponseRollup(
-        rollup_id=f"ROLLUP-{uuid.uuid4().hex[:10].upper()}",
+        rollup_id=rollup_id,
         project_id=project_id,
         main_supplier_actor_id=main_supplier_actor_id,
         can_accept_order=can_accept,
@@ -270,6 +321,18 @@ def generate_supplier_response_rollup(
         recommended_machine_ids=recommended_machine_ids or [],
         capability_gaps=capability_gaps or [],
         upstream_dependency_basis=upstream_dependency_basis or {},
+        # Lead time path model results
+        calculated_total_lead_time_days=lt_path.total_lead_time_days,
+        lead_time_components=[c.model_dump() for c in lt_path.components],
+        lead_time_evidence_refs=lt_path.evidence_refs,
+        lead_time_risk_flags=lt_path.risk_flags,
+        material_ready_days=int(lt_path.material_ready_days),
+        production_days=int(lt_path.production_days),
+        qc_days_estimate=int(lt_path.post_production_days) if lt_path.post_production_days else None,
+        packaging_days_estimate=lt_packaging_days,
+        logistics_days_estimate=lt_logistics_days,
+        risk_buffer_days=int(lt_path.risk_buffer_days),
+        supplier_stated_total_lead_time_days=None,
     )
 
     log_m_event(

@@ -45,7 +45,7 @@ class SupplierResponseRecord(BaseModel):
     can_make: bool | None = None
     capacity_available: bool | None = None
     material_available: bool | None = None
-    estimated_lead_time_days: int | None = None
+    estimated_lead_time_days: int | None = None  # kept for backward compat; treated as supplier_stated evidence only
     unit_price: float | None = None
     total_price: float | None = None
     currency: str | None = None
@@ -56,6 +56,8 @@ class SupplierResponseRecord(BaseModel):
     confidence_score: float = 0.0
     raw_response: str = ""
     submitted_at: datetime = Field(default_factory=_utcnow)
+    # Lead time breakdown (populated by M-side rollup bridge)
+    lead_time_breakdown: dict = Field(default_factory=dict)
 
 
 class DeliveryPath(BaseModel):
@@ -63,7 +65,7 @@ class DeliveryPath(BaseModel):
     rfq_id: str
     supplier_id: str
     supplier_name: str
-    lead_time_days: int | None = None
+    lead_time_days: int | None = None  # kept for compat (= calculated_lead_time_days)
     unit_price: float | None = None
     currency: str | None = None
     total_price: float | None = None
@@ -71,6 +73,16 @@ class DeliveryPath(BaseModel):
     confidence_score: float = 0.0
     notes: str | None = None
     rank: int = 0
+    # Lead time path model fields (new)
+    calculated_lead_time_days: int | None = None
+    supplier_stated_lead_time_days: int | None = None
+    lead_time_components: list[dict] = Field(default_factory=list)
+    critical_path_summary: str | None = None
+    slack_days: int | None = None
+    deadline_feasible: bool | None = None
+    evidence_refs: list[str] = Field(default_factory=list)
+    lead_time_risk_flags: list[str] = Field(default_factory=list)
+    label: str | None = None
 
 
 class FeasibilityReport(BaseModel):

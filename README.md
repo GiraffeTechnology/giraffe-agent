@@ -194,6 +194,24 @@ Result: 5/5 passed
 DB-off mode: PASS · DB-on mode: PASS · Reproducible integration baseline passed;
 ready for next-stage hardening and broader scenario testing.
 
+### Lead Time Path Model
+
+The B-side feasibility engine uses the **canonical Lead Time Path Model** — a full path-based lead time calculation replacing simplified `lead_time_days` ranking.
+
+**Key rules:**
+- Material, trim, packaging-material, subcontract run in **PARALLEL** → use `max()`
+- Production → QC → packaging → logistics run **SEQUENTIALLY** → use `sum()`
+- Supplier-stated lead time is preserved as evidence but not trusted blindly
+- Missing fields create `risk_flags`, never sentinel `999` values
+
+Run the deterministic demo:
+
+```bash
+uv run python scripts/run_lead_time_model_demo.py
+```
+
+Expected output: `LEAD TIME MODEL DEMO: PASS`
+
 ### MVP E2E Scripts
 
 | Script | What it verifies |
@@ -206,6 +224,7 @@ ready for next-stage hardening and broader scenario testing.
 | `scripts/run_merchandiser_e2e_mvp.py` | AI Merchandiser full flow |
 | `scripts/run_logistics_cainiao_like_api_mvp.py` | Logistics ingestion and normalization |
 | `scripts/run_integrated_post_confirmation_mvp.py` | Integrated post-confirmation (56 checks) |
+| `scripts/run_lead_time_model_demo.py` | Lead Time Path Model deterministic verification |
 
 ```bash
 # Run all E2E scripts in sequence
@@ -216,6 +235,7 @@ uv run python scripts/run_mside_professional_free_cad_cnc_mvp.py
 uv run python scripts/run_merchandiser_e2e_mvp.py
 uv run python scripts/run_logistics_cainiao_like_api_mvp.py
 uv run python scripts/run_integrated_post_confirmation_mvp.py
+uv run python scripts/run_lead_time_model_demo.py
 ```
 
 ### Unit Tests

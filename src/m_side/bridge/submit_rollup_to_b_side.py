@@ -32,12 +32,14 @@ def submit_rollup_to_b_side(
     Convert a SupplierResponseRollup into a SupplierResponseRecord and attach it
     to the B-side workspace for feasibility engine consumption.
     """
-    # Extract lead time from lead_time_basis
-    lead_time_days = None
-    for dep_type_key in ("fabric", "logistics", "packaging"):
-        entry = rollup.lead_time_basis.get(dep_type_key, {})
-        if entry.get("days"):
-            lead_time_days = (lead_time_days or 0) + entry["days"]
+    # Use calculated lead time from Lead Time Path Model if available, else fall back to sum of basis days
+    lead_time_days = rollup.calculated_total_lead_time_days
+    if lead_time_days is None:
+        lead_time_days = None
+        for dep_type_key in ("fabric", "logistics", "packaging"):
+            entry = rollup.lead_time_basis.get(dep_type_key, {})
+            if entry.get("days"):
+                lead_time_days = (lead_time_days or 0) + entry["days"]
 
     # Estimate unit price from price_basis
     unit_price = None
@@ -50,6 +52,21 @@ def submit_rollup_to_b_side(
     red_flags = rollup.risk_flags.copy()
     if rollup.unresolved_dependencies:
         red_flags.append(f"Unresolved: {', '.join(rollup.unresolved_dependencies)}")
+
+    # Build structured lead time breakdown for B-side consumption
+    lead_time_breakdown = {
+        "fabric_days": rollup.material_ready_days,
+        "material_days": rollup.material_ready_days,
+        "production_days": rollup.production_days,
+        "qc_days": rollup.qc_days_estimate,
+        "packaging_days": rollup.packaging_days_estimate,
+        "logistics_days": rollup.logistics_days_estimate,
+        "risk_buffer_days": rollup.risk_buffer_days,
+        "calculated_total_days": rollup.calculated_total_lead_time_days,
+        "supplier_stated_total_days": rollup.supplier_stated_total_lead_time_days,
+        "evidence_refs": rollup.lead_time_evidence_refs,
+        "components": rollup.lead_time_components,
+    }
 
     response_record = SupplierResponseRecord(
         response_id=f"ROLLUP-RESP-{uuid.uuid4().hex[:8].upper()}",
@@ -70,6 +87,7 @@ def submit_rollup_to_b_side(
         completeness_score=rollup.completeness_score,
         confidence_score=rollup.confidence_score,
         raw_response=rollup.recommended_response_to_buyer_en,
+        lead_time_breakdown=lead_time_breakdown,
     )
 
     intake_supplier_response(b_workspace_id, response_record)

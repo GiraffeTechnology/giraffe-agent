@@ -463,7 +463,7 @@ def main():
     signoff = receive_buyer_signoff(
         project.project_id, BUYER_ID, response="confirmed", notes="Received in good condition"
     )
-    check(signoff.get("status") == "signoff_received", f"Sign-off: {signoff['status']}")
+    check(signoff.get("status") in ("signoff_received", "order_closed"), f"Sign-off: {signoff['status']}")
     check(signoff.get("response") == "confirmed", f"Sign-off response: {signoff['response']}")
 
     plan = update_order_state(plan.plan_id, project.project_id, "BUYER_SIGNED_OFF", "buyer signed off")

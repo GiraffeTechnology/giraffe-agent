@@ -42,6 +42,7 @@ def upload_media_evidence(
     description: str | None = None,
     artifact_id: str | None = None,
     count: int = 1,
+    update_milestone_status: bool = True,
 ) -> list[MediaEvidence]:
     _DATA_DIR.mkdir(parents=True, exist_ok=True)
     evidences = []
@@ -60,6 +61,20 @@ def upload_media_evidence(
         path.write_text(ev.model_dump_json(indent=2), encoding="utf-8")
         evidences.append(ev)
 
+    media_ids = [ev.media_id for ev in evidences]
+
+    if update_milestone_status:
+        try:
+            from src.merchandiser.milestone_manager import update_milestone_status as _update_ms
+            _update_ms(
+                milestone_id=milestone_id,
+                project_id=project_id,
+                status="UPLOADED",
+                metadata={"media_ids": media_ids, "uploaded_by": uploaded_by_actor_id},
+            )
+        except FileNotFoundError:
+            pass
+
     log_m_event(
         event_type="MEDIA_EVIDENCE_UPLOADED",
         b_workspace_id=project_id,
@@ -68,6 +83,8 @@ def upload_media_evidence(
             "uploaded_by": uploaded_by_actor_id,
             "count": count,
             "media_type": media_type,
+            "media_ids": media_ids,
+            "milestone_status_updated": update_milestone_status,
         },
     )
     return evidences

@@ -82,4 +82,7 @@ data/industrial_execution_graph/events.jsonl
 data/communication/inbox/
 data/communication/outbox/
 data/merchandiser/exceptions/
+data/merchandiser/qc/reference_images/
+data/merchandiser/qc/process_cards/
+data/merchandiser/qc/reports/
 ci_test.db

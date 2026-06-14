@@ -50,7 +50,7 @@ def handle_m_side_submit_supplier_response(params: dict) -> dict:
         next_msg = (
             next_q
             if next_q
-            else "已整理为结构化供应商响应。请确认是否提交给买方：回复"确认提交"。"
+            else '已整理为结构化供应商响应。请确认是否提交给买方：回复"确认提交"。'
         )
 
         return format_ok({

@@ -958,9 +958,10 @@ def resolve_exception_endpoint(exception_id: str, project_id: str, request: Reso
 
 class BuyerSignoffRequest(BaseModel):
     buyer_actor_id: str
-    tracking_number: str
+    tracking_number: str | None = None
     response: str = "confirmed"
     notes: str = ""
+    order_id: str | None = None
 
 
 @app.post("/api/merchandiser/{project_id}/buyer-signoff")
@@ -971,6 +972,8 @@ def buyer_signoff_endpoint(project_id: str, request: BuyerSignoffRequest):
         buyer_actor_id=request.buyer_actor_id,
         response=request.response,
         notes=request.notes,
+        order_id=request.order_id,
+        tracking_number=request.tracking_number,
     )
     return result
 
@@ -1060,3 +1063,154 @@ def list_logistics_providers():
             {"name": "cainiao_like", "description": "Cainiao-like logistics API provider", "requires_credentials": True},
         ]
     }
+
+
+# ─── QC endpoints ─────────────────────────────────────────────────────────────
+
+@app.get("/api/qc/health")
+def qc_health():
+    return {"status": "ok", "module": "qc"}
+
+
+class AddReferenceImageRequest(BaseModel):
+    image_path: str
+    uploaded_by_actor_id: str
+    milestone_type: str | None = None
+    description: str | None = None
+
+
+@app.post("/api/qc/{project_id}/reference-images")
+def add_reference_image_endpoint(project_id: str, request: AddReferenceImageRequest):
+    from src.merchandiser.qc.qc_reference_store import add_reference_image
+    ref = add_reference_image(
+        project_id=project_id,
+        image_path=request.image_path,
+        uploaded_by_actor_id=request.uploaded_by_actor_id,
+        milestone_type=request.milestone_type,
+        description=request.description,
+    )
+    return ref.model_dump()
+
+
+@app.get("/api/qc/{project_id}/reference-images")
+def list_reference_images_endpoint(project_id: str, milestone_type: str | None = None):
+    from src.merchandiser.qc.qc_reference_store import get_reference_images
+    refs = get_reference_images(project_id, milestone_type=milestone_type)
+    return {"reference_images": [r.model_dump() for r in refs]}
+
+
+class CreateProcessCardRequest(BaseModel):
+    category: str
+    material_spec: str | None = None
+    color_spec: str | None = None
+    size_spec: str | None = None
+    finish_spec: str | None = None
+    defect_criteria: str | None = None
+    supplier_notes: str | None = None
+
+
+@app.post("/api/qc/{project_id}/process-card")
+def create_process_card_endpoint(project_id: str, request: CreateProcessCardRequest):
+    from src.merchandiser.qc.qc_process_card import create_process_card
+    card = create_process_card(
+        project_id=project_id,
+        category=request.category,
+        material_spec=request.material_spec,
+        color_spec=request.color_spec,
+        size_spec=request.size_spec,
+        finish_spec=request.finish_spec,
+        defect_criteria=request.defect_criteria,
+        supplier_notes=request.supplier_notes,
+    )
+    return card.model_dump()
+
+
+@app.get("/api/qc/{project_id}/process-card")
+def get_process_card_endpoint(project_id: str):
+    from src.merchandiser.qc.qc_process_card import get_process_card
+    card = get_process_card(project_id)
+    if card is None:
+        raise HTTPException(status_code=404, detail=f"No process card for project {project_id}")
+    return card.model_dump()
+
+
+class QCCompareRequest(BaseModel):
+    production_images: list[str] = []
+    standard_images: list[str] | None = None
+    video_frames: list[str] | None = None
+    milestone_type: str | None = None
+    order_requirements: str | None = None
+    process_card_notes: str | None = None
+    provider_name: str | None = None
+    milestone_id: str | None = None
+    save_report: bool = True
+
+
+@app.post("/api/qc/{project_id}/compare")
+def run_qc_comparison_endpoint(project_id: str, request: QCCompareRequest):
+    from src.merchandiser.qc.qc_comparison_engine import compare_media_against_standard
+    from src.merchandiser.qc.qc_process_card import get_process_card, render_process_card_for_llm
+
+    process_card_notes = request.process_card_notes
+    if not process_card_notes:
+        card = get_process_card(project_id)
+        if card:
+            process_card_notes = render_process_card_for_llm(card)
+
+    milestone_id = request.milestone_id or f"MILE-API-{project_id[:8]}"
+
+    report = compare_media_against_standard(
+        project_id=project_id,
+        milestone_id=milestone_id,
+        production_images=request.production_images,
+        standard_images=request.standard_images,
+        milestone_type=request.milestone_type,
+        order_requirements=request.order_requirements,
+        process_card_notes=process_card_notes,
+        provider_name=request.provider_name,
+        video_frames=request.video_frames,
+    )
+
+    report_id = None
+    if request.save_report:
+        from src.merchandiser.qc.qc_result_store import save_qc_report
+        report_id = save_qc_report(report, project_id=project_id, milestone_id=milestone_id)
+
+    result = report.model_dump()
+    result["report_id"] = report_id
+    return result
+
+
+@app.get("/api/qc/{project_id}/reports")
+def list_qc_reports_endpoint(project_id: str):
+    from src.merchandiser.qc.qc_result_store import get_qc_reports_for_project
+    reports = get_qc_reports_for_project(project_id)
+    return {"reports": reports}
+
+
+@app.get("/api/qc/reports/{report_id}")
+def get_qc_report_endpoint(report_id: str):
+    from src.merchandiser.qc.qc_result_store import get_qc_report
+    data = get_qc_report(report_id)
+    if data is None:
+        raise HTTPException(status_code=404, detail=f"QC report {report_id} not found")
+    return data
+
+
+class BuyerQCDecisionRequest(BaseModel):
+    milestone_id: str
+    buyer_actor_id: str
+    decision: str
+    notes: str = ""
+
+
+@app.post("/api/qc/{project_id}/buyer-decision")
+def buyer_qc_decision_endpoint(project_id: str, request: BuyerQCDecisionRequest):
+    from src.merchandiser.b_side.b_qc_review import receive_buyer_qc_decision
+    return receive_buyer_qc_decision(
+        project_id=project_id,
+        milestone_id=request.milestone_id,
+        buyer_actor_id=request.buyer_actor_id,
+        decision=request.decision,
+        notes=request.notes,
+    )

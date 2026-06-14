@@ -21,6 +21,7 @@ from src.db.models.supplier_memory import SupplierScoreSnapshot, SupplierProfile
 from src.db.models.legal_notice import LegalNotice
 from src.db.models.merchandiser import MerchandiserExecutionPlan, MerchandiserTask, OrderMilestoneORM, MediaEvidenceORM, OrderExceptionORM
 from src.db.models.logistics import LogisticsShipmentORM, LogisticsEventORM
+from src.db.models.qc import QCReferenceImageORM, QCProcessCardORM, QCComparisonReportORM
 
 __all__ = [
     "Actor", "Project", "ProcurementEdge", "RoleContext",
@@ -35,4 +36,5 @@ __all__ = [
     "SupplierScoreSnapshot", "SupplierProfileUpdate", "LegalNotice",
     "MerchandiserExecutionPlan", "MerchandiserTask", "OrderMilestoneORM", "MediaEvidenceORM", "OrderExceptionORM",
     "LogisticsShipmentORM", "LogisticsEventORM",
+    "QCReferenceImageORM", "QCProcessCardORM", "QCComparisonReportORM",
 ]

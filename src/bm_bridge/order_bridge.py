@@ -101,11 +101,15 @@ def create_order_execution_from_selected_path(
         from src.projects.project_graph import _DATA_DIR as _PROJ_DIR
         import json as _json
         resolved_project_id = b_workspace_id
+        resolved_buyer_actor_id = b_workspace_id  # fallback: workspace ID serves as buyer actor
         try:
             for _pf in _PROJ_DIR.glob("PROJ-*.json"):
                 _pd = _json.loads(_pf.read_text(encoding="utf-8"))
                 if _pd.get("b_workspace_id") == b_workspace_id:
                     resolved_project_id = _pd["project_id"]
+                    # Use original_buyer_actor_id from project if available
+                    if _pd.get("original_buyer_actor_id"):
+                        resolved_buyer_actor_id = _pd["original_buyer_actor_id"]
                     break
         except Exception:
             pass
@@ -116,7 +120,7 @@ def create_order_execution_from_selected_path(
             project_id=resolved_project_id,
             order_id=order.order_execution_id,
             supplier_actor_id=order.supplier_id,
-            buyer_actor_id=b_workspace_id,
+            buyer_actor_id=resolved_buyer_actor_id,
             category=resolved_category,
             source="bm_order_bridge",
         )

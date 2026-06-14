@@ -79,3 +79,4 @@ data/merchandiser/milestones/
 data/merchandiser/tasks/
 data/supplier_memory/
 data/industrial_execution_graph/events.jsonl
+ci_test.db

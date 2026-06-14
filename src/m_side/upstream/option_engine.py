@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 from src.m_side.upstream.response_parser import UpstreamResponse
 from src.m_side.m_event_logger import log_m_event
+from src.lead_time.evidence import make_evidence_ref, EVIDENCE_TYPE_SUPPLIER_STATED, EVIDENCE_TYPE_DEFAULT_ASSUMPTION
 
 
 class UpstreamOption(BaseModel):
@@ -23,6 +24,13 @@ class UpstreamOption(BaseModel):
     score: float
     reason: str
     response_ids: list[str] = Field(default_factory=list)
+    # Lead time evidence fields (new)
+    lead_time_components: list[dict] = Field(default_factory=list)
+    evidence_refs: list[str] = Field(default_factory=list)
+    dispatch_lead_time_days: int | None = None  # supplier-stated dispatch
+    material_availability_days: int | None = None
+    shipping_to_manufacturer_days: int | None = None
+    lead_time_risk_flags: list[str] = Field(default_factory=list)
 
 
 def _score_response(r: UpstreamResponse) -> float:
@@ -55,6 +63,16 @@ def _fmt_risk(r: UpstreamResponse) -> str:
     if not r.risk_flags:
         return "No significant risks"
     return "; ".join(r.risk_flags)
+
+
+def _build_upstream_lt_evidence(r: UpstreamResponse) -> list[str]:
+    """Build evidence refs for upstream lead time."""
+    refs = []
+    if r.lead_time_days is not None:
+        refs.append(make_evidence_ref(EVIDENCE_TYPE_SUPPLIER_STATED, r.response_id, f"dispatch:{r.lead_time_days}d"))
+    else:
+        refs.append(make_evidence_ref(EVIDENCE_TYPE_DEFAULT_ASSUMPTION, r.response_id, "dispatch:unknown"))
+    return refs
 
 
 def generate_upstream_options(
@@ -105,6 +123,11 @@ def generate_upstream_options(
             f"Price {_fmt_price(best)}, lead time {_fmt_lead(best)}."
         ),
         response_ids=[best.response_id],
+        dispatch_lead_time_days=best.lead_time_days,
+        material_availability_days=None,
+        shipping_to_manufacturer_days=None,
+        lead_time_risk_flags=["lead_time_not_confirmed"] if best.lead_time_days is None else [],
+        evidence_refs=_build_upstream_lt_evidence(best),
     ))
 
     # FASTEST — shortest lead time
@@ -127,6 +150,11 @@ def generate_upstream_options(
                 f"Trade-off: may have higher price or lower confidence."
             ),
             response_ids=[fastest.response_id],
+            dispatch_lead_time_days=fastest.lead_time_days,
+            material_availability_days=None,
+            shipping_to_manufacturer_days=None,
+            lead_time_risk_flags=["lead_time_not_confirmed"] if fastest.lead_time_days is None else [],
+            evidence_refs=_build_upstream_lt_evidence(fastest),
         ))
 
     # SAFEST / BACKUP — fewest risk flags among remaining
@@ -150,6 +178,11 @@ def generate_upstream_options(
                 f"Risks: {_fmt_risk(safest)}."
             ),
             response_ids=[safest.response_id],
+            dispatch_lead_time_days=safest.lead_time_days,
+            material_availability_days=None,
+            shipping_to_manufacturer_days=None,
+            lead_time_risk_flags=["lead_time_not_confirmed"] if safest.lead_time_days is None else [],
+            evidence_refs=_build_upstream_lt_evidence(safest),
         ))
     elif len(options) == 1 and len(viable) >= 2:
         # if FASTEST was same as BEST, use 2nd scored as BACKUP
@@ -168,6 +201,11 @@ def generate_upstream_options(
                 score=_score_response(backup),
                 reason=f"Backup option. Score={_score_response(backup):.4f}.",
                 response_ids=[backup.response_id],
+                dispatch_lead_time_days=backup.lead_time_days,
+                material_availability_days=None,
+                shipping_to_manufacturer_days=None,
+                lead_time_risk_flags=["lead_time_not_confirmed"] if backup.lead_time_days is None else [],
+                evidence_refs=_build_upstream_lt_evidence(backup),
             ))
 
     log_m_event(

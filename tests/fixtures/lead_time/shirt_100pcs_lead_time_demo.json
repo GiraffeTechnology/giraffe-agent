@@ -1,0 +1,144 @@
+{
+  "fixture_id": "LTDEMO-SHIRT100",
+  "description": "100-shirt lead time demo fixture — deterministic",
+  "buyer_requirement": {
+    "product": "100 plain white cotton shirts",
+    "category": "apparel",
+    "quantity": 100,
+    "deadline_days": 30,
+    "destination": "Hong Kong"
+  },
+  "manufacturer_capacity": {
+    "actor_id": "actor_manufacturer_m",
+    "daily_capacity_units": 50,
+    "setup_days": 1,
+    "queue_days": 0,
+    "working_days_per_week": 5,
+    "minimum_batch_size": 10,
+    "confidence_score": 0.85,
+    "evidence_ref": "human_confirmed|src:actor_manufacturer_m|note:capacity:50units/day"
+  },
+  "fabric_supplier_options": [
+    {
+      "supplier_id": "actor_fabric_supplier_1",
+      "supplier_name": "Fabric Supplier A (Premium)",
+      "dispatch_lead_time_days": 5,
+      "price_per_unit": 12.5,
+      "currency": "RMB",
+      "stock_available": true,
+      "moq": 100,
+      "risk_flags": [],
+      "confidence_score": 0.9,
+      "completeness_score": 0.9,
+      "evidence_ref": "supplier_stated|src:actor_fabric_supplier_1|note:dispatch:5d"
+    },
+    {
+      "supplier_id": "actor_fabric_supplier_2",
+      "supplier_name": "Fabric Supplier B (Fast)",
+      "dispatch_lead_time_days": 2,
+      "price_per_unit": 13.5,
+      "currency": "RMB",
+      "stock_available": true,
+      "moq": 50,
+      "risk_flags": [],
+      "confidence_score": 0.85,
+      "completeness_score": 0.85,
+      "evidence_ref": "supplier_stated|src:actor_fabric_supplier_2|note:dispatch:2d"
+    },
+    {
+      "supplier_id": "actor_fabric_supplier_3",
+      "supplier_name": "Fabric Supplier C (Substitute)",
+      "dispatch_lead_time_days": 3,
+      "price_per_unit": 9.8,
+      "currency": "RMB",
+      "stock_available": true,
+      "moq": 100,
+      "risk_flags": ["substitute_material"],
+      "confidence_score": 0.7,
+      "completeness_score": 0.75,
+      "evidence_ref": "supplier_stated|src:actor_fabric_supplier_3|note:dispatch:3d_substitute"
+    }
+  ],
+  "trim_options": [
+    {
+      "supplier_id": "actor_trim_supplier_1",
+      "supplier_name": "Trim Supplier T1",
+      "dispatch_lead_time_days": 3,
+      "price_per_unit": 0.5,
+      "currency": "RMB",
+      "stock_available": true,
+      "risk_flags": [],
+      "confidence_score": 0.85,
+      "evidence_ref": "supplier_stated|src:actor_trim_supplier_1|note:dispatch:3d"
+    }
+  ],
+  "packaging_options": [
+    {
+      "supplier_id": "actor_pkg_supplier_1",
+      "supplier_name": "Packaging Supplier P1",
+      "dispatch_lead_time_days": 1,
+      "price_per_unit": 1.5,
+      "currency": "RMB",
+      "stock_available": true,
+      "risk_flags": [],
+      "confidence_score": 0.9,
+      "evidence_ref": "supplier_stated|src:actor_pkg_supplier_1|note:dispatch:1d"
+    }
+  ],
+  "qc_duration_days": 2,
+  "packaging_assembly_days": 1,
+  "logistics_days": 3,
+  "paths": [
+    {
+      "path_label": "FASTEST",
+      "fabric_supplier_id": "actor_fabric_supplier_2",
+      "fabric_days": 2,
+      "trim_days": 3,
+      "packaging_material_days": 1,
+      "qc_days": 2,
+      "packaging_days": 1,
+      "logistics_days": 3,
+      "production_days": 3,
+      "material_ready_days": 3,
+      "post_production_days": 6,
+      "risk_buffer_days": 0,
+      "expected_total_lead_time_days": 12,
+      "risk_flags": [],
+      "confidence_score": 0.85
+    },
+    {
+      "path_label": "BEST_OVERALL",
+      "fabric_supplier_id": "actor_fabric_supplier_1",
+      "fabric_days": 5,
+      "trim_days": 3,
+      "packaging_material_days": 1,
+      "qc_days": 2,
+      "packaging_days": 1,
+      "logistics_days": 3,
+      "production_days": 3,
+      "material_ready_days": 5,
+      "post_production_days": 6,
+      "risk_buffer_days": 0,
+      "expected_total_lead_time_days": 14,
+      "risk_flags": [],
+      "confidence_score": 0.9
+    },
+    {
+      "path_label": "LOWEST_COST",
+      "fabric_supplier_id": "actor_fabric_supplier_3",
+      "fabric_days": 3,
+      "trim_days": 3,
+      "packaging_material_days": 1,
+      "qc_days": 2,
+      "packaging_days": 1,
+      "logistics_days": 3,
+      "production_days": 3,
+      "material_ready_days": 3,
+      "post_production_days": 6,
+      "risk_buffer_days": 2.5,
+      "expected_total_lead_time_days": 15,
+      "risk_flags": ["substitute_material"],
+      "confidence_score": 0.7
+    }
+  ]
+}

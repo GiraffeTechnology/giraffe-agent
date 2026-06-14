@@ -64,4 +64,5 @@ data/b_side_workspaces/bw_*.json
 data/m_side_workspaces/mw_*.json
 data/order_execution/
 data/projects/
+data/industrial_execution_graph/events.jsonl
 ci_test.db

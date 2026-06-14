@@ -27,16 +27,16 @@ jobs:
         run: uv add --dev pytest
 
       - name: Compile Python files
-        run: python -m py_compile *.py
+        run: uv run python -m py_compile *.py
 
       - name: Run tests
         run: uv run pytest tests/ -q
 
       - name: Run BM DB integration verifier (DB-off)
-        run: GIRAFFE_DB_MODE=off python run_bm_e2e_with_db.py
+        run: GIRAFFE_DB_MODE=off uv run python run_bm_e2e_with_db.py
 
       - name: Run BM DB integration verifier (DB-on)
         run: |
-          GIRAFFE_DB_MODE=on GIRAFFE_DB_URL=sqlite:///./ci_test.db python build_schema.py
-          GIRAFFE_DB_MODE=on GIRAFFE_DB_URL=sqlite:///./ci_test.db python run_bm_e2e_with_db.py
-          python verify_integration.py --db sqlite:///./ci_test.db --runs 5
+          GIRAFFE_DB_MODE=on GIRAFFE_DB_URL=sqlite:///./ci_test.db uv run python build_schema.py
+          GIRAFFE_DB_MODE=on GIRAFFE_DB_URL=sqlite:///./ci_test.db uv run python run_bm_e2e_with_db.py
+          uv run python verify_integration.py --db sqlite:///./ci_test.db --runs 5

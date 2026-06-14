@@ -1,0 +1,23 @@
+{
+  "order_id": "ORD-ZERO-001",
+  "product_type": "men_shirt_cotton",
+  "quantity": 5000,
+  "requested_delivery_date": "2025-09-01",
+  "trade_term": "FOB",
+  "destination": "Hamburg, Germany",
+  "dynamic_form": {
+    "fabric_type": "100% cotton",
+    "color": "white",
+    "quality_standard": "AQL 2.5"
+  },
+  "participants": [],
+  "supplier_memory": [],
+  "supplier_responses": [],
+  "progress_events": [],
+  "calendar": {
+    "use_working_days": true,
+    "working_days_per_week": 5,
+    "holiday_dates": [],
+    "timezone": "UTC"
+  }
+}

@@ -351,3 +351,149 @@ def report_exception_endpoint(m_workspace_id: str, request: ExceptionReportReque
         "severity": exc.severity,
         "category": exc.category,
     }
+
+
+# ─── Channel adapter endpoints ─────────────────────────────────────────────────
+
+class ChannelWebhookRequest(BaseModel):
+    payload: dict = {}
+    headers: dict = {}
+
+
+@app.post("/api/channels/{channel}/webhook")
+def channel_webhook(channel: str, request: ChannelWebhookRequest):
+    """Receive a provider webhook, verify signature, normalize, and route."""
+    from src.channels.router import route_inbound_message, _get_adapter
+    from src.channels.channel_event_logger import log_channel_event
+
+    adapter = _get_adapter(channel)
+
+    # Signature verification
+    if not adapter.verify_signature(request.headers, request.payload):
+        log_channel_event(
+            "CHANNEL_SIGNATURE_VERIFICATION_FAILED",
+            {"channel": channel, "headers": request.headers},
+        )
+        raise HTTPException(status_code=403, detail="Signature verification failed")
+
+    log_channel_event("CHANNEL_INBOUND_MESSAGE_RECEIVED", {"channel": channel, "payload_keys": list(request.payload.keys())})
+
+    msg = adapter.normalize_inbound(request.payload)
+    log_channel_event("CHANNEL_MESSAGE_NORMALIZED", {"channel": channel, "idempotency_key": msg.idempotency_key, "intent": msg.intent})
+
+    if msg.actor_id:
+        log_channel_event("CHANNEL_ACTOR_RESOLVED", {"channel": channel, "actor_id": msg.actor_id})
+
+    routing = route_inbound_message(msg)
+    log_channel_event("CHANNEL_ROUTE_DECIDED", {"channel": channel, "route": routing["route"], "reason": routing["reason"]})
+
+    return {
+        "ok": True,
+        "channel": channel,
+        "external_user_id": msg.external_user_id,
+        "idempotency_key": msg.idempotency_key,
+        "intent": msg.intent,
+        "routing": routing,
+    }
+
+
+class MockInboundRequest(BaseModel):
+    external_user_id: str
+    text: str
+    external_thread_id: str | None = None
+    attachments: list[dict] = []
+
+
+@app.post("/api/channels/mock/inbound")
+def mock_inbound(request: MockInboundRequest):
+    """Simulate an inbound message via the mock adapter."""
+    from src.channels.mock_adapter import MockAdapter
+    from src.channels.router import route_inbound_message
+    from src.channels.channel_event_logger import log_channel_event
+
+    adapter = MockAdapter()
+    payload = {
+        "channel": "mock",
+        "external_user_id": request.external_user_id,
+        "external_thread_id": request.external_thread_id,
+        "text": request.text,
+        "attachments": request.attachments,
+    }
+    msg = adapter.normalize_inbound(payload)
+    log_channel_event("CHANNEL_INBOUND_MESSAGE_RECEIVED", {"channel": "mock", "text": request.text})
+    log_channel_event("CHANNEL_MESSAGE_NORMALIZED", {"channel": "mock", "idempotency_key": msg.idempotency_key, "intent": msg.intent})
+
+    routing = route_inbound_message(msg)
+    log_channel_event("CHANNEL_ROUTE_DECIDED", {"channel": "mock", "route": routing["route"]})
+
+    return {
+        "ok": True,
+        "normalized": msg.model_dump(),
+        "routing": routing,
+    }
+
+
+class EmailInboundRequest(BaseModel):
+    payload: dict
+
+
+@app.post("/api/channels/email/inbound")
+def email_inbound(request: EmailInboundRequest):
+    """Accept a parsed inbound email payload and normalize it."""
+    from src.channels.email_adapter import EmailAdapter
+    from src.channels.router import route_inbound_message
+    from src.channels.channel_event_logger import log_channel_event
+
+    adapter = EmailAdapter()
+    msg = adapter.normalize_inbound(request.payload)
+    log_channel_event("CHANNEL_INBOUND_MESSAGE_RECEIVED", {"channel": "email"})
+    log_channel_event("CHANNEL_MESSAGE_NORMALIZED", {"channel": "email", "idempotency_key": msg.idempotency_key, "intent": msg.intent})
+
+    routing = route_inbound_message(msg)
+    log_channel_event("CHANNEL_ROUTE_DECIDED", {"channel": "email", "route": routing["route"]})
+
+    return {
+        "ok": True,
+        "normalized": msg.model_dump(),
+        "routing": routing,
+    }
+
+
+class SendMessageRequest(BaseModel):
+    channel: str
+    to_external_user_id: str
+    to_external_thread_id: str | None = None
+    text: str
+    html: str | None = None
+    subject: str | None = None
+    attachments: list[dict] = []
+    metadata: dict = {}
+
+
+@app.post("/api/channels/send")
+def send_channel_message(request: SendMessageRequest):
+    """Send an outbound message via the specified channel adapter."""
+    from src.channels.base import OutboundChannelMessage
+    from src.channels.router import send_outbound_message
+    from src.channels.channel_event_logger import log_channel_event
+
+    msg = OutboundChannelMessage(
+        channel=request.channel,
+        to_external_user_id=request.to_external_user_id,
+        to_external_thread_id=request.to_external_thread_id,
+        text=request.text,
+        html=request.html,
+        subject=request.subject,
+        attachments=request.attachments,
+        metadata=request.metadata,
+    )
+    receipt = send_outbound_message(request.channel, msg)
+    log_channel_event(
+        "CHANNEL_OUTBOUND_MESSAGE_SENT",
+        {"channel": request.channel, "to": request.to_external_user_id, "status": receipt.status},
+    )
+    log_channel_event(
+        "CHANNEL_DELIVERY_RECEIPT_RECEIVED",
+        {"channel": request.channel, "status": receipt.status, "message_id": receipt.message_id},
+    )
+    return {"ok": True, "receipt": receipt.model_dump()}

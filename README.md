@@ -207,6 +207,7 @@ ready for next-stage hardening and broader scenario testing.
 | `scripts/run_merchandiser_e2e_mvp.py` | AI Merchandiser full flow |
 | `scripts/run_logistics_cainiao_like_api_mvp.py` | Logistics ingestion and normalization |
 | `scripts/run_integrated_post_confirmation_mvp.py` | Integrated post-confirmation (56 checks) |
+| `scripts/run_channel_adapter_e2e.py` | Channel Adapter Layer E2E (buyer→B-side, supplier→M-side, IEG events) |
 
 ```bash
 # Run all E2E scripts in sequence
@@ -217,6 +218,7 @@ uv run python scripts/run_mside_professional_free_cad_cnc_mvp.py
 uv run python scripts/run_merchandiser_e2e_mvp.py
 uv run python scripts/run_logistics_cainiao_like_api_mvp.py
 uv run python scripts/run_integrated_post_confirmation_mvp.py
+uv run python scripts/run_channel_adapter_e2e.py
 ```
 
 ### Unit Tests
@@ -239,6 +241,31 @@ MVP baseline results:
 - HTTP E2E: 3 consecutive runs passed
 
 See `docs/E2E_TEST_REPORT.md` for the full test report.
+
+---
+
+## Channel Adapter Layer
+
+Giraffe Agent supports an adapter-based channel layer. The current MVP includes API, mock-channel, and OpenClaw-compatible integration paths. Production WeChat, WhatsApp, and email adapters are provider-configurable and must be enabled with credentials and webhook verification.
+
+| Adapter | Module | Mode |
+|---------|--------|------|
+| Mock | `src/channels/mock_adapter.py` | Deterministic local tests; no external dependency |
+| Email | `src/channels/email_adapter.py` | `EMAIL_PROVIDER=mock\|smtp\|webhook`; SMTP via env vars |
+| WeChat | `src/channels/wechat_adapter.py` | Mock (default); production requires `WECHAT_TOKEN` + API setup |
+| WhatsApp | `src/channels/whatsapp_adapter.py` | Mock (default); production requires Meta Cloud API credentials |
+| OpenClaw | `src/channels/openclaw_adapter.py` | In-process skill router bridge |
+| Web | `src/channels/web_adapter.py` | Web fallback (mock); production via WebSocket/SSE |
+
+All inbound messages are normalized to `NormalizedChannelMessage` and routed by `src/channels/router.py`. Outbound delivery goes through `send_outbound_message(channel, OutboundChannelMessage)`.
+
+Channel events are appended to the Industrial Execution Graph:
+`CHANNEL_INBOUND_MESSAGE_RECEIVED`, `CHANNEL_MESSAGE_NORMALIZED`, `CHANNEL_ACTOR_RESOLVED`,
+`CHANNEL_ROUTE_DECIDED`, `CHANNEL_OUTBOUND_MESSAGE_SENT`, `CHANNEL_DELIVERY_RECEIPT_RECEIVED`,
+`CHANNEL_SIGNATURE_VERIFICATION_FAILED`, `CHANNEL_ROUTE_FAILED`.
+
+**Security:** Never hard-code credentials. Use env vars:
+`EMAIL_PROVIDER`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM`, `EMAIL_WEBHOOK_SECRET`.
 
 ---
 
@@ -274,6 +301,10 @@ The FastAPI server exposes the following route groups:
 | `POST /api/m-side/orders/{id}/production-update` | Submit production update |
 | `POST /api/m-side/orders/{id}/qc-update` | Submit QC confirmation |
 | `POST /api/m-side/orders/{id}/logistics-update` | Submit logistics handover |
+| `POST /api/channels/{channel}/webhook` | Receive provider webhook (verify → normalize → route) |
+| `POST /api/channels/mock/inbound` | Simulate inbound message via mock adapter |
+| `POST /api/channels/email/inbound` | Accept parsed inbound email payload |
+| `POST /api/channels/send` | Send outbound message via any configured channel |
 
 Full interactive documentation available at `/docs` when the server is running.
 

@@ -13,7 +13,8 @@ from src.m_side.supplier_workspace import create_m_workspace
 from src.m_side.supplier_identity import create_invitation_token
 from src.m_side.inquiry_receiver import receive_supplier_inquiry, format_inquiry_for_supplier
 from src.m_side.m_event_logger import log_m_event
-from src.channels.im_router import get_adapter
+from src.channels.router import _get_adapter as get_adapter
+from src.channels.base import OutboundChannelMessage
 from src.bm_bridge.notifications import notify_supplier_inquiry_dispatched
 
 
@@ -93,7 +94,12 @@ def dispatch_supplier_inquiry(
             language=profile.language_preference or "zh",
         )
         to_user = profile.external_user_id or supplier_id
-        adapter.send_message(to=to_user, text=dispatch_msg)
+        outbound = OutboundChannelMessage(
+            channel=channel,
+            to_external_user_id=to_user,
+            text=dispatch_msg,
+        )
+        adapter.send_message(outbound)
 
         # Log event
         log_m_event(

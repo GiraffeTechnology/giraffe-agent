@@ -52,7 +52,6 @@ def save_session(session_id: str, data: dict) -> dict:
     with open(_session_path(session_id), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-    # Update index: channel+user_id → session_id
     index = _load_index()
     channel = data.get("channel", "unknown")
     user_id = data.get("external_user_id", "unknown")
@@ -72,13 +71,38 @@ def find_session_by_user(channel: str, external_user_id: str) -> dict | None:
 
 
 def create_session(channel: str, external_user_id: str, extra: dict | None = None) -> dict:
-    """Create a new session for a channel user."""
+    """
+    Create a new channel session.
+
+    Extended fields supported in extra:
+      external_thread_id, actor_id, project_id,
+      b_workspace_id, m_workspace_id, role_context, last_message_at
+    """
     session_id = f"sess_{uuid.uuid4().hex[:12]}"
-    data = {
+    now = datetime.now(timezone.utc).isoformat()
+    data: dict = {
         "session_id": session_id,
         "channel": channel,
         "external_user_id": external_user_id,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        **(extra or {}),
+        "external_thread_id": None,
+        "actor_id": None,
+        "project_id": None,
+        "b_workspace_id": None,
+        "m_workspace_id": None,
+        "role_context": None,
+        "last_message_at": now,
+        "created_at": now,
     }
+    if extra:
+        data.update(extra)
+    return save_session(session_id, data)
+
+
+def update_session_field(session_id: str, **fields) -> dict | None:
+    """Update specific fields in an existing session."""
+    data = get_session(session_id)
+    if data is None:
+        return None
+    data.update(fields)
+    data["last_message_at"] = datetime.now(timezone.utc).isoformat()
     return save_session(session_id, data)

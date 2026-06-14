@@ -1,0 +1,34 @@
+{
+  "b_workspace_id": "bw_c4eebd27611b",
+  "rfq_id": "RFQ-70813E0E",
+  "raw_requirement": "100 cotton shirts",
+  "buyer_requirement": null,
+  "supplier_inquiry_draft": null,
+  "supplier_responses": [
+    {
+      "response_id": "ROLLUP-RESP-EB1229E2",
+      "rfq_id": "bw_c4eebd27611b",
+      "b_workspace_id": "bw_c4eebd27611b",
+      "supplier_id": "actor_manufacturer_m",
+      "supplier_name": "Manufacturer M",
+      "can_make": true,
+      "capacity_available": true,
+      "material_available": true,
+      "estimated_lead_time_days": 7,
+      "unit_price": 2.5,
+      "total_price": 250.0,
+      "currency": "USD",
+      "qc_available": false,
+      "logistics_notes": null,
+      "red_flags": [],
+      "completeness_score": 0.45,
+      "confidence_score": 0.45,
+      "raw_response": "We can support the 100 pcs order for 100 cotton shirts based on approved upstream options.\n\nFabric: actor_fabric_s1 — USD 2.50, dispatch in 7 days.\nTrims: confirmed supplier.\nPackaging: standard packaging.\nQC: standard QC.\nLogistics: TBC.\n\nEstimated total lead time: 17 days (fabric 7d + sewing ~7d + logistics 0d + 3d buffer).\n\nWe recommend confirming color and fabric option before final order acknowledgement.",
+      "submitted_at": "2026-06-14T03:30:45.728359Z"
+    }
+  ],
+  "feasibility_report": null,
+  "status": "collecting_responses",
+  "created_at": "2026-06-14T03:30:45.728154Z",
+  "updated_at": "2026-06-14T03:30:45.728457Z"
+}

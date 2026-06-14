@@ -1,0 +1,54 @@
+[
+  {
+    "edge_id": "EDGE-4C3309A1C4",
+    "project_id": "PROJ-9087F4C76F",
+    "from_actor_id": "actor_buyer_b",
+    "to_actor_id": "actor_manufacturer_m",
+    "edge_type": "BUYER_TO_MAIN_SUPPLIER",
+    "parent_edge_id": null,
+    "inquiry_id": null,
+    "response_id": null,
+    "status": "DRAFT",
+    "created_at": "2026-06-14T03:31:25.170965Z",
+    "updated_at": "2026-06-14T03:31:25.170966Z"
+  },
+  {
+    "edge_id": "EDGE-491B53FBB4",
+    "project_id": "PROJ-9087F4C76F",
+    "from_actor_id": "actor_manufacturer_m",
+    "to_actor_id": "actor_fabric_supplier_1",
+    "edge_type": "MAIN_SUPPLIER_TO_FABRIC_SUPPLIER",
+    "parent_edge_id": "EDGE-4C3309A1C4",
+    "inquiry_id": null,
+    "response_id": null,
+    "status": "DRAFT",
+    "created_at": "2026-06-14T03:31:25.171817Z",
+    "updated_at": "2026-06-14T03:31:25.171819Z"
+  },
+  {
+    "edge_id": "EDGE-167EF8E3E2",
+    "project_id": "PROJ-9087F4C76F",
+    "from_actor_id": "actor_manufacturer_m",
+    "to_actor_id": "actor_fabric_supplier_2",
+    "edge_type": "MAIN_SUPPLIER_TO_FABRIC_SUPPLIER",
+    "parent_edge_id": "EDGE-4C3309A1C4",
+    "inquiry_id": null,
+    "response_id": null,
+    "status": "DRAFT",
+    "created_at": "2026-06-14T03:31:25.172145Z",
+    "updated_at": "2026-06-14T03:31:25.172147Z"
+  },
+  {
+    "edge_id": "EDGE-1C27915A70",
+    "project_id": "PROJ-9087F4C76F",
+    "from_actor_id": "actor_manufacturer_m",
+    "to_actor_id": "actor_fabric_supplier_3",
+    "edge_type": "MAIN_SUPPLIER_TO_FABRIC_SUPPLIER",
+    "parent_edge_id": "EDGE-4C3309A1C4",
+    "inquiry_id": null,
+    "response_id": null,
+    "status": "DRAFT",
+    "created_at": "2026-06-14T03:31:25.172638Z",
+    "updated_at": "2026-06-14T03:31:25.172639Z"
+  }
+]

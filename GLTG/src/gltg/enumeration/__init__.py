@@ -1,0 +1,1 @@
+"""GLTG enumeration submodule."""

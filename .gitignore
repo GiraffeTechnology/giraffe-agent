@@ -58,3 +58,10 @@ logs/
 
 # OS
 Thumbs.db
+
+# Runtime / test-generated data (never commit these)
+data/b_side_workspaces/bw_*.json
+data/m_side_workspaces/mw_*.json
+data/order_execution/
+data/projects/
+ci_test.db

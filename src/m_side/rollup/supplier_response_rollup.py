@@ -264,6 +264,12 @@ def generate_supplier_response_rollup(
     lt_packaging_days = lead_time_basis.get("packaging", {}).get("days")
     lt_logistics_days = lead_time_basis.get("logistics", {}).get("days")
     lt_qc_days = lead_time_basis.get("qc_testing", {}).get("days")
+    lt_subcontract_days = (
+        lead_time_basis.get("subcontract_process", {}).get("days")
+        or lead_time_basis.get("surface_treatment", {}).get("days")
+        or lead_time_basis.get("heat_treatment", {}).get("days")
+        or lead_time_basis.get("component", {}).get("days")
+    )
 
     cap = ProductionCapacity(
         actor_id=main_supplier_actor_id,
@@ -282,7 +288,7 @@ def generate_supplier_response_rollup(
         fabric_days=lt_fabric_days,
         trim_days=lt_trim_days,
         packaging_material_days=None,
-        subcontract_days=None,
+        subcontract_days=lt_subcontract_days,
         qc_days=lt_qc_days,
         packaging_days=lt_packaging_days,
         logistics_days=lt_logistics_days,
@@ -291,6 +297,12 @@ def generate_supplier_response_rollup(
         confidence_score=confidence_score,
         completeness_score=completeness_score,
     )
+
+    # Extract QC-only duration from the QC component (not post_production_days which is qc+pkg+lgs)
+    _qc_comp_days = next(
+        (int(c.duration_days) for c in lt_path.components if c.component_type == "qc"), None
+    )
+    _qc_days_estimate = lt_qc_days if lt_qc_days is not None else _qc_comp_days
 
     rollup = SupplierResponseRollup(
         rollup_id=rollup_id,
@@ -328,7 +340,7 @@ def generate_supplier_response_rollup(
         lead_time_risk_flags=lt_path.risk_flags,
         material_ready_days=int(lt_path.material_ready_days),
         production_days=int(lt_path.production_days),
-        qc_days_estimate=int(lt_path.post_production_days) if lt_path.post_production_days else None,
+        qc_days_estimate=_qc_days_estimate,
         packaging_days_estimate=lt_packaging_days,
         logistics_days_estimate=lt_logistics_days,
         risk_buffer_days=int(lt_path.risk_buffer_days),

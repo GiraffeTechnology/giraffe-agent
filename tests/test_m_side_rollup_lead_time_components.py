@@ -337,3 +337,131 @@ class TestUpstreamOptionLeadTimeFields:
         assert len(options) >= 1
         opt = options[0]
         assert "lead_time_not_confirmed" in opt.lead_time_risk_flags
+
+
+class TestRegressionQcDaysEstimate:
+    """Regression: qc_days_estimate must store only QC days, not post_production total."""
+
+    def test_qc_days_estimate_does_not_include_packaging_or_logistics(self):
+        """qc_days_estimate must be < post_production_days when pkg/lgs are also present."""
+        rollup = generate_supplier_response_rollup(
+            project_id=PROJECT_ID,
+            main_supplier_actor_id=MANUFACTURER_ID,
+            approval_results=[
+                _make_approval_result("fabric", lead_time_summary="5 days"),
+                _make_approval_result("qc_testing", lead_time_summary="3 days"),
+                _make_approval_result("packaging", lead_time_summary="2 days"),
+                _make_approval_result("logistics", lead_time_summary="4 days"),
+            ],
+            product_summary="100 shirts",
+            quantity=100,
+        )
+        # qc_days_estimate must be ≤ 3 (only QC), NOT 3+2+4=9 (post_production total)
+        assert rollup.qc_days_estimate is not None
+        assert rollup.qc_days_estimate <= 3, (
+            f"qc_days_estimate={rollup.qc_days_estimate} includes pkg/lgs days; expected ≤ 3"
+        )
+
+    def test_lead_time_breakdown_qc_days_does_not_double_count_packaging_logistics(self):
+        """lead_time_breakdown.qc_days in SupplierResponseRecord must be QC-only."""
+        rollup = generate_supplier_response_rollup(
+            project_id=PROJECT_ID,
+            main_supplier_actor_id=MANUFACTURER_ID,
+            approval_results=[
+                _make_approval_result("fabric", lead_time_summary="5 days"),
+                _make_approval_result("qc_testing", lead_time_summary="3 days"),
+                _make_approval_result("packaging", lead_time_summary="2 days"),
+                _make_approval_result("logistics", lead_time_summary="4 days"),
+            ],
+            product_summary="100 shirts",
+            quantity=100,
+        )
+        b_workspace = create_b_workspace("100 shirts regression")
+        submit_rollup_to_b_side(rollup=rollup, b_workspace_id=b_workspace.b_workspace_id)
+
+        workspace = get_b_workspace(b_workspace.b_workspace_id)
+        resp = workspace.supplier_responses[0]
+        qc_in_breakdown = resp.lead_time_breakdown.get("qc_days")
+        if qc_in_breakdown is not None:
+            assert qc_in_breakdown <= 3, (
+                f"lead_time_breakdown.qc_days={qc_in_breakdown} double-counts pkg/lgs; expected ≤ 3"
+            )
+
+
+class TestRegressionSubcontractLeadTime:
+    """Regression: subcontract/surface_treatment/heat_treatment lead times must flow through."""
+
+    def test_subcontract_process_affects_calculated_total(self):
+        """A subcontract_process with long lead time must increase calculated_total_lead_time_days."""
+        rollup_no_sub = generate_supplier_response_rollup(
+            project_id=PROJECT_ID,
+            main_supplier_actor_id=MANUFACTURER_ID,
+            approval_results=[
+                _make_approval_result("fabric", lead_time_summary="5 days"),
+            ],
+            product_summary="100 parts",
+            quantity=100,
+        )
+        rollup_with_sub = generate_supplier_response_rollup(
+            project_id=PROJECT_ID,
+            main_supplier_actor_id=MANUFACTURER_ID,
+            approval_results=[
+                _make_approval_result("fabric", lead_time_summary="5 days"),
+                _make_approval_result("subcontract_process", lead_time_summary="30 days"),
+            ],
+            product_summary="100 parts",
+            quantity=100,
+        )
+        # With a 30-day subcontract parallel to 5-day fabric, material_ready increases
+        assert rollup_with_sub.calculated_total_lead_time_days > rollup_no_sub.calculated_total_lead_time_days, (
+            f"subcontract_process 30d did not increase total: "
+            f"no_sub={rollup_no_sub.calculated_total_lead_time_days} "
+            f"with_sub={rollup_with_sub.calculated_total_lead_time_days}"
+        )
+
+    def test_surface_treatment_lead_time_flows_through(self):
+        """surface_treatment lead time is treated as subcontract and extends material_ready."""
+        rollup = generate_supplier_response_rollup(
+            project_id=PROJECT_ID,
+            main_supplier_actor_id=MANUFACTURER_ID,
+            approval_results=[
+                _make_approval_result("fabric", lead_time_summary="5 days"),
+                _make_approval_result("surface_treatment", lead_time_summary="20 days"),
+            ],
+            product_summary="100 parts",
+            quantity=100,
+        )
+        # material_ready_days should reflect the 20-day surface treatment
+        assert rollup.material_ready_days is not None
+        assert rollup.material_ready_days >= 20, (
+            f"surface_treatment 20d not reflected in material_ready_days={rollup.material_ready_days}"
+        )
+
+    def test_long_subcontract_can_make_path_slower(self):
+        """A 60-day subcontract on a 30-day deadline makes calculated total > baseline."""
+        rollup_base = generate_supplier_response_rollup(
+            project_id=PROJECT_ID,
+            main_supplier_actor_id=MANUFACTURER_ID,
+            approval_results=[
+                _make_approval_result("fabric", lead_time_summary="5 days"),
+                _make_approval_result("logistics", lead_time_summary="3 days"),
+            ],
+            product_summary="100 parts",
+            quantity=100,
+        )
+        rollup_slow = generate_supplier_response_rollup(
+            project_id=PROJECT_ID,
+            main_supplier_actor_id=MANUFACTURER_ID,
+            approval_results=[
+                _make_approval_result("fabric", lead_time_summary="5 days"),
+                _make_approval_result("logistics", lead_time_summary="3 days"),
+                _make_approval_result("heat_treatment", lead_time_summary="60 days"),
+            ],
+            product_summary="100 parts",
+            quantity=100,
+        )
+        assert rollup_slow.calculated_total_lead_time_days > rollup_base.calculated_total_lead_time_days, (
+            f"60d heat_treatment did not make path slower: "
+            f"base={rollup_base.calculated_total_lead_time_days} "
+            f"slow={rollup_slow.calculated_total_lead_time_days}"
+        )

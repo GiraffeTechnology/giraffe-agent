@@ -7,6 +7,7 @@ from src.lead_time.models import (
     ProductionCapacity,
 )
 from src.lead_time.lead_time_calculator import calculate_lead_time_path
+from src.gltg.engine import calculate_gltg_lead_time_path
 from src.lead_time.path_enumerator import enumerate_delivery_paths
 from src.lead_time.path_ranker import rank_paths, assign_labels
 from src.lead_time.evidence import (
@@ -24,6 +25,7 @@ __all__ = [
     "LeadTimeScenario",
     "ProductionCapacity",
     "calculate_lead_time_path",
+    "calculate_gltg_lead_time_path",
     "enumerate_delivery_paths",
     "rank_paths",
     "assign_labels",

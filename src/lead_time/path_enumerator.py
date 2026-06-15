@@ -1,11 +1,14 @@
 """
 Path enumerator — generates 1–4 labeled LeadTimePath variants per supplier.
+
+AIVAN uses GLTG as the lead-time / feasibility engine. The legacy deterministic
+lead-time calculator remains the core computation, but all AIVAN path enumeration
+must pass through GLTG so buyer options expose P50/P80/P90 and a clear model
+provenance trail.
 """
 import uuid
-from typing import Any
 
 from src.lead_time.models import LeadTimePath, ProductionCapacity
-from src.lead_time.lead_time_calculator import calculate_lead_time_path
 
 
 def enumerate_delivery_paths(
@@ -26,14 +29,20 @@ def enumerate_delivery_paths(
     - Optional: risk_flags, missing_fields, confidence_score, completeness_score
     - Optional: unit_price, total_price, currency
     - can_make: bool (False -> skip)
+
+    AIVAN contract:
+    - Uses embedded GLTG for all generated paths.
+    - P80 is the default deadline feasibility basis.
+    - GLTG must never silently fallback to an unspecified model.
     """
+    from src.gltg.engine import calculate_gltg_lead_time_path  # lazy import avoids circular dependency
     all_paths: list[LeadTimePath] = []
 
     for sr in supplier_responses:
         if not sr.get("can_make", True):
             continue
 
-        path = calculate_lead_time_path(
+        path = calculate_gltg_lead_time_path(
             supplier_response_id=sr.get("response_id", f"RESP-{uuid.uuid4().hex[:6]}"),
             supplier_id=sr["supplier_id"],
             supplier_name=sr["supplier_name"],

@@ -83,6 +83,13 @@ class DeliveryPath(BaseModel):
     evidence_refs: list[str] = Field(default_factory=list)
     lead_time_risk_flags: list[str] = Field(default_factory=list)
     label: str | None = None
+    # GLTG provenance fields — AIVAN must expose these on all buyer-facing paths
+    lead_time_model: str | None = None
+    p50_lead_time_days: int | None = None
+    p80_lead_time_days: int | None = None
+    p90_lead_time_days: int | None = None
+    feasibility_basis: str | None = None
+    fallback_model_used: bool | None = None
 
 
 class FeasibilityReport(BaseModel):

@@ -53,6 +53,18 @@ class LeadTimePath(BaseModel):
     evidence_refs: list[str] = Field(default_factory=list)
     rank: int = 0
     label: Literal["FASTEST", "LOWEST_COST", "SAFEST", "BEST_OVERALL", "BACKUP"] | None = None
+
+    # GLTG integration fields.
+    # AIVAN must surface GLTG as the lead-time / feasibility engine rather than
+    # silently treating a simple supplier-stated lead time as final truth.
+    model_name: str = "lead_time_calculator"
+    model_version: str = "legacy"
+    p50_lead_time_days: int | None = None
+    p80_lead_time_days: int | None = None
+    p90_lead_time_days: int | None = None
+    feasibility_basis: Literal["p50", "p80", "p90", "deterministic"] = "deterministic"
+    fallback_model_used: bool = False
+
     # Breakdown for transparency
     material_ready_days: float = 0.0
     production_days: float = 0.0

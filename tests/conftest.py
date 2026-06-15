@@ -204,3 +204,95 @@ async def seed_sent_rfq(auth_client, seed_rfq):
     data = resp.json()
     data["id"] = data["id"]
     return data
+
+
+# ── Iter 5 fixtures ──────────────────────────────────────────────────────────
+
+@pytest.fixture
+async def seed_rfq_with_responses(auth_client, seed_sent_rfq, seed_participants):
+    """A sent RFQ with at least one supplier response recorded."""
+    await auth_client.post(
+        f"/api/rfqs/{seed_sent_rfq['id']}/responses",
+        json={
+            "participant_id": seed_participants[0]["id"],
+            "raw_response_text": (
+                "We can supply 10,000 T-shirts. Unit price $8.50 USD, MOQ 500 pcs, "
+                "fabric lead time 20 days, trim lead time 15 days, production time 25 days, "
+                "QC time 5 days, logistics time 7 days, total lead time 57 days. "
+                "Payment terms: 30% deposit, 70% before shipment. Trade terms: FOB Shenzhen. "
+                "Capacity: 15000 pcs."
+            ),
+        },
+    )
+    return {
+        "project_id": seed_sent_rfq.get("project_id", ""),
+        "rfq_id": seed_sent_rfq["id"],
+    }
+
+
+@pytest.fixture
+async def seed_decision_packet(auth_client, seed_rfq_with_responses, seed_project_with_form):
+    """A decision packet in PENDING state."""
+    resp = await auth_client.post(
+        f"/api/projects/{seed_project_with_form['id']}/decision-packets",
+        json={"rfq_id": seed_rfq_with_responses["rfq_id"]},
+    )
+    assert resp.status_code == 201, f"Create decision packet failed: {resp.text}"
+    data = resp.json()
+    return {
+        "id": data["packet"]["id"],
+        "project_id": seed_project_with_form["id"],
+        "approval_request_id": data["approval_request_id"],
+        "options": data["packet"]["options"],
+        "recommended_option_id": data["packet"]["recommended_option_id"],
+        **data["packet"],
+    }
+
+
+@pytest.fixture
+async def seed_approved_packet(auth_client, seed_decision_packet):
+    """A decision packet with an approved option."""
+    packet_id = seed_decision_packet["id"]
+    approval_id = seed_decision_packet["approval_request_id"]
+    option_id = seed_decision_packet["options"][0]["id"]
+
+    # Approve the ApprovalRequest first
+    await auth_client.post(
+        f"/api/approval-requests/{approval_id}/approve",
+        json={"review_notes": "Approved for test"},
+    )
+
+    # Approve the option
+    resp = await auth_client.post(
+        f"/api/decision-packets/{packet_id}/approve-option",
+        json={"option_id": option_id, "approval_id": approval_id},
+    )
+    assert resp.status_code == 200, f"Approve option failed: {resp.text}"
+    return {
+        **seed_decision_packet,
+        "recommended_option_id": option_id,
+        "approval_request_id": approval_id,
+    }
+
+
+@pytest.fixture
+async def seed_draft_order(auth_client, seed_approved_packet):
+    """A draft order created from an approved packet."""
+    resp = await auth_client.post(
+        f"/api/projects/{seed_approved_packet['project_id']}/orders/from-approved-option",
+        json={
+            "packet_id": seed_approved_packet["id"],
+            "option_id": seed_approved_packet["recommended_option_id"],
+            "approval_id": seed_approved_packet["approval_request_id"],
+        },
+    )
+    assert resp.status_code == 201, f"Create order failed: {resp.text}"
+    return resp.json()
+
+
+@pytest.fixture
+async def seed_confirmed_order(auth_client, seed_draft_order):
+    """An order that has been confirmed and is IN_PRODUCTION."""
+    resp = await auth_client.post(f"/api/orders/{seed_draft_order['id']}/confirm")
+    assert resp.status_code == 200, f"Confirm order failed: {resp.text}"
+    return resp.json()

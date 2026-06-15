@@ -1,0 +1,136 @@
+[
+  {
+    "participant_id": "FAB-001",
+    "name": "Shenzhen Premium Fabrics Co.",
+    "participant_type": "FABRIC_SUPPLIER",
+    "capabilities": [
+      {
+        "capability_id": "FAB-001-ord",
+        "node_type": "FABRIC_ORDERING",
+        "capacity_per_day": 5000,
+        "typical_lead_days": 21,
+        "quality_grade": "A"
+      },
+      {
+        "capability_id": "FAB-001-test",
+        "node_type": "FABRIC_TESTING",
+        "capacity_per_day": 2000,
+        "typical_lead_days": 7
+      }
+    ],
+    "location": "Shenzhen, China",
+    "capacity_per_day": 5000,
+    "moq": 2000,
+    "available_from": "2025-07-01",
+    "reliability_score": 0.88,
+    "quality_score": 0.90,
+    "on_time_delivery_rate": 0.85
+  },
+  {
+    "participant_id": "TRIM-001",
+    "name": "Guangzhou Trim House Ltd.",
+    "participant_type": "TRIM_SUPPLIER",
+    "capabilities": [
+      {
+        "capability_id": "TRIM-001-ord",
+        "node_type": "TRIM_ORDERING",
+        "capacity_per_day": 10000,
+        "typical_lead_days": 14,
+        "quality_grade": "A"
+      }
+    ],
+    "location": "Guangzhou, China",
+    "capacity_per_day": 10000,
+    "reliability_score": 0.92,
+    "on_time_delivery_rate": 0.90
+  },
+  {
+    "participant_id": "FACT-001",
+    "name": "Hangzhou Garment Manufacturing Co.",
+    "participant_type": "GARMENT_FACTORY",
+    "capabilities": [
+      {
+        "capability_id": "F1-cut",
+        "node_type": "CUTTING",
+        "capacity_per_day": 800,
+        "typical_lead_days": 2
+      },
+      {
+        "capability_id": "F1-sew",
+        "node_type": "SEWING",
+        "capacity_per_day": 600,
+        "typical_lead_days": 14
+      },
+      {
+        "capability_id": "F1-wash",
+        "node_type": "WASHING_OR_FINISHING",
+        "capacity_per_day": 1000,
+        "typical_lead_days": 3
+      },
+      {
+        "capability_id": "F1-pack",
+        "node_type": "PACKING",
+        "capacity_per_day": 2000,
+        "typical_lead_days": 2
+      },
+      {
+        "capability_id": "F1-sample",
+        "node_type": "SAMPLE_MAKING",
+        "capacity_per_day": 50,
+        "typical_lead_days": 7
+      }
+    ],
+    "location": "Hangzhou, China",
+    "capacity_per_day": 600,
+    "moq": 500,
+    "available_from": "2025-07-05",
+    "reliability_score": 0.87,
+    "quality_score": 0.88,
+    "on_time_delivery_rate": 0.83
+  },
+  {
+    "participant_id": "QC-001",
+    "name": "SGS China QC Services",
+    "participant_type": "QC_INSPECTOR",
+    "capabilities": [
+      {
+        "capability_id": "QC1-inline",
+        "node_type": "INLINE_QC",
+        "capacity_per_day": 2000,
+        "typical_lead_days": 1
+      },
+      {
+        "capability_id": "QC1-final",
+        "node_type": "FINAL_QC",
+        "capacity_per_day": 2000,
+        "typical_lead_days": 2
+      }
+    ],
+    "location": "Hangzhou, China",
+    "reliability_score": 0.95,
+    "quality_score": 0.97,
+    "on_time_delivery_rate": 0.92
+  },
+  {
+    "participant_id": "LOGI-001",
+    "name": "Sinofreight Logistics",
+    "participant_type": "LOGISTICS_PROVIDER",
+    "capabilities": [
+      {
+        "capability_id": "L1-book",
+        "node_type": "LOGISTICS_BOOKING",
+        "capacity_per_day": null,
+        "typical_lead_days": 3
+      },
+      {
+        "capability_id": "L1-ship",
+        "node_type": "SHIPMENT",
+        "capacity_per_day": null,
+        "typical_lead_days": 28
+      }
+    ],
+    "location": "Shenzhen, China",
+    "reliability_score": 0.90,
+    "on_time_delivery_rate": 0.88
+  }
+]

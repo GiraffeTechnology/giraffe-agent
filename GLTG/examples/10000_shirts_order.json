@@ -1,0 +1,313 @@
+{
+  "order_id": "ORD-2025-001",
+  "product_type": "men_shirt_cotton_white",
+  "quantity": 10000,
+  "requested_delivery_date": "2026-12-11",
+  "evaluation_date": "2026-06-15",
+  "trade_term": "FOB",
+  "destination": "Shenzhen, China",
+  "dynamic_form": {
+    "fabric_type": "100% cotton",
+    "fabric_weight": "120gsm",
+    "color": "white",
+    "size_set": "EU/US XS-3XL",
+    "wash_required": false,
+    "embellishment": "chest embroidery",
+    "packaging": "individual polybag + carton",
+    "quality_standard": "AQL 2.5",
+    "lab_test_required": true,
+    "fabric_sourcing": "buyer_nominated",
+    "trim_sourcing": "factory_sourced"
+  },
+  "participants": [
+    {
+      "participant_id": "FAB-001",
+      "name": "Shenzhen Premium Fabrics Co.",
+      "participant_type": "FABRIC_SUPPLIER",
+      "capabilities": [
+        {
+          "capability_id": "FAB-001-ord",
+          "node_type": "FABRIC_ORDERING",
+          "capacity_per_day": 5000,
+          "typical_lead_days": 21,
+          "quality_grade": "A"
+        },
+        {
+          "capability_id": "FAB-001-test",
+          "node_type": "FABRIC_TESTING",
+          "capacity_per_day": 2000,
+          "typical_lead_days": 7
+        }
+      ],
+      "location": "Shenzhen, China",
+      "capacity_per_day": 5000,
+      "moq": 2000,
+      "available_from": "2025-07-01",
+      "reliability_score": 0.88,
+      "quality_score": 0.9,
+      "on_time_delivery_rate": 0.85
+    },
+    {
+      "participant_id": "TRIM-001",
+      "name": "Guangzhou Trim House Ltd.",
+      "participant_type": "TRIM_SUPPLIER",
+      "capabilities": [
+        {
+          "capability_id": "TRIM-001-ord",
+          "node_type": "TRIM_ORDERING",
+          "capacity_per_day": 10000,
+          "typical_lead_days": 14,
+          "quality_grade": "A"
+        }
+      ],
+      "location": "Guangzhou, China",
+      "capacity_per_day": 10000,
+      "reliability_score": 0.92,
+      "on_time_delivery_rate": 0.9
+    },
+    {
+      "participant_id": "FACT-001",
+      "name": "Hangzhou Garment Manufacturing Co.",
+      "participant_type": "GARMENT_FACTORY",
+      "capabilities": [
+        {
+          "capability_id": "F1-cut",
+          "node_type": "CUTTING",
+          "capacity_per_day": 800,
+          "typical_lead_days": 2
+        },
+        {
+          "capability_id": "F1-sew",
+          "node_type": "SEWING",
+          "capacity_per_day": 600,
+          "typical_lead_days": 14
+        },
+        {
+          "capability_id": "F1-wash",
+          "node_type": "WASHING_OR_FINISHING",
+          "capacity_per_day": 1000,
+          "typical_lead_days": 3
+        },
+        {
+          "capability_id": "F1-pack",
+          "node_type": "PACKING",
+          "capacity_per_day": 2000,
+          "typical_lead_days": 2
+        },
+        {
+          "capability_id": "F1-sample",
+          "node_type": "SAMPLE_MAKING",
+          "capacity_per_day": 50,
+          "typical_lead_days": 7
+        }
+      ],
+      "location": "Hangzhou, China",
+      "capacity_per_day": 600,
+      "moq": 500,
+      "available_from": "2025-07-05",
+      "reliability_score": 0.87,
+      "quality_score": 0.88,
+      "on_time_delivery_rate": 0.83
+    },
+    {
+      "participant_id": "FACT-002",
+      "name": "Suzhou Textile & Garment Works",
+      "participant_type": "GARMENT_FACTORY",
+      "capabilities": [
+        {
+          "capability_id": "F2-cut",
+          "node_type": "CUTTING",
+          "capacity_per_day": 900,
+          "typical_lead_days": 2
+        },
+        {
+          "capability_id": "F2-sew",
+          "node_type": "SEWING",
+          "capacity_per_day": 700,
+          "typical_lead_days": 13
+        },
+        {
+          "capability_id": "F2-wash",
+          "node_type": "WASHING_OR_FINISHING",
+          "capacity_per_day": 1200,
+          "typical_lead_days": 3
+        },
+        {
+          "capability_id": "F2-pack",
+          "node_type": "PACKING",
+          "capacity_per_day": 2000,
+          "typical_lead_days": 2
+        },
+        {
+          "capability_id": "F2-sample",
+          "node_type": "SAMPLE_MAKING",
+          "capacity_per_day": 60,
+          "typical_lead_days": 7
+        }
+      ],
+      "location": "Suzhou, China",
+      "capacity_per_day": 700,
+      "moq": 500,
+      "available_from": "2026-06-20",
+      "reliability_score": 0.91,
+      "quality_score": 0.90,
+      "on_time_delivery_rate": 0.88
+    },
+    {
+      "participant_id": "FACT-003",
+      "name": "Ningbo Fashion Manufacturing Ltd.",
+      "participant_type": "GARMENT_FACTORY",
+      "capabilities": [
+        {
+          "capability_id": "F3-cut",
+          "node_type": "CUTTING",
+          "capacity_per_day": 1000,
+          "typical_lead_days": 2
+        },
+        {
+          "capability_id": "F3-sew",
+          "node_type": "SEWING",
+          "capacity_per_day": 750,
+          "typical_lead_days": 12
+        },
+        {
+          "capability_id": "F3-wash",
+          "node_type": "WASHING_OR_FINISHING",
+          "capacity_per_day": 1500,
+          "typical_lead_days": 3
+        },
+        {
+          "capability_id": "F3-pack",
+          "node_type": "PACKING",
+          "capacity_per_day": 2500,
+          "typical_lead_days": 2
+        },
+        {
+          "capability_id": "F3-sample",
+          "node_type": "SAMPLE_MAKING",
+          "capacity_per_day": 70,
+          "typical_lead_days": 6
+        }
+      ],
+      "location": "Ningbo, China",
+      "capacity_per_day": 750,
+      "moq": 300,
+      "available_from": "2026-06-18",
+      "reliability_score": 0.93,
+      "quality_score": 0.92,
+      "on_time_delivery_rate": 0.91
+    },
+    {
+      "participant_id": "QC-001",
+      "name": "SGS China QC Services",
+      "participant_type": "QC_INSPECTOR",
+      "capabilities": [
+        {
+          "capability_id": "QC1-inline",
+          "node_type": "INLINE_QC",
+          "capacity_per_day": 2000,
+          "typical_lead_days": 1
+        },
+        {
+          "capability_id": "QC1-final",
+          "node_type": "FINAL_QC",
+          "capacity_per_day": 2000,
+          "typical_lead_days": 2
+        }
+      ],
+      "location": "Hangzhou, China",
+      "reliability_score": 0.95,
+      "quality_score": 0.97,
+      "on_time_delivery_rate": 0.92
+    },
+    {
+      "participant_id": "LOGI-001",
+      "name": "Sinofreight Logistics",
+      "participant_type": "LOGISTICS_PROVIDER",
+      "capabilities": [
+        {
+          "capability_id": "L1-book",
+          "node_type": "LOGISTICS_BOOKING",
+          "capacity_per_day": null,
+          "typical_lead_days": 3
+        },
+        {
+          "capability_id": "L1-ship",
+          "node_type": "SHIPMENT",
+          "capacity_per_day": null,
+          "typical_lead_days": 28
+        }
+      ],
+      "location": "Shenzhen, China",
+      "reliability_score": 0.9,
+      "on_time_delivery_rate": 0.88
+    }
+  ],
+  "supplier_memory": [
+    {
+      "record_id": "MEM-001",
+      "participant_id": "FACT-001",
+      "node_type": "SEWING",
+      "order_quantity": 8000,
+      "stated_days": 14,
+      "actual_days": 16,
+      "on_time": false,
+      "quality_pass": true,
+      "notes": "2-day delay due to machine maintenance",
+      "recorded_at": "2024-11-20"
+    },
+    {
+      "record_id": "MEM-002",
+      "participant_id": "FACT-001",
+      "node_type": "CUTTING",
+      "order_quantity": 8000,
+      "stated_days": 2,
+      "actual_days": 2,
+      "on_time": true,
+      "quality_pass": true,
+      "recorded_at": "2024-11-18"
+    },
+    {
+      "record_id": "MEM-003",
+      "participant_id": "FAB-001",
+      "node_type": "FABRIC_ORDERING",
+      "order_quantity": 8000,
+      "stated_days": 21,
+      "actual_days": 24,
+      "on_time": false,
+      "quality_pass": true,
+      "notes": "Fabric mill backlog caused 3-day delay",
+      "recorded_at": "2024-10-30"
+    }
+  ],
+  "supplier_responses": [
+    {
+      "response_id": "RESP-001",
+      "participant_id": "FAB-001",
+      "node_type": "FABRIC_ORDERING",
+      "confirmed_days": 21,
+      "earliest_start": "2025-07-01",
+      "confirmed_at": "2025-06-10",
+      "expires_at": "2025-06-30"
+    },
+    {
+      "response_id": "RESP-002",
+      "participant_id": "FACT-001",
+      "node_type": "SEWING",
+      "confirmed_days": 15,
+      "earliest_start": "2025-07-22",
+      "confirmed_at": "2025-06-10",
+      "expires_at": "2025-06-30"
+    }
+  ],
+  "progress_events": [],
+  "calendar": {
+    "use_working_days": true,
+    "working_days_per_week": 5,
+    "holiday_dates": [
+      "2025-07-04",
+      "2025-08-01"
+    ],
+    "timezone": "Asia/Shanghai"
+  }
+}

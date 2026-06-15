@@ -22,7 +22,7 @@ from src.core_schema.b_side_types import (
 )
 from src.b_side.workspace import get_b_workspace, save_b_workspace
 from src.lead_time.models import LeadTimePath, ProductionCapacity
-from src.lead_time.lead_time_calculator import calculate_lead_time_path
+from src.gltg.engine import calculate_gltg_lead_time_path
 from src.lead_time.path_ranker import assign_labels
 
 
@@ -129,6 +129,12 @@ def _path_to_delivery_path(lt_path: LeadTimePath, rfq_id: str) -> DeliveryPath:
         evidence_refs=lt_path.evidence_refs,
         lead_time_risk_flags=lt_path.risk_flags,
         label=lt_path.label,
+        lead_time_model=lt_path.model_name,
+        p50_lead_time_days=lt_path.p50_lead_time_days,
+        p80_lead_time_days=lt_path.p80_lead_time_days,
+        p90_lead_time_days=lt_path.p90_lead_time_days,
+        feasibility_basis=lt_path.feasibility_basis,
+        fallback_model_used=lt_path.fallback_model_used,
     )
 
 
@@ -168,7 +174,7 @@ def run_feasibility_simulation(b_workspace_id: str, max_recommended: int = 0) ->
     lt_paths: list[LeadTimePath] = []
     for resp in eligible:
         inputs = _response_to_path_input(resp)
-        lt_path = calculate_lead_time_path(
+        lt_path = calculate_gltg_lead_time_path(
             supplier_response_id=inputs["response_id"],
             supplier_id=inputs["supplier_id"],
             supplier_name=inputs["supplier_name"],

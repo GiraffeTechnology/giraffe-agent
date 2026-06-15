@@ -9,7 +9,6 @@ provenance trail.
 import uuid
 
 from src.lead_time.models import LeadTimePath, ProductionCapacity
-from src.gltg.engine import calculate_gltg_lead_time_path
 
 
 def enumerate_delivery_paths(
@@ -36,6 +35,7 @@ def enumerate_delivery_paths(
     - P80 is the default deadline feasibility basis.
     - GLTG must never silently fallback to an unspecified model.
     """
+    from src.gltg.engine import calculate_gltg_lead_time_path  # lazy import avoids circular dependency
     all_paths: list[LeadTimePath] = []
 
     for sr in supplier_responses:

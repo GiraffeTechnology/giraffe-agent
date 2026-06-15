@@ -154,7 +154,7 @@ cd integrations/openclaw-aivan-plugin && npm install && npx tsc --noEmit
 # Unicode / BIDI / line-ending check
 python - << 'EOF'
 import os, re, sys
-BIDI = re.compile('[​-‏‪-‮⁠-⁩﻿]')
+BIDI = re.compile('[\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2069\\ufeff]')
 bad = []
 for root, dirs, files in os.walk('.'):
     dirs[:] = [d for d in dirs if d not in ('.git', '.venv', '__pycache__', 'node_modules', 'dist')]
@@ -203,12 +203,11 @@ EOF
 
 ## 8. CI Result
 
-The original `8a5a921` commit failed CI (`AIVAN ClawHub Plugin` job) due to the circular import bug.
-After hardening, all issues are resolved. CI will re-run on the new push.
+The original `8a5a921` commit failed CI (`AIVAN ClawHub Plugin` job) due to the circular import bug. A later hardening commit fixed the circular import but introduced literal BIDI characters inside this report's example regex. The report now uses ASCII-only `\\u` escapes, matching the CI-safe workflow pattern.
 
 Required CI jobs and expected outcomes:
 - B-side Tests: success
-- AIVAN ClawHub Plugin: success (circular import fixed)
+- AIVAN ClawHub Plugin: success
 - BM DB Integration: success
 - M-side Role-Switching Tests: success
 - Lead Time Path Model: success
@@ -225,9 +224,9 @@ Required CI jobs and expected outcomes:
 
 ## 10. Final Recommendation
 
-**SAFE TO MERGE**
+**SAFE TO MERGE once CI is green**
 
-All definition-of-done criteria are met:
+All definition-of-done criteria are met at the code/test level:
 - `src.gltg.engine.calculate_gltg_lead_time_path()` exists and is non-circular ✓
 - AIVAN path enumeration calls GLTG ✓
 - AIVAN buyer option generation does not bypass GLTG ✓
@@ -242,4 +241,4 @@ All definition-of-done criteria are met:
 - All four AIVAN E2E scripts pass ✓
 - Plugin validation passes ✓
 - TypeScript check passes ✓
-- Unicode/BIDI check passes ✓
+- Unicode/BIDI check is now written with ASCII-only escape sequences ✓

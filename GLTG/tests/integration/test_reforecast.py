@@ -93,3 +93,44 @@ class TestReforecast:
         result = engine.reforecast(base_packet, events)
         # generated_at should still be a valid datetime
         assert result.generated_at is not None
+
+    def test_reforecast_delay_produces_acceleration_options(self, engine, base_packet):
+        """A node-level delay that shifts commitable_date must produce acceleration_options."""
+        if not base_packet.options or not base_packet.options[0].nodes:
+            pytest.skip("No options/nodes in base_packet to target")
+        # Target ALL nodes in the first option to guarantee at least one
+        # node with a commitable_finish gets shifted.
+        option_nodes = base_packet.options[0].nodes
+        node_ids = [n.node_id for n in option_nodes if n.commitable_finish is not None]
+        if not node_ids:
+            pytest.skip("No nodes with commitable_finish to delay")
+        events = [
+            _material_delay_event(node_id=nid, delay_days=30)
+            for nid in node_ids
+        ]
+        # Record commitable before reforecast
+        original_commitable = base_packet.commitable_date
+        result = engine.reforecast(base_packet, events)
+        # Acceleration options should be populated when delay is positive
+        if result.commitable_date and original_commitable and result.commitable_date > original_commitable:
+            assert len(result.acceleration_options) > 0, (
+                "Expected acceleration_options when commitable_date is pushed out"
+            )
+        else:
+            # If date didn't shift (e.g. dependency resolver normalised it),
+            # acceleration_options may be empty -- not a failure.
+            assert isinstance(result.acceleration_options, list)
+
+    def test_reforecast_acceleration_options_have_required_keys(self, engine, base_packet):
+        """Acceleration option dicts must contain expected keys."""
+        if not base_packet.options or not base_packet.options[0].nodes:
+            pytest.skip("No options/nodes in base_packet to target")
+        option_nodes = base_packet.options[0].nodes
+        node_ids = [n.node_id for n in option_nodes if n.commitable_finish is not None]
+        if not node_ids:
+            pytest.skip("No nodes with commitable_finish to delay")
+        events = [_material_delay_event(node_id=node_ids[-1], delay_days=30)]
+        result = engine.reforecast(base_packet, events)
+        for opt in result.acceleration_options:
+            assert "name" in opt
+            assert "days_saved" in opt

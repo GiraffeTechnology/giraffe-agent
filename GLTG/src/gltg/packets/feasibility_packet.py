@@ -68,13 +68,13 @@ class FeasibilityPacketBuilder:
             ))
             top_options = feasible_options[:2]
             recommended_action = "Two options available -- review both before deciding."
-            human_review = False
+            human_review = True
 
         else:
             status = FeasibilityStatus.FEASIBLE
             top_options = feasible_options[:3]
             recommended_action = "Review top 3 options and select the best fit."
-            human_review = False
+            human_review = True
 
         # If any option requires expedite, escalate status
         if status == FeasibilityStatus.FEASIBLE and any(

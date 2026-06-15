@@ -122,3 +122,14 @@ class TestGiraffeAgentAdapter:
         response = adapter.packet_to_agent_response(packet)
         assert "human_review_required" in response
         assert isinstance(response["human_review_required"], bool)
+
+    def test_response_human_review_required_always_true(self, adapter, engine):
+        """human_review_required must be True for all supplier counts in v1.0."""
+        for n in range(0, 4):
+            participants = [make_participant(f"P{i}") for i in range(1, n + 1)]
+            order = make_order(order_id=f"HR-ADAPT-{n}", participants=participants)
+            packet = engine.evaluate(order)
+            response = adapter.packet_to_agent_response(packet)
+            assert response["human_review_required"] is True, (
+                f"Expected human_review_required=True for {n} supplier(s)"
+            )

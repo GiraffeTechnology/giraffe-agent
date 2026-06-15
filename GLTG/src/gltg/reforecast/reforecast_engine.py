@@ -127,6 +127,7 @@ class ReforecastEngine:
         packet.critical_path = best.critical_path
         packet.bottleneck_nodes = best.bottleneck_nodes
         packet.risk_flags = packet.risk_flags + new_flags
+        packet.acceleration_options = acceleration
         packet.generated_at = datetime.utcnow()
 
         return packet

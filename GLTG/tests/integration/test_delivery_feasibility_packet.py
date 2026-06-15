@@ -98,3 +98,27 @@ class TestDeliveryFeasibilityPacket:
         """generated_at should be set on the returned packet."""
         packet = engine.evaluate(three_participant_order)
         assert packet.generated_at is not None
+
+    # ------------------------------------------------------------------
+    # human_review_required must be True for ALL supplier counts (v1.0)
+    # ------------------------------------------------------------------
+
+    def test_human_review_required_zero_suppliers(self, engine):
+        order = make_order(order_id="HR-0", participants=[])
+        packet = engine.evaluate(order)
+        assert packet.human_review_required is True
+
+    def test_human_review_required_one_supplier(self, engine):
+        order = make_order(order_id="HR-1", participants=[make_participant("P1")])
+        packet = engine.evaluate(order)
+        assert packet.human_review_required is True
+
+    def test_human_review_required_two_suppliers(self, engine):
+        participants = [make_participant(f"P{i}") for i in range(1, 3)]
+        order = make_order(order_id="HR-2", participants=participants)
+        packet = engine.evaluate(order)
+        assert packet.human_review_required is True
+
+    def test_human_review_required_three_suppliers(self, engine, three_participant_order):
+        packet = engine.evaluate(three_participant_order)
+        assert packet.human_review_required is True

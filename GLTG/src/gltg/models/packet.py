@@ -31,3 +31,4 @@ class DeliveryFeasibilityPacket(BaseModel):
     evidence_summary: list[EvidenceItem] = []
     recommended_action: str | None = None
     human_review_required: bool = True
+    acceleration_options: list[dict] = []

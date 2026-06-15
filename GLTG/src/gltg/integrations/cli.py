@@ -62,8 +62,18 @@ def _print_summary(packet) -> None:
     print(f"Options:      {len(packet.options)}")
     print(f"Risk Flags:   {len(packet.risk_flags)}")
     print(f"Missing:      {', '.join(packet.missing_fields) or 'None'}")
+    print(f"Human Review: {packet.human_review_required}")
     if packet.recommended_action:
         print(f"Action:       {packet.recommended_action}")
+    if packet.acceleration_options:
+        print("\nExpedite Levers:")
+        for opt in packet.acceleration_options:
+            print(
+                f"  - {opt.get('name', '?')}  "
+                f"saves={opt.get('days_saved', '?')}d  "
+                f"cost={opt.get('cost_impact', '?')}  "
+                f"risk={opt.get('risk_impact', '?')}"
+            )
     if packet.options:
         print("\nTop Options:")
         for i, opt in enumerate(packet.options, 1):

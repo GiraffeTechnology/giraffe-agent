@@ -16,6 +16,9 @@ dependencies = [
     "httpx>=0.28.0",
 ]
 
+[project.scripts]
+aivan = "src.aivan_cli:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

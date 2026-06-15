@@ -23,6 +23,9 @@ def _parse_quantity(text: str) -> int | None:
         r"(\d[\d,]*)\s*个",
         r"(\d[\d,]*)\s*件",
         r"(\d[\d,]*)\s*套",
+        # Apparel and general product counts with possible modifier words between number and product
+        r"(\d[\d,]*)\s+(?:[^\d,\n]{1,60}?\s+)?(?:shirts?|t-shirts?|garments?|jackets?|trousers?|pants?|dresses?|hoodies?)\b",
+        r"(\d[\d,]*)\s+(?:[^\d,\n]{1,40}?\s+)?(?:items?|products?|goods?)\b",
     ]
     for pat in patterns:
         m = re.search(pat, text, re.IGNORECASE)
@@ -78,9 +81,24 @@ def _parse_destination(text: str) -> str | None:
         "New York", "Los Angeles", "Chicago",
         "London", "Paris", "Amsterdam",
         "Tokyo", "Singapore", "Hong Kong",
+        # North America
+        "Vancouver", "Toronto", "Montreal", "Calgary",
+        "Seattle", "San Francisco", "Boston", "Miami", "Dallas",
+        # Europe
+        "Madrid", "Barcelona", "Rome", "Milan", "Stockholm",
+        "Oslo", "Copenhagen", "Vienna", "Warsaw", "Zurich",
+        # Asia-Pacific
+        "Sydney", "Melbourne", "Auckland", "Seoul", "Bangkok",
+        "Taipei", "Jakarta", "Kuala Lumpur", "Mumbai", "Delhi",
+        # Middle East
+        "Dubai", "Abu Dhabi", "Riyadh",
+        # Country-level destinations
+        "Canada", "United States", "USA", "UK", "Germany",
+        "France", "Australia", "Japan",
     ]
+    tl = text.lower()
     for city in cities:
-        if city.lower() in text.lower():
+        if city.lower() in tl:
             return city
     return None
 

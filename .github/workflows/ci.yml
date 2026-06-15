@@ -128,3 +128,49 @@ jobs:
 
       - name: Run role switching tests
         run: uv run pytest tests/test_mside_role_switching.py -q --tb=short
+
+  aivan-clawhub-plugin:
+    name: AIVAN ClawHub Plugin
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Compile Python sources
+        run: uv run python -m compileall api/ scripts/ -q
+
+      - name: Run full pytest suite (includes AIVAN endpoint tests)
+        run: uv run pytest -q --tb=short
+
+      - name: Validate ClawHub plugin metadata
+        run: uv run python scripts/validate_clawhub_aivan_plugin.py
+
+      - name: Smoke test (mock AIVAN server)
+        run: |
+          uv run uvicorn api.main:app --host 127.0.0.1 --port 8000 &
+          sleep 3
+          AIVAN_BASE_URL=http://127.0.0.1:8000 uv run python scripts/run_aivan_openclaw_plugin_smoke_test.py
+          kill %1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: TypeScript syntax check (plugin bridge)
+        working-directory: integrations/openclaw-aivan-plugin
+        run: |
+          npm install --save-dev typescript@5 @types/node
+          npx tsc --version
+          npx tsc

@@ -31,7 +31,12 @@
         "id": "aivan.forwardEvent",
         "title": "AIVAN: Forward Trade Event",
         "description": "Forward a normalized OpenClaw trade event to the local AIVAN service",
-        "eventTypes": ["message", "inquiry", "quotation", "order-update"]
+        "eventTypes": [
+          "message",
+          "inquiry",
+          "quotation",
+          "order-update"
+        ]
       },
       {
         "type": "command",
@@ -67,5 +72,9 @@
     "procurement",
     "salesperson",
     "giraffe-technology"
-  ]
+  ],
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "typescript": "^5.9.3"
+  }
 }

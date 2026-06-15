@@ -128,8 +128,11 @@ export async function forwardEvent(event: {
 }
 
 /**
- * Open the AIVAN trade salesperson dashboard in the system browser.
- * Falls back to logging the URL if a browser cannot be opened.
+ * Return the AIVAN dashboard URL after verifying the service is reachable.
+ *
+ * The plugin bridge does not open a browser window directly — it returns the URL
+ * so the OpenClaw runtime or calling code can handle display. This keeps the
+ * bridge dependency-free and lets the caller decide how to present the URL.
  */
 export async function openDashboard(): Promise<{ ok: boolean; url: string; error?: string }> {
   const dashboardUrl = `${AIVAN_BASE_URL}/docs`;
@@ -141,15 +144,6 @@ export async function openDashboard(): Promise<{ ok: boolean; url: string; error
       url: dashboardUrl,
       error: `AIVAN is not running. Start it first, then open: ${dashboardUrl}`,
     };
-  }
-
-  try {
-    const { default: open } = await import("open").catch(() => ({ default: null }));
-    if (open) {
-      await open(dashboardUrl);
-    }
-  } catch {
-    // Non-fatal: URL is returned so the caller can handle it
   }
 
   return { ok: true, url: dashboardUrl };

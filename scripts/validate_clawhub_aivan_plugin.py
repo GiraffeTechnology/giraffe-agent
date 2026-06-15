@@ -142,8 +142,12 @@ SECRET_PATTERNS = [
 
 files_to_check = list(PLUGIN_DIR.rglob("*"))
 secret_found = False
+SKIP_DIRS = {"node_modules", ".git", "__pycache__", ".venv", "dist", "build"}
 for fpath in files_to_check:
     if not fpath.is_file():
+        continue
+    # Skip vendored/generated directories
+    if any(part in SKIP_DIRS for part in fpath.parts):
         continue
     try:
         content = fpath.read_text(encoding="utf-8", errors="replace").lower()

@@ -2,7 +2,9 @@
 Giraffe Agent FastAPI application — B-side + M-side endpoints + OpenClaw skill invocation.
 """
 
-from fastapi import FastAPI, HTTPException
+import os
+
+from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI(
@@ -1216,6 +1218,32 @@ def buyer_qc_decision_endpoint(project_id: str, request: BuyerQCDecisionRequest)
     )
 
 
+# ─── AIVAN / OpenClaw API key guard ───────────────────────────────────────────
+
+def _require_openclaw_api_key(
+    x_aivan_api_key: str | None = Header(default=None),
+) -> None:
+    """FastAPI dependency: enforce X-AIVAN-API-Key when AIVAN_API_KEY env var is set.
+
+    - AIVAN_API_KEY not set  → open access (useful for local-only / mock mode)
+    - Header missing          → 401 Unauthorized
+    - Header wrong            → 403 Forbidden
+    """
+    configured = os.environ.get("AIVAN_API_KEY", "")
+    if not configured:
+        return
+    if x_aivan_api_key is None:
+        raise HTTPException(
+            status_code=401,
+            detail="X-AIVAN-API-Key header is required",
+        )
+    if x_aivan_api_key != configured:
+        raise HTTPException(
+            status_code=403,
+            detail="Invalid API key",
+        )
+
+
 # ─── AIVAN / OpenClaw events intake ───────────────────────────────────────────
 
 class OpenClawEventRequest(BaseModel):
@@ -1237,7 +1265,10 @@ class OpenClawEventRequest(BaseModel):
 
 
 @app.post("/api/openclaw/events")
-def receive_openclaw_event(event: OpenClawEventRequest):
+def receive_openclaw_event(
+    event: OpenClawEventRequest,
+    _: None = Depends(_require_openclaw_api_key),
+):
     """
     AIVAN OpenClaw event intake.
     Receives normalized channel events from the OpenClaw plugin bridge
@@ -1249,7 +1280,10 @@ def receive_openclaw_event(event: OpenClawEventRequest):
 
 
 @app.get("/api/openclaw/drafts/pending")
-def list_pending_drafts(project_id: str):
+def list_pending_drafts(
+    project_id: str,
+    _: None = Depends(_require_openclaw_api_key),
+):
     """List message drafts awaiting human approval for a project."""
     from src.openclaw_skill.message_draft_store import find_pending_drafts
     drafts = find_pending_drafts(project_id)
@@ -1264,20 +1298,33 @@ class ApproveDraftRequest(BaseModel):
 
 
 @app.post("/api/openclaw/drafts/{draft_id}/approve")
-def approve_message_draft(draft_id: str, request: ApproveDraftRequest):
-    """Approve a pending message draft. Human sign-off required before dispatch."""
-    from src.openclaw_skill.message_draft_store import approve_draft
-    draft = approve_draft(draft_id, request.approved_by)
+def approve_message_draft(
+    draft_id: str,
+    request: ApproveDraftRequest,
+    _: None = Depends(_require_openclaw_api_key),
+):
+    """Approve a pending message draft. Only 'pending_approval' drafts can be approved."""
+    from src.openclaw_skill.message_draft_store import approve_draft, DraftStateError
+    try:
+        draft = approve_draft(draft_id, request.approved_by)
+    except DraftStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
     if draft is None:
         raise HTTPException(status_code=404, detail=f"Draft {draft_id} not found")
     return {"ok": True, "draft_id": draft.id, "status": draft.approval_status}
 
 
 @app.post("/api/openclaw/drafts/{draft_id}/reject")
-def reject_message_draft(draft_id: str):
-    """Reject a pending message draft."""
-    from src.openclaw_skill.message_draft_store import reject_draft
-    draft = reject_draft(draft_id)
+def reject_message_draft(
+    draft_id: str,
+    _: None = Depends(_require_openclaw_api_key),
+):
+    """Reject a pending message draft. Only 'pending_approval' drafts can be rejected."""
+    from src.openclaw_skill.message_draft_store import reject_draft, DraftStateError
+    try:
+        draft = reject_draft(draft_id)
+    except DraftStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
     if draft is None:
         raise HTTPException(status_code=404, detail=f"Draft {draft_id} not found")
     return {"ok": True, "draft_id": draft.id, "status": draft.approval_status}

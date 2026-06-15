@@ -32,20 +32,22 @@ class SupplierMemoryAnalyzer:
         if not relevant:
             return None
 
-        # Prefer actual_days; fall back to stated_days
-        days_values: list[float] = []
+        # Scale by quantity ratio if records have quantities.
+        # Build pairs from the same iteration that produced days_values so
+        # indices stay aligned even when some records lack both actual_days
+        # and stated_days (those records are simply skipped).
+        record_day_pairs: list[tuple] = []
         for r in relevant:
             if r.actual_days is not None:
-                days_values.append(r.actual_days)
+                record_day_pairs.append((r, r.actual_days))
             elif r.stated_days is not None:
-                days_values.append(r.stated_days)
+                record_day_pairs.append((r, r.stated_days))
 
-        if not days_values:
+        if not record_day_pairs:
             return None
 
-        # Scale by quantity ratio if records have quantities
         scaled_values: list[float] = []
-        for r, d in zip(relevant, days_values):
+        for r, d in record_day_pairs:
             if r.order_quantity and r.order_quantity > 0 and quantity > 0:
                 scale = quantity / r.order_quantity
                 # Assume sub-linear scaling: sqrt relationship beyond 2x
@@ -61,7 +63,8 @@ class SupplierMemoryAnalyzer:
         mean_days = statistics.mean(scaled_values)
 
         # Compute on-time rate for confidence bonus
-        on_time_records = [r for r in relevant if r.on_time is not None]
+        paired_records = [r for r, _ in record_day_pairs]
+        on_time_records = [r for r in paired_records if r.on_time is not None]
         on_time_rate = (
             sum(1 for r in on_time_records if r.on_time) / len(on_time_records)
             if on_time_records else 0.5

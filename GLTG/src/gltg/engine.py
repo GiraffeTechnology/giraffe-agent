@@ -58,9 +58,13 @@ class LeadTimeGraphEngine:
 
         # Refine duration estimates with available evidence
         for node in nodes:
-            # Find supplier response for this node type
+            # Find supplier response matching both participant and node type
             sr = next(
-                (r for r in order_input.supplier_responses if r.node_type == node.node_type),
+                (
+                    r for r in order_input.supplier_responses
+                    if r.node_type == node.node_type
+                    and (r.participant_id is None or r.participant_id == node.participant_id)
+                ),
                 None,
             )
             participant = None
@@ -82,7 +86,7 @@ class LeadTimeGraphEngine:
             )
 
         graph = self._builder.build(order_input, nodes)
-        start = date.today()
+        start = order_input.evaluation_date or date.today()
         self._resolver.resolve(graph, start, order_input.calendar)
         critical = self._cp_finder.find(graph)
         bottlenecks = self._cp_finder.find_bottlenecks(graph, critical)
@@ -121,27 +125,30 @@ class LeadTimeGraphEngine:
         critical_path: list[str] = graph.metadata.get("critical_path", [])
         bottlenecks: list[str] = graph.metadata.get("bottleneck_nodes", [])
 
-        # Step 4: Enumerate base options
-        base_options = self.enumerate_options(graph)
+        # Step 4: Enumerate base options (one per factory participant)
+        base_options = self._enumerator.enumerate(graph, order_input)
+        # Factory option count drives the 0/1/2/3 feasibility rule:
+        # never show more options than real factory paths (max 3).
+        factory_option_cap = min(3, len(base_options))
 
         # Step 5: Prune infeasible
         classified = self._pruner.prune(base_options, order_input.requested_delivery_date)
 
-        # Step 6: Generate variants
+        # Step 6: Generate variants (batch-split / alt routes) — only when 3+ factories
+        # so variants don't inflate option count beyond the real factory cap.
         all_options: list[DeliveryPathOption] = list(classified)
 
-        feasible_base = self._pruner.filter_feasible(classified)
-        if feasible_base:
-            best = feasible_base[0]
-            # Batch split variants
-            splits = self._splitter.generate_splits(best, order_input.quantity)
-            classified_splits = self._pruner.prune(splits, order_input.requested_delivery_date)
-            all_options.extend(classified_splits)
+        if factory_option_cap >= 3:
+            feasible_base = self._pruner.filter_feasible(classified)
+            if feasible_base:
+                best = feasible_base[0]
+                splits = self._splitter.generate_splits(best, order_input.quantity)
+                classified_splits = self._pruner.prune(splits, order_input.requested_delivery_date)
+                all_options.extend(classified_splits)
 
-            # Alternative routes
-            alts = self._alt_routes.generate(best, order_input.requested_delivery_date)
-            classified_alts = self._pruner.prune(alts, order_input.requested_delivery_date)
-            all_options.extend(classified_alts)
+                alts = self._alt_routes.generate(best, order_input.requested_delivery_date)
+                classified_alts = self._pruner.prune(alts, order_input.requested_delivery_date)
+                all_options.extend(classified_alts)
 
         # Step 7: Compute on-time probabilities
         for option in all_options:
@@ -153,11 +160,9 @@ class LeadTimeGraphEngine:
                 )
                 option.on_time_probability = otp
 
-        # Step 8: Rank (top 3, capped by distinct participant count)
-        unique_participant_count = len(order_input.participants)
-        max_options = min(3, unique_participant_count) if unique_participant_count > 0 else 0
+        # Step 8: Rank and cap at factory_option_cap (never > real factory paths, max 3)
         ranked = self._ranker.rank(all_options, order_input.requested_delivery_date)
-        ranked = ranked[:max_options]
+        ranked = ranked[:factory_option_cap]
 
         # Propagate missing fields to options
         for opt in ranked:

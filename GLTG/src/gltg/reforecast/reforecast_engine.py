@@ -1,4 +1,4 @@
-"""Reforecast engine — re-evaluates an order after progress events."""
+"""Reforecast engine -- re-evaluates an order after progress events."""
 
 from __future__ import annotations
 
@@ -24,40 +24,60 @@ class ReforecastEngine:
     ) -> DeliveryFeasibilityPacket:
         """Apply events to the packet's options and return an updated packet.
 
-        This re-evaluates dates on the best option's nodes by applying events,
-        then re-resolving the dependency graph and rebuilding the packet.
+        Event-applied dates are used as ANCHORS during re-resolve so that
+        node-level mutations (delay shifts, completion dates) are not discarded
+        when the dependency graph is re-propagated forward.
         """
         if not packet.options or not events:
             return packet
 
-        # Work on the top (first) option's graph-like structure
-        # We apply events to each option's nodes
         all_changed: set[str] = set()
         previous_commitable = packet.commitable_date
 
         for option in packet.options:
-            # Build a lightweight graph from the option's nodes/edges
             from ..models.graph import LeadTimeGraph
             temp_graph = LeadTimeGraph(
                 graph_id="reforecast_temp",
                 order_id=packet.order_id,
-                nodes=option.nodes,
-                edges=option.edges,
+                nodes=list(option.nodes),
+                edges=list(option.edges),
             )
+
+            # Record commitable_finish BEFORE event application so we can
+            # use post-event dates as floors during re-resolve.
+            pre_cf = {
+                n.node_id: n.commitable_finish
+                for n in temp_graph.nodes
+                if n.commitable_finish is not None
+            }
 
             for event in events:
                 changed = self._applier.apply(temp_graph, event)
                 all_changed.update(changed)
 
-            # Re-resolve dates after applying events
+            # Build anchor map: for nodes that EventApplier mutated,
+            # use their post-event commitable_finish as a floor so the
+            # forward-pass resolver propagates the real (delayed) date
+            # rather than overwriting it with baseline durations.
+            node_finish_floors: dict[str, date] = {}
+            for nid in all_changed:
+                node = temp_graph.get_node(nid)
+                if node and node.commitable_finish is not None:
+                    pre = pre_cf.get(nid)
+                    # Use floor only if the event actually shifted the date
+                    if pre is None or node.commitable_finish != pre:
+                        node_finish_floors[nid] = node.commitable_finish
+
             from ..graph.dependency_resolver import DependencyResolver
             from ..graph.critical_path import CriticalPathFinder
 
             resolver = DependencyResolver()
             cp_finder = CriticalPathFinder()
 
+            # Use a start date that respects already-completed work.
+            # The node_finish_floors anchors the re-resolve to event dates.
             start = date.today()
-            resolver.resolve(temp_graph, start, None)
+            resolver.resolve(temp_graph, start, None, node_finish_floors=node_finish_floors)
 
             new_critical = cp_finder.find(temp_graph)
             new_bottlenecks = cp_finder.find_bottlenecks(temp_graph, new_critical)
@@ -67,7 +87,6 @@ class ReforecastEngine:
             option.critical_path = new_critical
             option.bottleneck_nodes = new_bottlenecks
 
-            # Update option-level dates from terminal node
             has_successor = {e.from_node_id for e in temp_graph.edges}
             terminals = [n for n in temp_graph.nodes if n.node_id not in has_successor]
             if terminals:
@@ -77,24 +96,19 @@ class ReforecastEngine:
                 option.earliest_feasible_date = terminal.earliest_finish
                 option.risk_adjusted_latest_date = terminal.risk_adjusted_finish
 
-        # Rebuild packet-level dates from best option
         best = packet.options[0]
         new_commitable = best.commitable_date
 
-        # Compute delta
         delta_days: int | None = None
         if previous_commitable and new_commitable:
             delta_days = (new_commitable - previous_commitable).days
 
-        # Generate acceleration options if slipped
         acceleration = []
         if delta_days and delta_days > 0:
             acceleration = self._expedite.generate(days_needed_to_save=delta_days)
 
-        # Check if critical path changed
         critical_path_changed = (best.critical_path != packet.critical_path)
 
-        # Collect new risk flags (from events)
         new_flags = []
         if delta_days and delta_days > 7:
             from ..models.enums import RiskFlagCode
@@ -106,7 +120,6 @@ class ReforecastEngine:
                 mitigation_hint="Consider expedite options.",
             ))
 
-        # Update the packet
         packet.commitable_date = new_commitable
         packet.most_likely_date = best.most_likely_date
         packet.earliest_feasible_date = best.earliest_feasible_date
@@ -128,7 +141,6 @@ class ReforecastEngine:
         new_risk_flags,
         acceleration_options: list[dict],
     ) -> ReforecastResult:
-        """Build a ReforecastResult summary."""
         delta = None
         if previous_commitable and new_commitable:
             delta = (new_commitable - previous_commitable).days

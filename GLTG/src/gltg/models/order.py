@@ -15,12 +15,13 @@ class ApparelOrderInput(BaseModel):
     """All information needed to evaluate an apparel order's lead time."""
 
     order_id: str
-    product_type: str                         # e.g. "woven shirt", "knit polo"
+    product_type: str
     quantity: int
     requested_delivery_date: date | None = None
-    trade_term: str | None = None             # FOB, CIF, DDP, etc.
-    destination: str | None = None            # destination country/port
-    dynamic_form: dict[str, Any] = {}         # free-form buyer requirements
+    evaluation_date: date | None = None  # explicit start date for graph resolution
+    trade_term: str | None = None
+    destination: str | None = None
+    dynamic_form: dict[str, Any] = {}
     participants: list[ParticipantProfile] = []
     supplier_memory: list[SupplierMemoryRecord] = []
     supplier_responses: list[SupplierResponse] = []

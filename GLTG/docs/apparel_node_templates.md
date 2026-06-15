@@ -2,7 +2,7 @@
 
 This document lists all 28 `ApparelNodeType` values supported by the GLTG engine, along with display names, typical participant types, baseline lead times, required inputs/outputs, and whether the node is optional in the standard workflow.
 
-Baseline lead times are in **working days** at the p50/p80/p90 percentile bands for a typical 5,000–10,000 piece order. The SEWING baseline scales linearly with quantity (7 days per 1,000 pieces at p50).
+Baseline lead times are in **working days** at the p50/p80/p90 percentile bands for a typical 5,000-10,000 piece order. The SEWING baseline scales linearly with quantity (7 days per 1,000 pieces at p50).
 
 ---
 

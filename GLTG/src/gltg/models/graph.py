@@ -1,4 +1,4 @@
-"""LeadTimeGraph model — the container for the full order graph."""
+"""LeadTimeGraph model -- the container for the full order graph."""
 
 from __future__ import annotations
 

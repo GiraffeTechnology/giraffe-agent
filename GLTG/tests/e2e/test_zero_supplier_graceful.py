@@ -1,4 +1,4 @@
-"""E2E test: Zero suppliers — graceful degradation."""
+"""E2E test: Zero suppliers -- graceful degradation."""
 
 from __future__ import annotations
 

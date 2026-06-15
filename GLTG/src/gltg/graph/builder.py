@@ -1,4 +1,4 @@
-"""GraphBuilder — wires nodes into a LeadTimeGraph with appropriate edges."""
+"""GraphBuilder -- wires nodes into a LeadTimeGraph with appropriate edges."""
 
 from __future__ import annotations
 

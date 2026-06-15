@@ -24,7 +24,7 @@ class EventApplier:
                 self._apply_to_node(node, event)
                 changed.append(node_id)
         else:
-            # Order-level event — may affect multiple nodes
+            # Order-level event -- may affect multiple nodes
             changed.extend(self._apply_order_level(graph, event))
 
         return changed

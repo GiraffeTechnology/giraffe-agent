@@ -18,7 +18,7 @@ class ConfidenceCalculator:
     ]
 
     def to_level(self, confidence: float) -> ConfidenceLevel:
-        """Convert a 0–1 float to a ConfidenceLevel."""
+        """Convert a 0-1 float to a ConfidenceLevel."""
         for threshold, level in self.THRESHOLDS:
             if confidence >= threshold:
                 return level
@@ -27,7 +27,7 @@ class ConfidenceCalculator:
     def from_evidence(self, evidence_items: list[EvidenceItem]) -> float:
         """Compute overall confidence from a list of evidence items.
 
-        Returns 0–1 float. Accounts for evidence diversity and magnitude.
+        Returns 0-1 float. Accounts for evidence diversity and magnitude.
         """
         if not evidence_items:
             return 0.2

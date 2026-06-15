@@ -1,4 +1,4 @@
-"""ApparelOrderInput — the primary input to the GLTG engine."""
+"""ApparelOrderInput -- the primary input to the GLTG engine."""
 
 from __future__ import annotations
 

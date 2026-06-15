@@ -1,4 +1,4 @@
-"""Capability model — what a participant can do and at what throughput."""
+"""Capability model -- what a participant can do and at what throughput."""
 
 from __future__ import annotations
 

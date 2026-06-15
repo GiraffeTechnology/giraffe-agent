@@ -27,8 +27,8 @@ class CalendarCalculator:
 
         holiday_set: set[date] = set(config.holiday_dates)
         working_days_in_week = max(1, min(config.working_days_per_week, 7))
-        # Assume working days are Monday–(Monday + working_days_in_week - 1)
-        # i.e. if 5 working days: Mon–Fri (weekday < 5)
+        # Assume working days are Monday-(Monday + working_days_in_week - 1)
+        # i.e. if 5 working days: Mon-Fri (weekday < 5)
         work_day_weekdays = set(range(working_days_in_week))
 
         remaining = math.ceil(days)
@@ -53,7 +53,7 @@ class CalendarCalculator:
         """Return `d` if it is a working day, otherwise the next working day."""
         if self.is_working_day(d, config):
             return d
-        return self.add_working_days(d, 0, config)  # 0 extra → same day hunt
+        return self.add_working_days(d, 0, config)  # 0 extra -> same day hunt
         # Actually we need to move forward if not a working day
         # Re-implement properly:
 

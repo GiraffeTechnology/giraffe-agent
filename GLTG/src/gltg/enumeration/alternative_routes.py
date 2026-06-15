@@ -53,7 +53,7 @@ class AlternativeRouteGenerator:
 
         air_risk = RiskFlag(
             code=RiskFlagCode.LOGISTICS_RISK,
-            description="Air freight selected — significantly higher cost.",
+            description="Air freight selected -- significantly higher cost.",
             severity="LOW",
             mitigation_hint="Confirm cost premium is acceptable with buyer.",
         )

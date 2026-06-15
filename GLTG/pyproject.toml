@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "gltg"
 version = "1.0.0"
-description = "Giraffe Lead-Time Graph — evidence-weighted execution-time graph model for apparel and textile orders"
+description = "Giraffe Lead-Time Graph -- evidence-weighted execution-time graph model for apparel and textile orders"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

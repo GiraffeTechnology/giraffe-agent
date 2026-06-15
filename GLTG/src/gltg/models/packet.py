@@ -1,4 +1,4 @@
-"""DeliveryFeasibilityPacket — the top-level output of the GLTG engine."""
+"""DeliveryFeasibilityPacket -- the top-level output of the GLTG engine."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ class DeliveryFeasibilityPacket(BaseModel):
     most_likely_date: date | None = None
     commitable_date: date | None = None
     risk_adjusted_latest_date: date | None = None
-    on_time_probability: float | None = None   # 0.0–1.0
+    on_time_probability: float | None = None   # 0.0-1.0
     options: list[DeliveryPathOption] = []     # 0 to 3 ranked options
     critical_path: list[str] = []              # node_ids in order
     bottleneck_nodes: list[str] = []

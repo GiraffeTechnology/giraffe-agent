@@ -21,7 +21,7 @@ class OnTimeProbabilityCalculator:
         duration_estimate: DurationEstimate | None,
         target_date: date | None,
     ) -> float | None:
-        """Return probability (0–1) of finishing by target_date, or None."""
+        """Return probability (0-1) of finishing by target_date, or None."""
         if target_date is None or duration_estimate is None:
             return None
 

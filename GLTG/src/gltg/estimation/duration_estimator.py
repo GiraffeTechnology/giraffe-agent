@@ -1,4 +1,4 @@
-"""Duration estimator — blends all evidence sources into a final DurationEstimate."""
+"""Duration estimator -- blends all evidence sources into a final DurationEstimate."""
 
 from __future__ import annotations
 

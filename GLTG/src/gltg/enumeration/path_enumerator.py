@@ -49,7 +49,7 @@ class PathEnumerator:
 
         Strategy:
         - When order_input is provided, identify factory participants from
-          order_input.participants (by type or capability) — this correctly
+          order_input.participants (by type or capability) -- this correctly
           enumerates all alternative factories even when the graph was built
           using only the first available participant per node type.
         - Generate one DeliveryPathOption per factory (up to 3).
@@ -96,7 +96,7 @@ class PathEnumerator:
         support_pids = [p.participant_id for p in support_participants]
 
         if not factory_participants:
-            # No factories but other participants → single generic option
+            # No factories but other participants -> single generic option
             all_pids = [p.participant_id for p in order_input.participants]
             if not all_pids:
                 return []

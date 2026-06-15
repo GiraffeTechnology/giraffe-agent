@@ -50,24 +50,24 @@ class FeasibilityPacketBuilder:
             status = FeasibilityStatus.LIMITED_OPTIONS
             extra_flags.append(RiskFlag(
                 code=RiskFlagCode.LIMITED_COMPETITION,
-                description="Only one feasible delivery option found — limited competition.",
+                description="Only one feasible delivery option found -- limited competition.",
                 severity="MEDIUM",
                 mitigation_hint="Source additional participants to increase competition.",
             ))
             top_options = feasible_options[:1]
-            recommended_action = "Proceed with caution — only one option available."
+            recommended_action = "Proceed with caution -- only one option available."
             human_review = True
 
         elif n == 2:
             status = FeasibilityStatus.LIMITED_OPTIONS
             extra_flags.append(RiskFlag(
                 code=RiskFlagCode.LIMITED_COMPARISON,
-                description="Only two feasible delivery options — limited comparison.",
+                description="Only two feasible delivery options -- limited comparison.",
                 severity="LOW",
                 mitigation_hint="Consider sourcing a third option for better comparison.",
             ))
             top_options = feasible_options[:2]
-            recommended_action = "Two options available — review both before deciding."
+            recommended_action = "Two options available -- review both before deciding."
             human_review = False
 
         else:

@@ -1,4 +1,4 @@
-"""Reforecast models — progress events, calendar config, and reforecast results."""
+"""Reforecast models -- progress events, calendar config, and reforecast results."""
 
 from __future__ import annotations
 

@@ -25,7 +25,7 @@ class CriticalPathFinder:
         # Build id -> node map
         node_map = {n.node_id: n for n in graph.nodes}
 
-        # Find the terminal node(s) — nodes with no successors
+        # Find the terminal node(s) -- nodes with no successors
         has_successor = {e.from_node_id for e in graph.edges}
         terminal_ids = [n.node_id for n in graph.nodes if n.node_id not in has_successor]
 

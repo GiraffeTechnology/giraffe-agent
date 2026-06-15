@@ -12,7 +12,7 @@ class ExpediteOptionGenerator:
 
     LEVERS = [
         {
-            "name": "Air freight (sea → air)",
+            "name": "Air freight (sea -> air)",
             "days_saved": 18,
             "cost_impact": CostImpactLevel.VERY_HIGH,
             "risk_impact": RiskImpactLevel.LOW,
@@ -70,7 +70,7 @@ class ExpediteOptionGenerator:
 
         Args:
             days_needed_to_save: How many days must be recovered.
-            available_budget: Cost constraint — LOW, MEDIUM, HIGH, VERY_HIGH, ANY.
+            available_budget: Cost constraint -- LOW, MEDIUM, HIGH, VERY_HIGH, ANY.
 
         Returns:
             List of lever dicts sorted by days_saved descending.

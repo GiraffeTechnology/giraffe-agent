@@ -24,7 +24,7 @@ _STATIC_BASELINES: dict[ApparelNodeType, dict[str, float]] = {
     ApparelNodeType.PP_SAMPLE_APPROVAL: dict(p50=3, p80=5, p90=7, min=2, max=10),
     ApparelNodeType.PRODUCTION_SLOT_BOOKING: dict(p50=2, p80=3, p90=5, min=1, max=7),
     ApparelNodeType.CUTTING: dict(p50=2, p80=3, p90=4, min=1, max=7),
-    # SEWING is quantity-based — handled separately
+    # SEWING is quantity-based -- handled separately
     ApparelNodeType.SEWING: dict(p50=7, p80=10, p90=14, min=5, max=21),
     ApparelNodeType.WASHING_OR_FINISHING: dict(p50=3, p80=5, p90=7, min=2, max=10),
     ApparelNodeType.INLINE_QC: dict(p50=1, p80=2, p90=3, min=1, max=5),

@@ -38,7 +38,7 @@ def main() -> None:
     engine = LeadTimeGraphEngine()
 
     # ------------------------------------------------------------------ #
-    # Case 1: Zero suppliers — expect NO_FEASIBLE_OPTION, 0 options       #
+    # Case 1: Zero suppliers -- expect NO_FEASIBLE_OPTION, 0 options       #
     # ------------------------------------------------------------------ #
     packet_zero = run_case(
         "Zero suppliers (ORD-ZERO-001)",
@@ -57,7 +57,7 @@ def main() -> None:
     print("  [PASS] options == 0")
 
     # ------------------------------------------------------------------ #
-    # Case 2: One supplier — expect LIMITED_OPTIONS, 1 option,            #
+    # Case 2: One supplier -- expect LIMITED_OPTIONS, 1 option,            #
     #         LIMITED_COMPETITION in risk_flags                           #
     # ------------------------------------------------------------------ #
     packet_one = run_case(
@@ -83,7 +83,7 @@ def main() -> None:
     print("  [PASS] LIMITED_COMPETITION in risk_flags")
 
     # ------------------------------------------------------------------ #
-    # Case 3: Two suppliers — expect LIMITED_OPTIONS, 2 options,          #
+    # Case 3: Two suppliers -- expect LIMITED_OPTIONS, 2 options,          #
     #         LIMITED_COMPARISON in risk_flags                            #
     # ------------------------------------------------------------------ #
     packet_two = run_case(

@@ -29,8 +29,8 @@ class GiraffeAgentAdapter:
           - requested_delivery_date (str ISO 8601, optional)
           - trade_term (str, optional)
           - destination (str, optional)
-          - participants (list[dict], optional) — raw participant dicts
-          - dynamic_form (dict, optional) — pass-through form fields
+          - participants (list[dict], optional) -- raw participant dicts
+          - dynamic_form (dict, optional) -- pass-through form fields
         """
         participants = self._build_participants(form_data.get("participants", []))
 

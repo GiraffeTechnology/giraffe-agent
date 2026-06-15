@@ -1,4 +1,4 @@
-"""GLTG — Giraffe Lead-Time Graph public API."""
+"""GLTG -- Giraffe Lead-Time Graph public API."""
 
 from .engine import LeadTimeGraphEngine
 from .models.edge import LeadTimeEdge

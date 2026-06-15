@@ -1,0 +1,19 @@
+# Enforce LF line endings for all text files in this repo.
+# This prevents Windows CRLF conversion and ensures raw GitHub views
+# always show proper multi-line source files.
+* text=auto eol=lf
+
+# Explicitly mark binary files so git never touches their endings
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary

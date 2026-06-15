@@ -1,4 +1,4 @@
-"""Workflow template selection — adapts the default workflow to order specifics."""
+"""Workflow template selection -- adapts the default workflow to order specifics."""
 
 from __future__ import annotations
 

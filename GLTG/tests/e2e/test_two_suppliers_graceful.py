@@ -1,4 +1,4 @@
-"""E2E test: Two suppliers — graceful degradation.
+"""E2E test: Two suppliers -- graceful degradation.
 
 The example file two_suppliers.json only contains two GARMENT_FACTORY participants
 (no fabric supplier), which causes the validator to flag MISSING_FABRIC_SUPPLIER

@@ -1,4 +1,4 @@
-"""LeadTimeGraphEngine — the main evaluation orchestrator."""
+"""LeadTimeGraphEngine -- the main evaluation orchestrator."""
 
 from __future__ import annotations
 
@@ -134,7 +134,7 @@ class LeadTimeGraphEngine:
         # Step 5: Prune infeasible
         classified = self._pruner.prune(base_options, order_input.requested_delivery_date)
 
-        # Step 6: Generate variants (batch-split / alt routes) — only when 3+ factories
+        # Step 6: Generate variants (batch-split / alt routes) -- only when 3+ factories
         # so variants don't inflate option count beyond the real factory cap.
         all_options: list[DeliveryPathOption] = list(classified)
 

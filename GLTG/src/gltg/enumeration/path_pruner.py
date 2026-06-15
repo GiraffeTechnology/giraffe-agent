@@ -38,7 +38,7 @@ class PathPruner:
     ) -> DeliveryPathOption:
         """Set option status based on its dates vs requested_date."""
         if requested_date is None:
-            # No target — all options are feasible by default
+            # No target -- all options are feasible by default
             option.status = OptionStatus.FEASIBLE
             return option
 
@@ -52,7 +52,7 @@ class PathPruner:
             return option
 
         if commitable <= requested_date:
-            # On track — check how tight
+            # On track -- check how tight
             days_buffer = (requested_date - commitable).days
             if days_buffer >= 7:
                 option.status = OptionStatus.FEASIBLE
@@ -62,12 +62,12 @@ class PathPruner:
             option.status = OptionStatus.REQUIRES_EXPEDITE
             option.infeasibility_reason = (
                 f"Most likely date {most_likely} meets deadline but commitable date "
-                f"{commitable} does not — requires some acceleration."
+                f"{commitable} does not -- requires some acceleration."
             )
         elif earliest and earliest <= requested_date:
             option.status = OptionStatus.REQUIRES_EXPEDITE
             option.infeasibility_reason = (
-                f"Only earliest feasible date {earliest} meets deadline — "
+                f"Only earliest feasible date {earliest} meets deadline -- "
                 "requires significant expediting."
             )
         else:

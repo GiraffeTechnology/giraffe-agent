@@ -1,4 +1,4 @@
-# GLTG — Giraffe Lead-Time Graph
+# GLTG -- Giraffe Lead-Time Graph
 
 **Version 1.0.0**
 
@@ -24,7 +24,7 @@ GLTG:
 - Generates batch and split delivery options
 - Reforecasts after progress events
 - Generates expedite options to recover delayed orders
-- Returns 0 to 3 ranked delivery options — never crashes with fewer than 3 suppliers
+- Returns 0 to 3 ranked delivery options -- never crashes with fewer than 3 suppliers
 
 ---
 
@@ -151,9 +151,9 @@ gltg evaluate examples/two_suppliers.json --summary
 | File | Description |
 |---|---|
 | `examples/10000_shirts_order.json` | 10,000 men's cotton shirts, FOB Shenzhen, 45-day requirement |
-| `examples/zero_suppliers.json` | Valid order with no participants — returns NO_FEASIBLE_OPTION |
-| `examples/one_supplier.json` | Single supplier — returns LIMITED_OPTIONS + LIMITED_COMPETITION |
-| `examples/two_suppliers.json` | Two suppliers — returns LIMITED_OPTIONS + LIMITED_COMPARISON |
+| `examples/zero_suppliers.json` | Valid order with no participants -- returns NO_FEASIBLE_OPTION |
+| `examples/one_supplier.json` | Single supplier -- returns LIMITED_OPTIONS + LIMITED_COMPETITION |
+| `examples/two_suppliers.json` | Two suppliers -- returns LIMITED_OPTIONS + LIMITED_COMPARISON |
 
 ---
 
@@ -198,10 +198,10 @@ agent_response = adapter.packet_to_agent_response(packet)
 
 | Candidate count | Status | Risk flags |
 |---|---|---|
-| 0 | `NO_FEASIBLE_OPTION` | — |
+| 0 | `NO_FEASIBLE_OPTION` | -- |
 | 1 | `LIMITED_OPTIONS` | `LIMITED_COMPETITION` |
 | 2 | `LIMITED_OPTIONS` | `LIMITED_COMPARISON` |
-| ≥3 | `FEASIBLE` | — |
+| ?3 | `FEASIBLE` | -- |
 
 GLTG never crashes or invents suppliers to fill 3 slots.
 

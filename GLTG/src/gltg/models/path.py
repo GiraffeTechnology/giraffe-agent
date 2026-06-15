@@ -1,4 +1,4 @@
-"""DeliveryPathOption — one possible delivery scenario."""
+"""DeliveryPathOption -- one possible delivery scenario."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ class DeliveryPathOption(BaseModel):
     most_likely_date: date | None = None
     commitable_date: date | None = None
     risk_adjusted_latest_date: date | None = None
-    on_time_probability: float | None = None  # 0.0–1.0
+    on_time_probability: float | None = None  # 0.0-1.0
     critical_path: list[str] = []             # ordered node_ids
     bottleneck_nodes: list[str] = []
     risk_flags: list[RiskFlag] = []

@@ -44,8 +44,8 @@ and fabric ordering performance from a prior run and are used by the
 
 A JSON array of two in-flight `ProgressEvent` objects for order `ORD-2025-001`:
 
-- `MATERIAL_DELAYED` — fabric mill backlog adding 5 days
-- `SUPPLIER_CONFIRMED` — factory `FACT-001` confirmed production start date
+- `MATERIAL_DELAYED` -- fabric mill backlog adding 5 days
+- `SUPPLIER_CONFIRMED` -- factory `FACT-001` confirmed production start date
 
 Used to demonstrate and test the `engine.reforecast(packet, events)` API.
 

@@ -142,7 +142,7 @@ class OptionRanker:
         """Generate a short recommendation reason."""
         if option.label == OptionLabel.FASTEST:
             d = option.commitable_date
-            return f"Fastest path — commitable by {d}."
+            return f"Fastest path -- commitable by {d}."
         elif option.label == OptionLabel.MOST_RELIABLE:
             otp = option.on_time_probability
             s = f"{otp:.0%}" if otp else "high"

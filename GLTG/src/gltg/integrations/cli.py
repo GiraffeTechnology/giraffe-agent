@@ -80,7 +80,7 @@ def main(argv: list[str] | None = None) -> None:
     """Entry point for the `gltg` CLI command."""
     parser = argparse.ArgumentParser(
         prog="gltg",
-        description="Giraffe Lead-Time Graph — apparel order feasibility engine",
+        description="Giraffe Lead-Time Graph -- apparel order feasibility engine",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 

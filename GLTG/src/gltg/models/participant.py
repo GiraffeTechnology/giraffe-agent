@@ -25,9 +25,9 @@ class ParticipantProfile(BaseModel):
     capacity_per_day: int | None = None    # units per working day (aggregate)
     moq: int | None = None                 # minimum order quantity
     available_from: date | None = None
-    reliability_score: float | None = None   # 0.0–1.0
-    quality_score: float | None = None       # 0.0–1.0
-    on_time_delivery_rate: float | None = None  # 0.0–1.0
+    reliability_score: float | None = None   # 0.0-1.0
+    quality_score: float | None = None       # 0.0-1.0
+    on_time_delivery_rate: float | None = None  # 0.0-1.0
     metadata: dict[str, Any] = {}
 
     def can_handle(self, node_type: ApparelNodeType) -> bool:

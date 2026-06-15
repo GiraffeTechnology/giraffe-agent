@@ -1,4 +1,4 @@
-"""Order input validation — surfaces missing fields and structural risks."""
+"""Order input validation -- surfaces missing fields and structural risks."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ class ApparelOrderValidator:
             missing.append("Requested delivery date")
             flags.append(RiskFlag(
                 code=RiskFlagCode.MISSING_REQUIRED_FIELD,
-                description="No requested delivery date provided — cannot assess on-time probability.",
+                description="No requested delivery date provided -- cannot assess on-time probability.",
                 severity="HIGH",
                 mitigation_hint="Supply a target delivery date.",
             ))
@@ -39,7 +39,7 @@ class ApparelOrderValidator:
         if not order.participants:
             flags.append(RiskFlag(
                 code=RiskFlagCode.MISSING_PRODUCTION_CAPACITY,
-                description="No participants provided — cannot resolve production capacity.",
+                description="No participants provided -- cannot resolve production capacity.",
                 severity="CRITICAL",
                 mitigation_hint="Add at least one garment factory participant.",
             ))
@@ -75,7 +75,7 @@ class ApparelOrderValidator:
         if len(fabric_suppliers) == 1:
             flags.append(RiskFlag(
                 code=RiskFlagCode.SINGLE_SOURCE_RISK,
-                description="Only one fabric supplier available — no alternative if this supplier fails.",
+                description="Only one fabric supplier available -- no alternative if this supplier fails.",
                 severity="MEDIUM",
                 affected_nodes=[],
                 mitigation_hint="Identify a backup fabric supplier.",

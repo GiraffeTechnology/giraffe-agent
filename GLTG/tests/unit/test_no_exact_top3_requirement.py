@@ -81,7 +81,7 @@ class TestNoExactTop3Requirement:
         assert len(result.options) == 3
 
     def test_no_fake_participants_invented(self):
-        """The engine must not invent participants — only use those passed in."""
+        """The engine must not invent participants -- only use those passed in."""
         n = 2
         result = _evaluate(n)
         # Each option's participant_combination should only reference real participant IDs

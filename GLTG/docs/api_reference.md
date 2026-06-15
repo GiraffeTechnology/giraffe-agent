@@ -17,7 +17,7 @@ engine = LeadTimeGraphEngine()
 |---|---|---|
 | `build_graph` | `(order_input: ApparelOrderInput) -> LeadTimeGraph` | Builds the lead-time DAG, resolves dependency dates, and identifies the critical path. Returns the resolved `LeadTimeGraph` without generating options. |
 | `enumerate_options` | `(graph: LeadTimeGraph) -> list[DeliveryPathOption]` | Generates all candidate delivery path options from a resolved graph by enumerating participant combinations. Does not prune or rank. |
-| `evaluate` | `(order_input: ApparelOrderInput) -> DeliveryFeasibilityPacket` | Full pipeline: validate → build graph → enumerate options → prune → generate variants → compute probabilities → rank → build packet. The primary entry point for all callers. |
+| `evaluate` | `(order_input: ApparelOrderInput) -> DeliveryFeasibilityPacket` | Full pipeline: validate -> build graph -> enumerate options -> prune -> generate variants -> compute probabilities -> rank -> build packet. The primary entry point for all callers. |
 | `reforecast` | `(existing_packet: DeliveryFeasibilityPacket, events: list[ProgressEvent]) -> DeliveryFeasibilityPacket` | Applies progress events to the existing packet's options, re-resolves the graph, and returns an updated packet with revised dates and risk flags. |
 
 ---
@@ -53,9 +53,9 @@ engine = LeadTimeGraphEngine()
 | `capacity_per_day` | `int \| None` | No | Aggregate throughput in units per working day |
 | `moq` | `int \| None` | No | Minimum order quantity |
 | `available_from` | `date \| None` | No | Earliest date this participant is available |
-| `reliability_score` | `float \| None` | No | Historical reliability 0.0–1.0 |
-| `quality_score` | `float \| None` | No | Historical quality pass rate 0.0–1.0 |
-| `on_time_delivery_rate` | `float \| None` | No | Historical on-time delivery rate 0.0–1.0 |
+| `reliability_score` | `float \| None` | No | Historical reliability 0.0-1.0 |
+| `quality_score` | `float \| None` | No | Historical quality pass rate 0.0-1.0 |
+| `on_time_delivery_rate` | `float \| None` | No | Historical on-time delivery rate 0.0-1.0 |
 | `metadata` | `dict[str, Any]` | No | Custom key-value metadata |
 
 ---
@@ -71,8 +71,8 @@ engine = LeadTimeGraphEngine()
 | `most_likely_date` | `date \| None` | Expected delivery date (p80 path) |
 | `commitable_date` | `date \| None` | Committed delivery date (p90 path) |
 | `risk_adjusted_latest_date` | `date \| None` | Worst-case date including risk buffers |
-| `on_time_probability` | `float \| None` | Probability 0.0–1.0 of meeting `requested_delivery_date` |
-| `options` | `list[DeliveryPathOption]` | Ranked delivery path options (0–3) |
+| `on_time_probability` | `float \| None` | Probability 0.0-1.0 of meeting `requested_delivery_date` |
+| `options` | `list[DeliveryPathOption]` | Ranked delivery path options (0-3) |
 | `critical_path` | `list[str]` | Ordered node IDs on the critical path |
 | `bottleneck_nodes` | `list[str]` | Node IDs identified as bottlenecks |
 | `risk_flags` | `list[RiskFlag]` | Structured risk flags with severity |
@@ -103,7 +103,7 @@ engine = LeadTimeGraphEngine()
 | `bottleneck_nodes` | `list[str]` | Bottleneck node IDs for this option |
 | `risk_flags` | `list[RiskFlag]` | Option-specific risk flags |
 | `missing_fields` | `list[str]` | Missing fields propagated from order |
-| `score` | `float \| None` | Composite ranking score 0.0–1.0 |
+| `score` | `float \| None` | Composite ranking score 0.0-1.0 |
 | `recommendation_reason` | `str \| None` | Human-readable reason for recommendation |
 | `evidence_summary` | `list[EvidenceItem]` | Evidence items for this option |
 | `infeasibility_reason` | `str \| None` | Explanation when status is INFEASIBLE |
@@ -140,7 +140,7 @@ engine = LeadTimeGraphEngine()
 
 ### ApparelNodeType (28 values)
 
-`BUYER_REQUIREMENT_CONFIRMATION` · `DESIGN_OR_TECH_PACK_CONFIRMATION` · `FABRIC_SELECTION` · `FABRIC_AVAILABILITY_CONFIRMATION` · `FABRIC_ORDERING` · `FABRIC_DYEING_OR_PRINTING` · `FABRIC_FINISHING` · `FABRIC_TESTING` · `TRIM_SELECTION` · `TRIM_AVAILABILITY_CONFIRMATION` · `TRIM_ORDERING` · `PACKAGING_MATERIAL_CONFIRMATION` · `SAMPLE_MAKING` · `SAMPLE_APPROVAL` · `PP_SAMPLE_APPROVAL` · `PRODUCTION_SLOT_BOOKING` · `CUTTING` · `SEWING` · `WASHING_OR_FINISHING` · `INLINE_QC` · `FINAL_QC` · `REWORK_IF_NEEDED` · `PACKING` · `LOGISTICS_BOOKING` · `CUSTOMS_OR_EXPORT_DOCS` · `SHIPMENT` · `BUYER_RECEIPT` · `BUYER_SIGN_OFF`
+`BUYER_REQUIREMENT_CONFIRMATION` ? `DESIGN_OR_TECH_PACK_CONFIRMATION` ? `FABRIC_SELECTION` ? `FABRIC_AVAILABILITY_CONFIRMATION` ? `FABRIC_ORDERING` ? `FABRIC_DYEING_OR_PRINTING` ? `FABRIC_FINISHING` ? `FABRIC_TESTING` ? `TRIM_SELECTION` ? `TRIM_AVAILABILITY_CONFIRMATION` ? `TRIM_ORDERING` ? `PACKAGING_MATERIAL_CONFIRMATION` ? `SAMPLE_MAKING` ? `SAMPLE_APPROVAL` ? `PP_SAMPLE_APPROVAL` ? `PRODUCTION_SLOT_BOOKING` ? `CUTTING` ? `SEWING` ? `WASHING_OR_FINISHING` ? `INLINE_QC` ? `FINAL_QC` ? `REWORK_IF_NEEDED` ? `PACKING` ? `LOGISTICS_BOOKING` ? `CUSTOMS_OR_EXPORT_DOCS` ? `SHIPMENT` ? `BUYER_RECEIPT` ? `BUYER_SIGN_OFF`
 
 ### ParticipantType (8 values)
 
@@ -167,43 +167,43 @@ engine = LeadTimeGraphEngine()
 
 ### OptionStatus (4 values)
 
-`FEASIBLE` · `TIGHT` · `REQUIRES_EXPEDITE` · `INFEASIBLE`
+`FEASIBLE` ? `TIGHT` ? `REQUIRES_EXPEDITE` ? `INFEASIBLE`
 
 ### ProgressEventType (12 values)
 
-`SUPPLIER_CONFIRMED` · `MATERIAL_DELAYED` · `TRIM_DELAYED` · `SAMPLE_APPROVAL_DELAYED` · `PRODUCTION_PROGRESS_UPDATE` · `QC_FAILED` · `REWORK_STARTED` · `REWORK_COMPLETED` · `LOGISTICS_DELAYED` · `BUYER_APPROVAL_DELAYED` · `NODE_COMPLETED` · `NODE_STARTED`
+`SUPPLIER_CONFIRMED` ? `MATERIAL_DELAYED` ? `TRIM_DELAYED` ? `SAMPLE_APPROVAL_DELAYED` ? `PRODUCTION_PROGRESS_UPDATE` ? `QC_FAILED` ? `REWORK_STARTED` ? `REWORK_COMPLETED` ? `LOGISTICS_DELAYED` ? `BUYER_APPROVAL_DELAYED` ? `NODE_COMPLETED` ? `NODE_STARTED`
 
 ### DependencyType (8 values)
 
-`FINISH_TO_START` · `START_TO_START` · `FINISH_TO_FINISH` · `MATERIAL_READY_BEFORE_START` · `APPROVAL_READY_BEFORE_START` · `CAPACITY_SLOT_REQUIRED` · `OPTIONAL` · `CONDITIONAL`
+`FINISH_TO_START` ? `START_TO_START` ? `FINISH_TO_FINISH` ? `MATERIAL_READY_BEFORE_START` ? `APPROVAL_READY_BEFORE_START` ? `CAPACITY_SLOT_REQUIRED` ? `OPTIONAL` ? `CONDITIONAL`
 
 ### EvidenceSourceType (6 values)
 
-`ACTUAL_PROGRESS` · `SUPPLIER_CONFIRMATION` · `HISTORICAL_MEMORY` · `SUPPLIER_QUOTE` · `CATEGORY_BASELINE` · `AI_ESTIMATE`
+`ACTUAL_PROGRESS` ? `SUPPLIER_CONFIRMATION` ? `HISTORICAL_MEMORY` ? `SUPPLIER_QUOTE` ? `CATEGORY_BASELINE` ? `AI_ESTIMATE`
 
 ### RiskFlagCode (15 values)
 
-`LIMITED_COMPETITION` · `LIMITED_COMPARISON` · `NO_FEASIBLE_OPTION` · `MISSING_FABRIC_SUPPLIER` · `MISSING_PRODUCTION_CAPACITY` · `LOW_SUPPLIER_RELIABILITY` · `TIGHT_DEADLINE` · `MISSING_SAMPLE_APPROVAL` · `HIGH_REWORK_RISK` · `LOGISTICS_RISK` · `MISSING_REQUIRED_FIELD` · `CAPACITY_CONSTRAINT` · `SINGLE_SOURCE_RISK` · `QC_RISK` · `CUSTOMS_RISK`
+`LIMITED_COMPETITION` ? `LIMITED_COMPARISON` ? `NO_FEASIBLE_OPTION` ? `MISSING_FABRIC_SUPPLIER` ? `MISSING_PRODUCTION_CAPACITY` ? `LOW_SUPPLIER_RELIABILITY` ? `TIGHT_DEADLINE` ? `MISSING_SAMPLE_APPROVAL` ? `HIGH_REWORK_RISK` ? `LOGISTICS_RISK` ? `MISSING_REQUIRED_FIELD` ? `CAPACITY_CONSTRAINT` ? `SINGLE_SOURCE_RISK` ? `QC_RISK` ? `CUSTOMS_RISK`
 
 ### ConfidenceLevel (4 values)
 
-`HIGH` · `MEDIUM` · `LOW` · `VERY_LOW`
+`HIGH` ? `MEDIUM` ? `LOW` ? `VERY_LOW`
 
 ### DeliveryMode (5 values)
 
-`FULL_DELIVERY` · `PARTIAL_DELIVERY` · `SPLIT_SHIPMENT` · `PARALLEL_FACTORY_PRODUCTION` · `SEQUENTIAL_FACTORY_PRODUCTION`
+`FULL_DELIVERY` ? `PARTIAL_DELIVERY` ? `SPLIT_SHIPMENT` ? `PARALLEL_FACTORY_PRODUCTION` ? `SEQUENTIAL_FACTORY_PRODUCTION`
 
 ### OptionLabel (3 values)
 
-`FASTEST` · `MOST_RELIABLE` · `BEST_COMMERCIAL_BALANCE`
+`FASTEST` ? `MOST_RELIABLE` ? `BEST_COMMERCIAL_BALANCE`
 
 ### NodeStatus (5 values)
 
-`PENDING` · `IN_PROGRESS` · `COMPLETED` · `BLOCKED` · `SKIPPED`
+`PENDING` ? `IN_PROGRESS` ? `COMPLETED` ? `BLOCKED` ? `SKIPPED`
 
 ### CostImpactLevel / RiskImpactLevel (4 values each)
 
-`LOW` · `MEDIUM` · `HIGH` · `VERY_HIGH`
+`LOW` ? `MEDIUM` ? `HIGH` ? `VERY_HIGH`
 
 ---
 

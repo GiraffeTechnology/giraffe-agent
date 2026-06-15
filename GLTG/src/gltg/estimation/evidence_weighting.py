@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from ..models.enums import EvidenceSourceType
 
-# Evidence hierarchy weights — higher = more authoritative
+# Evidence hierarchy weights -- higher = more authoritative
 EVIDENCE_WEIGHTS: dict[EvidenceSourceType, float] = {
     EvidenceSourceType.ACTUAL_PROGRESS: 1.0,
     EvidenceSourceType.SUPPLIER_CONFIRMATION: 0.85,

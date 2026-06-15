@@ -12,7 +12,7 @@ Evidence sources are ranked by how authoritative and verifiable they are. A high
 
 | Tier | `EvidenceSourceType` | Base Weight | Rationale |
 |---|---|---|---|
-| 1 | `ACTUAL_PROGRESS` | **1.00** | Ground truth — an event that has already happened or is verified in-flight |
+| 1 | `ACTUAL_PROGRESS` | **1.00** | Ground truth -- an event that has already happened or is verified in-flight |
 | 2 | `SUPPLIER_CONFIRMATION` | **0.85** | A formal, dated supplier response with committed lead days |
 | 3 | `HISTORICAL_MEMORY` | **0.70** | Observed actuals from a prior order with the same participant on the same node type |
 | 4 | `SUPPLIER_QUOTE` | **0.55** | An informal estimate or verbal/email quote without formal commitment |
@@ -25,7 +25,7 @@ The base weights reflect the decreasing reliability of evidence further down the
 
 ## How Weights Adjust Based on Evidence Availability
 
-The `EvidenceWeighter.blend()` method does not modify the base weights themselves, but the effective contribution of each source is modulated by its `item_confidence` (a 0.0–1.0 value assigned at evidence creation time):
+The `EvidenceWeighter.blend()` method does not modify the base weights themselves, but the effective contribution of each source is modulated by its `item_confidence` (a 0.0-1.0 value assigned at evidence creation time):
 
 ```
 effective_weight_i = base_weight(source_type_i) * item_confidence_i
@@ -58,7 +58,7 @@ The multi-source bonus rewards having diverse evidence. Adding a second source (
 
 ## Worked Examples
 
-### Example 1: Supplier Claim Only — Low Confidence
+### Example 1: Supplier Claim Only -- Low Confidence
 
 A garment factory provides a verbal lead time of 14 days for SEWING, but there is no historical memory and no supplier confirmation (just an informal quote).
 
@@ -69,14 +69,14 @@ Evidence items:
 effective_weight = 0.55 * 0.70 = 0.385
 blended_days     = 14.0
 overall_confidence = (0.55 * 0.70) / 1 + 0 bonus = 0.385
-→ ConfidenceLevel: VERY_LOW
+-> ConfidenceLevel: VERY_LOW
 ```
 
 The engine will still generate an estimate but will tag the node as VERY_LOW confidence and surface a risk flag recommending a formal supplier response.
 
 ---
 
-### Example 2: Actual Progress + Historical Memory — High Confidence
+### Example 2: Actual Progress + Historical Memory -- High Confidence
 
 The factory has completed cutting (ACTUAL_PROGRESS confirms 2 days elapsed) and has two historical memory records for the same participant on SEWING (14 days stated, 16 days actual on a prior 8,000-piece order) plus a confirmed supplier response for the current order (15 days for SEWING).
 
@@ -95,12 +95,12 @@ effective_weights:
 blended_days = (2*0.950 + 16*0.560 + 15*0.765) / 2.275
              = (1.9 + 8.96 + 11.475) / 2.275
              = 22.335 / 2.275
-             ≈ 9.82 days  (sewing-only portion after cutting completes)
+             ? 9.82 days  (sewing-only portion after cutting completes)
 
 multi_source_bonus = min(0.15, (3-1) * 0.05) = 0.10
 base_confidence    = 2.275 / 3 = 0.758
 overall_confidence = min(1.0, 0.758 + 0.10) = 0.858
-→ ConfidenceLevel: HIGH
+-> ConfidenceLevel: HIGH
 ```
 
 The presence of actual progress from the current order and confirmed supplier data drives the confidence to HIGH.
@@ -112,16 +112,16 @@ The presence of actual progress from the current order and confirmed supplier da
 For each node, the `DurationEstimator` gathers all available evidence items and produces a `DurationEstimate` with three percentile bands:
 
 - **p50 (median)**: Blended estimate using all evidence items.
-- **p80 (comfortable buffer)**: p50 multiplied by a percentile factor (typically 1.3–1.5 depending on confidence level).
-- **p90 (committable)**: p50 multiplied by a larger factor (typically 1.7–2.0), used as the basis for `commitable_date`.
+- **p80 (comfortable buffer)**: p50 multiplied by a percentile factor (typically 1.3-1.5 depending on confidence level).
+- **p90 (committable)**: p50 multiplied by a larger factor (typically 1.7-2.0), used as the basis for `commitable_date`.
 
 The p80 and p90 multipliers shrink as `overall_confidence` increases:
 
 | Confidence Range | p80 Multiplier | p90 Multiplier |
 |---|---|---|
-| 0.80–1.00 (HIGH) | 1.25 | 1.50 |
-| 0.60–0.79 (MEDIUM) | 1.35 | 1.75 |
-| 0.40–0.59 (LOW) | 1.50 | 2.00 |
-| 0.00–0.39 (VERY_LOW) | 1.70 | 2.50 |
+| 0.80-1.00 (HIGH) | 1.25 | 1.50 |
+| 0.60-0.79 (MEDIUM) | 1.35 | 1.75 |
+| 0.40-0.59 (LOW) | 1.50 | 2.00 |
+| 0.00-0.39 (VERY_LOW) | 1.70 | 2.50 |
 
 This means that when evidence is weak, the engine adds conservative buffers to protect the commitment date. High-quality evidence allows tighter bands and earlier commitable dates.

@@ -12,7 +12,7 @@ A directed acyclic graph (DAG) in which each **node** represents a discrete step
 
 ## Commitable Date
 
-The delivery date the GLTG engine will formally commit to for a given delivery path option. It is derived from the **p90 duration band** — the 90th-percentile estimate — of the terminal node in the lead-time graph. This means there is approximately a 90% probability that the order will be delivered by this date given the current evidence. The `commitable_date` is the primary decision date surfaced to buyers and agents.
+The delivery date the GLTG engine will formally commit to for a given delivery path option. It is derived from the **p90 duration band** -- the 90th-percentile estimate -- of the terminal node in the lead-time graph. This means there is approximately a 90% probability that the order will be delivered by this date given the current evidence. The `commitable_date` is the primary decision date surfaced to buyers and agents.
 
 ---
 
@@ -24,13 +24,13 @@ The sequence of workflow nodes in the lead-time graph that determines the minimu
 
 ## Bottleneck Node
 
-A node on the critical path that has the smallest float among all critical nodes — i.e., a node where even a small delay will most severely impact the overall timeline. GLTG identifies bottleneck nodes using the `CriticalPathFinder.find_bottlenecks()` method. Common bottlenecks in apparel orders are SEWING (high duration, quantity-dependent) and FABRIC_ORDERING (long lead time with mill dependency).
+A node on the critical path that has the smallest float among all critical nodes -- i.e., a node where even a small delay will most severely impact the overall timeline. GLTG identifies bottleneck nodes using the `CriticalPathFinder.find_bottlenecks()` method. Common bottlenecks in apparel orders are SEWING (high duration, quantity-dependent) and FABRIC_ORDERING (long lead time with mill dependency).
 
 ---
 
 ## Evidence Weight
 
-A numerical multiplier (0.0–1.0) assigned to each evidence source type that reflects how authoritative and verifiable that source is. Evidence weights are used by `EvidenceWeighter.blend()` to compute a weighted-average duration estimate. The six tiers are: `ACTUAL_PROGRESS` (1.00), `SUPPLIER_CONFIRMATION` (0.85), `HISTORICAL_MEMORY` (0.70), `SUPPLIER_QUOTE` (0.55), `CATEGORY_BASELINE` (0.40), and `AI_ESTIMATE` (0.25). Higher-tier evidence dominates the blended result.
+A numerical multiplier (0.0-1.0) assigned to each evidence source type that reflects how authoritative and verifiable that source is. Evidence weights are used by `EvidenceWeighter.blend()` to compute a weighted-average duration estimate. The six tiers are: `ACTUAL_PROGRESS` (1.00), `SUPPLIER_CONFIRMATION` (0.85), `HISTORICAL_MEMORY` (0.70), `SUPPLIER_QUOTE` (0.55), `CATEGORY_BASELINE` (0.40), and `AI_ESTIMATE` (0.25). Higher-tier evidence dominates the blended result.
 
 ---
 
@@ -60,7 +60,7 @@ An actionable intervention that can recover schedule slippage identified during 
 
 ## Supplier Memory
 
-A collection of historical performance records (`SupplierMemoryRecord`) capturing what a specific participant actually delivered on prior orders, versus what they stated. Each record covers a specific `participant_id`, `node_type`, order quantity, stated days, and actual days. The `DurationEstimator` uses supplier memory to compute `memory_adjusted_days` — a more realistic duration estimate that accounts for observed delays or accelerations.
+A collection of historical performance records (`SupplierMemoryRecord`) capturing what a specific participant actually delivered on prior orders, versus what they stated. Each record covers a specific `participant_id`, `node_type`, order quantity, stated days, and actual days. The `DurationEstimator` uses supplier memory to compute `memory_adjusted_days` -- a more realistic duration estimate that accounts for observed delays or accelerations.
 
 ---
 

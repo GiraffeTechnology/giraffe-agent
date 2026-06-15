@@ -18,5 +18,5 @@ class DurationEstimate(BaseModel):
     supplier_claim_days: float | None = None   # what the supplier stated
     computed_days: float | None = None          # capacity-based calculation
     memory_adjusted_days: float | None = None   # adjusted by historical records
-    confidence: float = Field(ge=0.0, le=1.0)  # overall confidence 0.0–1.0
+    confidence: float = Field(ge=0.0, le=1.0)  # overall confidence 0.0-1.0
     evidence_summary: list[EvidenceItem] = []

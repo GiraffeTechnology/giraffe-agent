@@ -89,7 +89,7 @@ When the reforecast reveals schedule slippage (`delta_days > 0`), the `ExpediteO
 
 | # | Lever Name | Days Saved | Cost Impact | Risk Impact | Precondition |
 |---|---|---|---|---|---|
-| 1 | Air freight (sea → air) | **18** | VERY_HIGH | LOW | Buyer approves air freight |
+| 1 | Air freight (sea -> air) | **18** | VERY_HIGH | LOW | Buyer approves air freight |
 | 2 | Stock fabric (pre-book from mill inventory) | **14** | MEDIUM | MEDIUM | Stock fabric available at mill |
 | 3 | Expedited trim ordering | **7** | MEDIUM | LOW | Local trim supplier available |
 | 4 | Overtime production | **5** | MEDIUM | LOW | Factory agrees to overtime/weekend shifts |

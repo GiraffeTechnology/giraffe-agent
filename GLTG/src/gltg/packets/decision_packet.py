@@ -1,4 +1,4 @@
-"""DecisionPacket — simplified view of the feasibility packet for agents."""
+"""DecisionPacket -- simplified view of the feasibility packet for agents."""
 
 from __future__ import annotations
 

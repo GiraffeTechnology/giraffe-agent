@@ -63,28 +63,28 @@ Split variants are only generated when there is more than one garment factory pa
 
 The `AlternativeRouteGenerator` creates synthetic variants of the best option to model non-standard supply scenarios:
 
-1. **Air freight variant**: Replaces the SHIPMENT node duration (typically 21–28 days by sea) with an air freight duration (typically 3–5 days). This reduces the commitable date at significantly higher cost.
+1. **Air freight variant**: Replaces the SHIPMENT node duration (typically 21-28 days by sea) with an air freight duration (typically 3-5 days). This reduces the commitable date at significantly higher cost.
 
-2. **Stock fabric variant**: Replaces FABRIC_ORDERING duration with a near-zero lead time representing use of fabric already in mill inventory. This can save 7–14 days on the critical path.
+2. **Stock fabric variant**: Replaces FABRIC_ORDERING duration with a near-zero lead time representing use of fabric already in mill inventory. This can save 7-14 days on the critical path.
 
 Both variants are classified and pruned the same way as primary options. Their scores are penalized by cost and risk multipliers during ranking.
 
 ---
 
-## The Ranking Formula — 8-Factor Scoring
+## The Ranking Formula -- 8-Factor Scoring
 
 The `OptionRanker` assigns a composite score to each option using eight weighted factors:
 
 | Factor | Weight | Description |
 |---|---|---|
-| On-time probability | **0.30** | `option.on_time_probability` — probability of meeting `requested_delivery_date` |
+| On-time probability | **0.30** | `option.on_time_probability` -- probability of meeting `requested_delivery_date` |
 | Evidence completeness | **0.15** | Average confidence across the option's evidence items |
 | Supplier reliability | **0.20** | Penalises options with HIGH or CRITICAL risk flags |
 | Margin safety | **0.15** | Buffer days between `commitable_date` and `requested_date` (capped at 21 days full credit) |
-| Delay risk | **−0.10** | Penalty per TIGHT_DEADLINE or LOGISTICS_RISK flag |
-| QC risk | **−0.05** | Penalty per QC_RISK or HIGH_REWORK_RISK flag |
-| Missing field penalty | **−0.03** | Penalty per missing order field |
-| Operational complexity | **−0.02** | Applied to SPLIT_SHIPMENT and PARALLEL_FACTORY_PRODUCTION modes |
+| Delay risk | **?0.10** | Penalty per TIGHT_DEADLINE or LOGISTICS_RISK flag |
+| QC risk | **?0.05** | Penalty per QC_RISK or HIGH_REWORK_RISK flag |
+| Missing field penalty | **?0.03** | Penalty per missing order field |
+| Operational complexity | **?0.02** | Applied to SPLIT_SHIPMENT and PARALLEL_FACTORY_PRODUCTION modes |
 
 The total score is clamped to [0.0, 1.0]. Options are sorted descending by score. The top three are returned.
 

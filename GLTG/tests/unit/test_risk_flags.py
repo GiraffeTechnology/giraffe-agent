@@ -25,7 +25,7 @@ class TestRiskFlags:
 
     def test_missing_fabric_supplier_creates_flag(self):
         """An order with no FABRIC_SUPPLIER participant should produce MISSING_FABRIC_SUPPLIER."""
-        # Only a garment factory — no fabric supplier
+        # Only a garment factory -- no fabric supplier
         factory = make_participant("F1", ptype=ParticipantType.GARMENT_FACTORY)
         order = make_order(participants=[factory])
         _, flags = self.validator.validate(order)

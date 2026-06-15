@@ -12,6 +12,18 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+
+class DraftStateError(Exception):
+    """Raised when a draft state transition is not permitted."""
+
+    def __init__(self, draft_id: str, current_status: str, action: str) -> None:
+        self.draft_id = draft_id
+        self.current_status = current_status
+        self.action = action
+        super().__init__(
+            f"Cannot {action} draft '{draft_id}': current status is '{current_status}'"
+        )
+
 _DATA_DIR = Path("data/message_drafts")
 
 
@@ -94,9 +106,16 @@ def find_draft_by_id(draft_id: str) -> Optional[MessageDraft]:
 
 
 def approve_draft(draft_id: str, approved_by_sender_id: str) -> Optional[MessageDraft]:
+    """Approve a draft. Only drafts with status 'pending_approval' may be approved.
+
+    Raises DraftStateError if the draft is already approved or rejected.
+    Returns None if the draft does not exist.
+    """
     draft = find_draft_by_id(draft_id)
     if draft is None:
         return None
+    if draft.approval_status != "pending_approval":
+        raise DraftStateError(draft_id, draft.approval_status, "approve")
     draft.approval_status = "approved"
     draft.approved_by_sender_id = approved_by_sender_id
     draft.approved_at = _utcnow()
@@ -106,9 +125,16 @@ def approve_draft(draft_id: str, approved_by_sender_id: str) -> Optional[Message
 
 
 def reject_draft(draft_id: str) -> Optional[MessageDraft]:
+    """Reject a draft. Only drafts with status 'pending_approval' may be rejected.
+
+    Raises DraftStateError if the draft is already approved or rejected.
+    Returns None if the draft does not exist.
+    """
     draft = find_draft_by_id(draft_id)
     if draft is None:
         return None
+    if draft.approval_status != "pending_approval":
+        raise DraftStateError(draft_id, draft.approval_status, "reject")
     draft.approval_status = "rejected"
     draft.updated_at = _utcnow()
     _save(draft)

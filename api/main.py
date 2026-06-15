@@ -2,7 +2,9 @@
 Giraffe Agent FastAPI application — B-side + M-side endpoints + OpenClaw skill invocation.
 """
 
-from fastapi import FastAPI, HTTPException
+import os
+
+from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI(
@@ -1214,3 +1216,115 @@ def buyer_qc_decision_endpoint(project_id: str, request: BuyerQCDecisionRequest)
         decision=request.decision,
         notes=request.notes,
     )
+
+
+# ─── AIVAN / OpenClaw API key guard ───────────────────────────────────────────
+
+def _require_openclaw_api_key(
+    x_aivan_api_key: str | None = Header(default=None),
+) -> None:
+    """FastAPI dependency: enforce X-AIVAN-API-Key when AIVAN_API_KEY env var is set.
+
+    - AIVAN_API_KEY not set  → open access (useful for local-only / mock mode)
+    - Header missing          → 401 Unauthorized
+    - Header wrong            → 403 Forbidden
+    """
+    configured = os.environ.get("AIVAN_API_KEY", "")
+    if not configured:
+        return
+    if x_aivan_api_key is None:
+        raise HTTPException(
+            status_code=401,
+            detail="X-AIVAN-API-Key header is required",
+        )
+    if x_aivan_api_key != configured:
+        raise HTTPException(
+            status_code=403,
+            detail="Invalid API key",
+        )
+
+
+# ─── AIVAN / OpenClaw events intake ───────────────────────────────────────────
+
+class OpenClawEventRequest(BaseModel):
+    source: str = "openclaw"
+    channel: str
+    channel_account_id: str = ""
+    conversation_id: str = ""
+    sender_id: str = ""
+    sender_display_name: str | None = None
+    message_text: str = ""
+    message_type: str = "text"
+    attachments: list = []
+    timestamp: str | None = None
+    project_id: str | None = None
+    procurement_edge_id: str | None = None
+    actor_id: str | None = None
+    role_context: str | None = None
+    mode: str | None = None
+
+
+@app.post("/api/openclaw/events")
+def receive_openclaw_event(
+    event: OpenClawEventRequest,
+    _: None = Depends(_require_openclaw_api_key),
+):
+    """
+    AIVAN OpenClaw event intake.
+    Receives normalized channel events from the OpenClaw plugin bridge
+    and routes them through AIVAN's trade salesperson workflow.
+    AIVAN never receives raw IM credentials or channel tokens.
+    """
+    from src.openclaw_skill.openclaw_event_adapter import adapt_openclaw_event
+    return adapt_openclaw_event(event.model_dump())
+
+
+@app.get("/api/openclaw/drafts/pending")
+def list_pending_drafts(
+    project_id: str,
+    _: None = Depends(_require_openclaw_api_key),
+):
+    """List message drafts awaiting human approval for a project."""
+    from src.openclaw_skill.message_draft_store import find_pending_drafts
+    drafts = find_pending_drafts(project_id)
+    return {
+        "pending_count": len(drafts),
+        "drafts": [d.model_dump(mode="json") for d in drafts],
+    }
+
+
+class ApproveDraftRequest(BaseModel):
+    approved_by: str
+
+
+@app.post("/api/openclaw/drafts/{draft_id}/approve")
+def approve_message_draft(
+    draft_id: str,
+    request: ApproveDraftRequest,
+    _: None = Depends(_require_openclaw_api_key),
+):
+    """Approve a pending message draft. Only 'pending_approval' drafts can be approved."""
+    from src.openclaw_skill.message_draft_store import approve_draft, DraftStateError
+    try:
+        draft = approve_draft(draft_id, request.approved_by)
+    except DraftStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    if draft is None:
+        raise HTTPException(status_code=404, detail=f"Draft {draft_id} not found")
+    return {"ok": True, "draft_id": draft.id, "status": draft.approval_status}
+
+
+@app.post("/api/openclaw/drafts/{draft_id}/reject")
+def reject_message_draft(
+    draft_id: str,
+    _: None = Depends(_require_openclaw_api_key),
+):
+    """Reject a pending message draft. Only 'pending_approval' drafts can be rejected."""
+    from src.openclaw_skill.message_draft_store import reject_draft, DraftStateError
+    try:
+        draft = reject_draft(draft_id)
+    except DraftStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    if draft is None:
+        raise HTTPException(status_code=404, detail=f"Draft {draft_id} not found")
+    return {"ok": True, "draft_id": draft.id, "status": draft.approval_status}

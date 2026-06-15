@@ -168,9 +168,37 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Unicode / BIDI / line-ending check
+        run: |
+          python - << 'PYEOF'
+          import os, re, sys
+          BIDI = re.compile('[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]')
+          bad = []
+          for root, dirs, files in os.walk('.'):
+              dirs[:] = [d for d in dirs if d not in ('.git', '.venv', '__pycache__', 'node_modules', 'dist')]
+              for f in files:
+                  if not any(f.endswith(e) for e in ('.py', '.ts', '.md', '.json', '.yml', '.yaml', '.sh')):
+                      continue
+                  path = os.path.join(root, f)
+                  raw = open(path, 'rb').read()
+                  issues = []
+                  if b'\r\n' in raw:
+                      issues.append('CRLF')
+                  if raw.startswith(b'\xef\xbb\xbf'):
+                      issues.append('BOM')
+                  if BIDI.search(raw.decode('utf-8', errors='replace')):
+                      issues.append('BIDI')
+                  if issues:
+                      bad.append(f"{','.join(issues)}: {path}")
+          if bad:
+              print('\n'.join(bad))
+              sys.exit(1)
+          print('No encoding issues found.')
+          PYEOF
+
       - name: TypeScript syntax check (plugin bridge)
         working-directory: integrations/openclaw-aivan-plugin
         run: |
-          npm install --save-dev typescript@5 @types/node
+          npm install
           npx tsc --version
-          npx tsc
+          npx tsc --noEmit

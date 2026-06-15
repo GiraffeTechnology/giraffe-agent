@@ -1,6 +1,57 @@
 # Changelog
 
-All notable changes to Giraffe Agent are recorded here.
+All notable changes to Giraffe Agent / AIVAN are recorded here.
+
+---
+
+## [0.1.0-clawhub] — 2026-06-15
+
+### Tag candidate
+`v0.1.0`
+
+### Classification
+First ClawHub-ready release of the AIVAN OpenClaw plugin bridge.
+AIVAN (AI trade salesperson) is the public-facing product name for Giraffe Agent's
+trade salesperson workflow, published as the first Giraffe Technology OpenClaw
+ecosystem release.
+
+### Added
+- `integrations/openclaw-aivan-plugin/package.json` — ClawHub code plugin package
+  metadata (`@giraffetechnology/openclaw-aivan v0.1.0`) with OpenClaw compatibility
+  fields (`pluginApi`, `openclawVersion`, `extensions`)
+- `integrations/openclaw-aivan-plugin/index.ts` — thin OpenClaw plugin bridge
+  implementing `aivan.health`, `aivan.forwardEvent`, `aivan.openDashboard`,
+  `aivan.getPendingDrafts`, `aivan.approveDraft`, `aivan.rejectDraft`; fails safely
+  when AIVAN is not running; never logs secrets; never bypasses approval gate
+- `integrations/openclaw-aivan-plugin/README.md` — installation, environment
+  variables, mock mode, human approval gate, local data boundary, test and
+  publication instructions
+- `integrations/openclaw-aivan-plugin/SECURITY.md` — credential policy, approval gate,
+  anti-bot boundaries, local data boundary, risk screening scope
+- `skills/aivan-trade-salesperson/SKILL.md` — lightweight ClawHub skill listing that
+  teaches OpenClaw when to route trade-salesperson workflows to the AIVAN plugin
+- `scripts/validate_clawhub_aivan_plugin.py` — pre-publication validator: checks
+  package metadata, OpenClaw compatibility fields, env-var documentation, skill
+  listing, and absence of hardcoded secrets
+- `scripts/run_aivan_openclaw_plugin_smoke_test.py` — smoke test: missing
+  `AIVAN_BASE_URL` fails safely; health, event forwarding, pending drafts, and
+  approve/reject round-trip verified; approval gate not bypassable
+- `api/main.py` — new AIVAN/OpenClaw endpoints:
+  - `POST /api/openclaw/events` — normalized event intake for the plugin bridge
+  - `GET /api/openclaw/drafts/pending` — list drafts awaiting human approval
+  - `POST /api/openclaw/drafts/{draft_id}/approve` — human approval action
+  - `POST /api/openclaw/drafts/{draft_id}/reject` — rejection action
+- `.env.example` — safe environment variable template (no real credentials)
+- `SECURITY.md` — root security policy covering credential storage, approval gate,
+  anti-bot rules, local data boundary, LLM key optionality, and risk screening scope
+- README.md `## ClawHub / OpenClaw Plugin Publication` section with dry-run and
+  publish commands for both the code plugin and the optional skill listing
+
+### Security
+- No credentials stored in plugin or service
+- Human approval required for all outbound trade messages
+- Mock mode confirmed working without any external API keys
+- No direct IM/channel connections from AIVAN
 
 ---
 

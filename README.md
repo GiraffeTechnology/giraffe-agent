@@ -892,6 +892,61 @@ Before submitting a PR, run the E2E suite and make sure the relevant scripts sti
 
 ---
 
+## ClawHub / OpenClaw Plugin Publication
+
+AIVAN is published as an installable ClawHub code plugin via the `@giraffetechnology/openclaw-aivan` plugin bridge.
+
+### Prerequisites
+
+```bash
+npm i -g clawhub
+clawhub login
+clawhub whoami
+```
+
+### Validate Plugin Before Publishing
+
+```bash
+# Validate metadata and structure
+uv run python scripts/validate_clawhub_aivan_plugin.py
+
+# Run smoke test (requires AIVAN running locally)
+uv run uvicorn api.main:app --reload &
+uv run python scripts/run_aivan_openclaw_plugin_smoke_test.py
+```
+
+### Publish Code Plugin (Dry Run First)
+
+```bash
+clawhub package publish integrations/openclaw-aivan-plugin --family code-plugin --dry-run
+```
+
+### Publish Code Plugin
+
+```bash
+clawhub package publish integrations/openclaw-aivan-plugin --family code-plugin
+```
+
+### Publish Skill Listing (Optional — for discoverability)
+
+```bash
+clawhub skill publish skills/aivan-trade-salesperson \
+  --slug aivan-trade-salesperson \
+  --name "AIVAN Trade Salesperson" \
+  --version 0.1.0 \
+  --changelog "Initial AIVAN ClawHub skill listing"
+```
+
+### Plugin Security Contract
+
+- The plugin never stores IM credentials, channel tokens, or platform secrets
+- All outbound messages require human approval via AIVAN's approval gate
+- AIVAN data stays local (SQLite / JSON files on your machine)
+- Mock mode works without any external API keys
+- See [`integrations/openclaw-aivan-plugin/SECURITY.md`](integrations/openclaw-aivan-plugin/SECURITY.md) and [`SECURITY.md`](SECURITY.md)
+
+---
+
 ## Patent Notice and License
 
 This repository is released under the Apache-2.0 software license.

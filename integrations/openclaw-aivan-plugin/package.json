@@ -1,0 +1,71 @@
+{
+  "name": "@giraffetechnology/openclaw-aivan",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "OpenClaw plugin bridge for AIVAN, a local-first AI trade salesperson assistant by Giraffe Technology",
+  "main": "index.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GiraffeTechnology/giraffe-agent"
+  },
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "openclaw": {
+    "compat": {
+      "pluginApi": "1.0"
+    },
+    "build": {
+      "openclawVersion": ">=5.0.0"
+    },
+    "extensions": [
+      {
+        "type": "command",
+        "id": "aivan.health",
+        "title": "AIVAN: Check Health",
+        "description": "Check whether the local AIVAN service is running"
+      },
+      {
+        "type": "channel-event-handler",
+        "id": "aivan.forwardEvent",
+        "title": "AIVAN: Forward Trade Event",
+        "description": "Forward a normalized OpenClaw trade event to the local AIVAN service",
+        "eventTypes": ["message", "inquiry", "quotation", "order-update"]
+      },
+      {
+        "type": "command",
+        "id": "aivan.openDashboard",
+        "title": "AIVAN: Open Dashboard",
+        "description": "Open the AIVAN trade salesperson dashboard in a browser"
+      },
+      {
+        "type": "command",
+        "id": "aivan.getPendingDrafts",
+        "title": "AIVAN: Get Pending Drafts",
+        "description": "Retrieve message drafts awaiting human approval in AIVAN"
+      },
+      {
+        "type": "command",
+        "id": "aivan.approveDraft",
+        "title": "AIVAN: Approve Draft",
+        "description": "Approve a pending AIVAN draft for dispatch (human approval required)"
+      },
+      {
+        "type": "command",
+        "id": "aivan.rejectDraft",
+        "title": "AIVAN: Reject Draft",
+        "description": "Reject a pending AIVAN draft"
+      }
+    ]
+  },
+  "keywords": [
+    "openclaw",
+    "clawhub",
+    "aivan",
+    "trade",
+    "procurement",
+    "salesperson",
+    "giraffe-technology"
+  ]
+}

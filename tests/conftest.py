@@ -108,3 +108,99 @@ async def seed_locked_form(auth_client, seed_form):
     resp = await auth_client.post(f"/api/dynamic-forms/{seed_form['form_id']}/lock")
     assert resp.status_code == 200, f"Lock form failed: {resp.text}"
     return seed_form
+
+
+# ── Iter 4 fixtures ──────────────────────────────────────────────────────────
+
+@pytest.fixture
+async def seed_project_with_form(auth_client):
+    """A project with an inquiry and a dynamic form, returns project + form_version_id."""
+    proj_resp = await auth_client.post("/api/projects", json={"title": "Matching Test Project"})
+    assert proj_resp.status_code == 201
+    project = proj_resp.json()
+
+    inq_resp = await auth_client.post(
+        f"/api/projects/{project['id']}/buyer-inquiries",
+        json={"raw_text": "10,000 white cotton T-shirts, FOB Shenzhen, delivery in 60 days."},
+    )
+    assert inq_resp.status_code == 201
+    inquiry = inq_resp.json()
+
+    form_resp = await auth_client.post(
+        f"/api/projects/{project['id']}/dynamic-forms",
+        json={"inquiry_id": inquiry["id"]},
+    )
+    assert form_resp.status_code == 201
+    form_data = form_resp.json()
+
+    return {
+        "id": project["id"],
+        "form_version_id": str(form_data["id"]),
+        "form_id": str(form_data["form_id"]),
+    }
+
+
+@pytest.fixture
+async def seed_participants(auth_client):
+    """Two participants with roles for matching tests."""
+    p1_resp = await auth_client.post(
+        "/api/participants",
+        json={"name": "Shenzhen Garment Factory", "country": "CN"},
+    )
+    assert p1_resp.status_code == 201
+    p1 = p1_resp.json()
+
+    await auth_client.post(
+        f"/api/participants/{p1['id']}/roles",
+        json={"role_name": "MANUFACTURER"},
+    )
+
+    p2_resp = await auth_client.post(
+        "/api/participants",
+        json={"name": "Guangzhou Fabric Co.", "country": "CN"},
+    )
+    assert p2_resp.status_code == 201
+    p2 = p2_resp.json()
+
+    await auth_client.post(
+        f"/api/participants/{p2['id']}/roles",
+        json={"role_name": "FABRIC_SUPPLIER"},
+    )
+
+    return [p1, p2]
+
+
+@pytest.fixture
+async def seed_rfq(auth_client, seed_project_with_form, seed_participants):
+    """An RFQ in PENDING_APPROVAL state with a linked ApprovalRequest."""
+    resp = await auth_client.post(
+        f"/api/projects/{seed_project_with_form['id']}/rfqs",
+        json={
+            "form_version_id": seed_project_with_form["form_version_id"],
+            "recipient_participant_ids": [seed_participants[0]["id"]],
+        },
+    )
+    assert resp.status_code == 201, f"Create RFQ failed: {resp.text}"
+    data = resp.json()
+    return {
+        "id": data["rfq"]["id"],
+        "approval_request_id": data["approval_request_id"],
+        **data,
+    }
+
+
+@pytest.fixture
+async def seed_sent_rfq(auth_client, seed_rfq):
+    """An RFQ that has been approved and sent."""
+    await auth_client.post(
+        f"/api/approval-requests/{seed_rfq['approval_request_id']}/approve",
+        json={"review_notes": "Approved for test"},
+    )
+    resp = await auth_client.post(
+        f"/api/rfqs/{seed_rfq['id']}/send",
+        json={"approval_id": seed_rfq["approval_request_id"]},
+    )
+    assert resp.status_code == 200, f"Send RFQ failed: {resp.text}"
+    data = resp.json()
+    data["id"] = data["id"]
+    return data

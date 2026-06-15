@@ -13,7 +13,7 @@ This report documents the investigation and resolution of two CI-blocking issues
 
 1. **TypeScript check** — Verified `@types/node` and `"types": ["node"]` in `tsconfig.json` are present and correct. TypeScript compilation passes with zero errors.
 
-2. **Unicode / BIDI check** — Added a BIDI/encoding check step to `.github/workflows/ci.yml` using ASCII-only `\u` escape sequences. The regex pattern `'[​-‏‪-‮⁠-⁩﻿]'` is written with Python Unicode escapes, ensuring the CI workflow file itself contains no literal BIDI characters and will not be flagged by its own check.
+2. **Unicode / BIDI check** — Added a BIDI/encoding check step to `.github/workflows/ci.yml` using ASCII-only `\u` escape sequences. The regex pattern `'[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]'` is written with Python Unicode escapes, ensuring the CI workflow file itself contains no literal BIDI characters and will not be flagged by its own check.
 
 **Final Status: SAFE TO MERGE**
 
@@ -53,10 +53,10 @@ BIDI: ./.github/workflows/ci.yml
 **Fix applied:** Added a `Unicode / BIDI / line-ending check` step to the `aivan-clawhub-plugin` CI job in `.github/workflows/ci.yml`. The BIDI regex is written using ASCII-only Python string Unicode escapes:
 
 ```python
-BIDI = re.compile('[​-‏‪-‮⁠-⁩﻿]')
+BIDI = re.compile('[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]')
 ```
 
-This regex is stored in the YAML file as the ASCII text `​` etc., not as actual Unicode code points. Python evaluates these `\u` escapes at runtime, producing a regex that correctly detects invisible Unicode injection characters — but the source file remains entirely ASCII-safe.
+This regex is stored in the YAML file as the ASCII text `\u200b` etc., not as actual Unicode code points. Python evaluates these `\u` escapes at runtime, producing a regex that correctly detects invisible Unicode injection characters — but the source file remains entirely ASCII-safe.
 
 ---
 
@@ -81,7 +81,7 @@ No source code was changed. No tests were weakened. No security checks were remo
   run: |
     python - << 'PYEOF'
     import os, re, sys
-    BIDI = re.compile('[​-‏‪-‮⁠-⁩﻿]')
+    BIDI = re.compile('[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]')
     bad = []
     for root, dirs, files in os.walk('.'):
         dirs[:] = [d for d in dirs if d not in ('.git', '.venv', '__pycache__', 'node_modules', 'dist')]
@@ -138,7 +138,7 @@ python -m compileall src scripts tests -q
 # Unicode/BIDI/CRLF/BOM check
 python - << 'EOF'
 import os, re, sys
-BIDI = re.compile('[​-‏‪-‮⁠-⁩﻿]')
+BIDI = re.compile('[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]')
 bad = []
 for root, dirs, files in os.walk('.'):
     dirs[:] = [d for d in dirs if d not in ('.git', '.venv', '__pycache__', 'node_modules', 'dist')]

@@ -96,28 +96,51 @@ def compare_media_against_standard(
     )
 
     frames = video_frames or []
-    if frames:
-        llm_result = provider.compare_video_frames(frames, user_prompt, system_prompt=system_prompt)
-        raw = llm_result.result_json
-        raw_text = llm_result.raw_text
-        model_name = llm_result.model_name
-        frames_used = llm_result.frames_used
-        image_count = len(all_images)
-    elif all_images:
-        llm_result = provider.compare_images(all_images, user_prompt, system_prompt=system_prompt)
-        raw = llm_result.result_json
-        raw_text = llm_result.raw_text
-        model_name = llm_result.model_name
-        frames_used = 0
-        image_count = len(all_images)
-    else:
-        from src.llm.provider_base import LLMJsonResult
-        json_result = provider.extract_json(user_prompt, system_prompt=system_prompt)
-        raw = json_result.data
-        raw_text = json_result.raw_text
-        model_name = json_result.model_name
-        frames_used = 0
-        image_count = 0
+    try:
+        if frames:
+            llm_result = provider.compare_video_frames(frames, user_prompt, system_prompt=system_prompt)
+            raw = llm_result.result_json
+            raw_text = llm_result.raw_text
+            model_name = llm_result.model_name
+            frames_used = llm_result.frames_used
+            image_count = len(all_images)
+        elif all_images:
+            llm_result = provider.compare_images(all_images, user_prompt, system_prompt=system_prompt)
+            raw = llm_result.result_json
+            raw_text = llm_result.raw_text
+            model_name = llm_result.model_name
+            frames_used = 0
+            image_count = len(all_images)
+        else:
+            from src.llm.provider_base import LLMJsonResult
+            json_result = provider.extract_json(user_prompt, system_prompt=system_prompt)
+            raw = json_result.data
+            raw_text = json_result.raw_text
+            model_name = json_result.model_name
+            frames_used = 0
+            image_count = 0
+    except Exception as exc:
+        error_msg = str(exc)
+        return QCComparisonReport(
+            overall_result="unknown",
+            overall_score=0.0,
+            severity="critical",
+            detected_deviations=[],
+            process_card_violations=[],
+            buyer_confirmation_required=False,
+            human_review_required=True,
+            m_side_feedback_zh=f"QC比对失败，图片处理或API调用出错：{error_msg}",
+            m_side_feedback_en=f"QC comparison failed due to image processing or API error: {error_msg}",
+            b_side_summary=f"QC comparison could not be completed: {error_msg}",
+            provider_name=provider.provider_name,
+            model_name=getattr(provider, "vision_model", "unknown"),
+            requested_provider=requested_provider,
+            fallback_used=fallback_used,
+            fallback_reason=error_msg,
+            image_count=len(all_images),
+            frames_used=0,
+            raw_llm_text=error_msg,
+        )
 
     report = QCComparisonReport(
         overall_result=raw.get("overall_result", "unknown"),

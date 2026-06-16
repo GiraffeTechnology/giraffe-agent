@@ -1,0 +1,262 @@
+{
+  "run_at": "2026-06-16T10:23:24.189455",
+  "total": 37,
+  "passed": 31,
+  "failed": 6,
+  "qwen_real_calls": [
+    {
+      "label": "TC1_identical",
+      "model": "qwen-vl-plus",
+      "http_status": 200,
+      "elapsed_s": 1.43
+    },
+    {
+      "label": "TC2_different",
+      "model": "qwen-vl-plus",
+      "http_status": 200,
+      "elapsed_s": 2.34
+    },
+    {
+      "label": "TC3_borderline",
+      "model": "qwen-vl-plus",
+      "http_status": 200,
+      "elapsed_s": 5.89
+    }
+  ],
+  "all_real_qwen": true,
+  "results": [
+    {
+      "phase": "Phase1",
+      "name": "DB tables count",
+      "passed": true,
+      "detail": "Found 34 tables"
+    },
+    {
+      "phase": "Phase1",
+      "name": "QC tables in alembic migration",
+      "passed": false,
+      "detail": "QC tables present in schema: [] (expected 3, found 0) — MISSING FROM MIGRATION"
+    },
+    {
+      "phase": "Phase1",
+      "name": "Alembic version applied",
+      "passed": true,
+      "detail": "('a3b15996ec7b',)"
+    },
+    {
+      "phase": "Phase2",
+      "name": "FK reject bad project_id",
+      "passed": true,
+      "detail": "Correctly rejected: (sqlite3.IntegrityError) FOREIGN KEY constraint failed\n[SQL: \n            INSERT INTO supplier_inquiries\n            (inquiry_id, project_id, edge_id, from_actor_id, to_actor_id,\n             requested_fields_json, required_reply_schema_json, status, created_at, updated_at)\n            VALUES (?, ?, ?, ?, ?, '{}', '{}', 'SENT', ?, ?)\n        ]\n[parameters: ('c65afd97-25f6-4318-a4a1-f7b2891f9cfa', 'NONEXISTENT-PROJECT', 'FAKE-EDGE', 'FAKE-FROM', 'FAKE-TO', '2026-06-16T10:23:00.053934+00:00', '2026-06-16T10:23:00.053934+00:00')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+    },
+    {
+      "phase": "Phase2",
+      "name": "FK enforcement with PRAGMA hook",
+      "passed": true,
+      "detail": "Correctly rejected: (sqlite3.IntegrityError) FOREIGN KEY constraint failed\n[SQL: \n            INSERT INTO supplier_inquiries\n            (inquiry_id, project_id, edge_id, from_actor_id, to_actor_id,\n             requested_fields_json, required_reply_schema_json, status, created_at, updated_at)\n            VALUES (?, 'NONEXISTENT-PROJECT', 'FAKE-EDGE', 'FAKE-FROM', 'FAKE-TO',\n                    '{}', '{}', 'SENT', ?, ?)\n        ]\n[parameters: ('3dcd60cc-abd8-490b-9eac-97ef765efa20', '2026-06-16T10:23:00.055055+00:00', '2026-06-16T10:23:00.055055+00:00')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+    },
+    {
+      "phase": "Phase2",
+      "name": "PK uniqueness constraint",
+      "passed": true,
+      "detail": "Correctly rejected duplicate PK"
+    },
+    {
+      "phase": "Phase2",
+      "name": "NOT NULL constraint on actors.name",
+      "passed": true,
+      "detail": "Correctly rejected NULL name"
+    },
+    {
+      "phase": "Phase2",
+      "name": "Transaction atomicity on mid-failure",
+      "passed": true,
+      "detail": "After rollback, actor NOT found (correct)"
+    },
+    {
+      "phase": "Phase2",
+      "name": "Cascade/FK on actor delete with referencing project",
+      "passed": true,
+      "detail": "Correctly blocked actor deletion: (sqlite3.IntegrityError) FOREIGN KEY constraint failed\n[SQL: DELETE FROM actors WHERE actor_id=?]\n[p"
+    },
+    {
+      "phase": "Phase3",
+      "name": "Concurrent status updates (5 threads)",
+      "passed": true,
+      "detail": "Final status: CLOSED, errors: []"
+    },
+    {
+      "phase": "Phase3",
+      "name": "No locking mechanism (optimistic/pessimistic)",
+      "passed": false,
+      "detail": "SQLite uses DB-level write lock — concurrent writes serialize, no optimistic lock / version field in schema. Risk: no conflict detection for business logic."
+    },
+    {
+      "phase": "Phase3",
+      "name": "Bulk insert 500 actors",
+      "passed": true,
+      "detail": "500 inserts took 0.04s (11134 rows/s)"
+    },
+    {
+      "phase": "Phase3",
+      "name": "Query 500 active actors",
+      "passed": true,
+      "detail": "Retrieved 500 rows in 0.003s"
+    },
+    {
+      "phase": "Phase3",
+      "name": "Index on supplier_inquiries.project_id",
+      "passed": false,
+      "detail": "Indexed cols: []"
+    },
+    {
+      "phase": "Phase3",
+      "name": "Index on projects.status (performance risk)",
+      "passed": true,
+      "detail": "projects indexes: ['category', 'created_at', 'main_supplier_actor_id', 'original_buyer_actor_id', 'status'] — OK"
+    },
+    {
+      "phase": "Phase4",
+      "name": "Migration has downgrade function",
+      "passed": true,
+      "detail": "HAS_DOWNGRADE: True\nDOWNGRADE_PASS: False"
+    },
+    {
+      "phase": "Phase4",
+      "name": "Downgrade is non-trivial (not just pass)",
+      "passed": true,
+      "detail": "downgrade() has real logic"
+    },
+    {
+      "phase": "Phase4",
+      "name": "alembic downgrade base",
+      "passed": true,
+      "detail": "INFO  [alembic.runtime.migration] Context impl SQLiteImpl.\nINFO  [alembic.runtime.migration] Will assume non-transactional DDL.\nINFO  [alembic.runtime.migration] Running downgrade a3b15996ec7b -> , create_all_tables\n"
+    },
+    {
+      "phase": "Phase4",
+      "name": "alembic upgrade head (after downgrade)",
+      "passed": true,
+      "detail": "INFO  [alembic.runtime.migration] Context impl SQLiteImpl.\nINFO  [alembic.runtime.migration] Will assume non-transactional DDL.\nINFO  [alembic.runtime.migration] Running upgrade  -> a3b15996ec7b, create_all_tables\n"
+    },
+    {
+      "phase": "Phase4",
+      "name": "QC tables in migration script",
+      "passed": false,
+      "detail": "CRITICAL: QC ORM models (src/db/models/qc.py) define 3 tables but they are NOT in the alembic migration script. Migration drift detected."
+    },
+    {
+      "phase": "Phase4",
+      "name": "No destructive DROP ops in migration",
+      "passed": false,
+      "detail": "WARNING: DROP ops found in migration"
+    },
+    {
+      "phase": "Phase5",
+      "name": "QWEN_API_KEY available",
+      "passed": true,
+      "detail": "Key starts with: sk-ws-H...."
+    },
+    {
+      "phase": "Phase5",
+      "name": "Network: dashscope.aliyuncs.com reachable",
+      "passed": true,
+      "detail": "HTTP 404"
+    },
+    {
+      "phase": "Phase5",
+      "name": "QwenProvider instantiated",
+      "passed": true,
+      "detail": "vision_model=qwen-vl-plus"
+    },
+    {
+      "phase": "Phase5",
+      "name": "Vision endpoint URL",
+      "passed": true,
+      "detail": "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation"
+    },
+    {
+      "phase": "Phase5",
+      "name": "TC1: Identical images — real Qwen call",
+      "passed": true,
+      "detail": "HTTP=200, elapsed=1.43s, response_snippet=```json\n{\n  \"overall_result\": \"pass\",\n  \"overall_score\": 1.0,\n  \"m_side_feedback_zh\": \"两张图片完全相同，无任何差异，产品质量合格。\",\n  \"b_side_summary\": \"Both images are identical with no differences, product quality is qualified.\"\n}\n```",
+      "qwen_model": "qwen-vl-plus",
+      "http_status": 200,
+      "elapsed_s": 1.43
+    },
+    {
+      "phase": "Phase5",
+      "name": "TC1: Identical images — result is 'pass'",
+      "passed": true,
+      "detail": "LLM raw (first 500 chars): ```json\n{\n  \"overall_result\": \"pass\",\n  \"overall_score\": 1.0,\n  \"m_side_feedback_zh\": \"两张图片完全相同，无任何差异，产品质量合格。\",\n  \"b_side_summary\": \"Both images are identical with no differences, product quality is qualified.\"\n}\n```"
+    },
+    {
+      "phase": "Phase5",
+      "name": "TC2: Different images — real Qwen call",
+      "passed": true,
+      "detail": "HTTP=200, elapsed=2.34s, snippet=```json\n{\n  \"overall_result\": \"fail\",\n  \"overall_score\": 0.0,\n  \"detected_deviations\": [\n    {\n      \"deviation_type\": \"color_mismatch\",\n      \"description\": \"生产实物的颜色为\u7ef f色，而标准样品的颜色为红色，两者颜色不一致。\"\n    }\n  ],\n  \"m_side_feedback_zh\": \"生产实物的颜色与标准样品的颜色不符，建议检查生产过程中的颜色控制。\",\n  \"b_side_summary\": \"The color of th",
+      "qwen_model": "qwen-vl-plus",
+      "http_status": 200,
+      "elapsed_s": 2.34
+    },
+    {
+      "phase": "Phase5",
+      "name": "TC2: Different images — result is 'fail'",
+      "passed": true,
+      "detail": "LLM raw: ```json\n{\n  \"overall_result\": \"fail\",\n  \"overall_score\": 0.0,\n  \"detected_deviations\": [\n    {\n      \"deviation_type\": \"color_mismatch\",\n      \"description\": \"生产实物的颜色为\u7ef f色，而标准样品的颜色为红色，两者颜色不一致。\"\n    }\n  ],\n  \"m_side_feedback_zh\": \"生产实物的颜色与标准样品的颜色不符，建议检查生产过程中的颜色控制。\",\n  \"b_side_summary\": \"The color of the production sample is green, which does not match the red color of the standard sample. Please check the color control in the production process.\"\n}\n```"
+    },
+    {
+      "phase": "Phase5",
+      "name": "TC3: Border case (slight variation) — real Qwen call",
+      "passed": true,
+      "detail": "HTTP=200, elapsed=5.89s, snippet=根据提供的两张图片，第一张是标准样品（深红色），第二张是生产实物（略浅红色）。我们需要判断色差是否在可接受范围内（允许轻微色差）。\n\n### 分析：\n1. **颜色对比**：\n   - 第一张图片的颜色为深红色。\n   - 第二张图片的颜色为略浅的红色。\n   - 从视觉上看，第二张图片的颜色确实比第一张图片的颜色要浅一些，但差异并不明显。\n\n2. **色差评估**：\n   - 允许轻微色差的情况下，这种颜色差异是可以接受的。\n   - 色差在可接受范围内，因为没有明显的质量问题或显著的颜色偏差。\n\n### JSON格式输出：\n```json\n{\n  \"overall_result\": \"pa",
+      "qwen_model": "qwen-vl-plus",
+      "http_status": 200,
+      "elapsed_s": 5.89
+    },
+    {
+      "phase": "Phase5",
+      "name": "TC3: Border case — has reasonable judgment",
+      "passed": true,
+      "detail": "LLM raw: 根据提供的两张图片，第一张是标准样品（深红色），第二张是生产实物（略浅红色）。我们需要判断色差是否在可接受范围内（允许轻微色差）。\n\n### 分析：\n1. **颜色对比**：\n   - 第一张图片的颜色为深红色。\n   - 第二张图片的颜色为略浅的红色。\n   - 从视觉上看，第二张图片的颜色确实比第一张图片的颜色要浅一些，但差异并不明显。\n\n2. **色差评估**：\n   - 允许轻微色差的情况下，这种颜色差异是可以接受的。\n   - 色差在可接受范围内，因为没有明显的质量问题或显著的颜色偏差。\n\n### JSON格式输出：\n```json\n{\n  \"overall_result\": \"pass\",\n  \"overall_score\": 0.9,\n  \"m_side_feedback_zh\": \"色差在可接受范围内，生产实物颜色略浅于标准样品，但差异轻微。\",\n  \"b_side_summary\": \"生产实物颜色与标准样品相比有轻微色差，但符合质量要求。\"\n}\n```\n\n### 解释：\n- **overall_result**: \"pass\" 表示色差在可接受范围内。\n- **ov"
+    },
+    {
+      "phase": "Phase5",
+      "name": "compare_media_against_standard — not a fallback/mock call",
+      "passed": true,
+      "detail": "fallback_used=False, provider=qwen, model=qwen-vl-plus",
+      "qwen_model": "qwen-vl-plus",
+      "elapsed_s": 2.25
+    },
+    {
+      "phase": "Phase5",
+      "name": "compare_media_against_standard — has result",
+      "passed": true,
+      "detail": "result=pass, score=1.0"
+    },
+    {
+      "phase": "Phase5",
+      "name": "QC report saved to file store",
+      "passed": true,
+      "detail": "report_id=QCR-E0BA98C732, overall_result=pass"
+    },
+    {
+      "phase": "Phase6",
+      "name": "Constraint violation returns clear IntegrityError",
+      "passed": true,
+      "detail": "IntegrityError raised: (sqlite3.IntegrityError) NOT NULL constraint failed: actors.name\n[SQL: \n            INSERT INTO actors (actor_id, name, actor_type, contact_channels_j"
+    },
+    {
+      "phase": "Phase6",
+      "name": "Corrupt JPEG handled gracefully",
+      "passed": false,
+      "detail": "Exception raised: Qwen API call failed after 3 attempts: Client error '400 Bad Request' for url 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+    },
+    {
+      "phase": "Phase6",
+      "name": "Bad API key raises error (not silent mock fallback)",
+      "passed": true,
+      "detail": "RuntimeError: Qwen API call failed after 3 attempts: Client error '401 Unauthorized' for url 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation'\nFor more information check: https:"
+    }
+  ]
+}

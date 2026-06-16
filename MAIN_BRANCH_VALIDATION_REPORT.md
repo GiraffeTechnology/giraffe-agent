@@ -187,7 +187,7 @@ These are not failures. All internal interfaces and mock paths pass. External ca
 
 **PASS WITH GAPS**
 
-- All 525 unit tests pass.
+- Full pytest suite passed: 734 tests.
 - All E2E scripts pass.
 - DB-off and DB-on modes both validated.
 - SQLite integrity confirmed.

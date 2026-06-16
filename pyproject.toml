@@ -34,4 +34,5 @@ pythonpath = ["."]
 dev = [
     "pytest>=9.1.0",
     "sqlalchemy>=2.0.50",
+    "pillow>=12.2.0",
 ]

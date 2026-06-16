@@ -11,37 +11,38 @@ This report covers the resolution of two stable CI blockers found after 5 failed
 
 ---
 
-## CI Failures (Original)
+## CI Failures Originally Observed
 
 Both failures were reproducible across all 5 CI reruns:
 
 1. **Unicode / BIDI / line-ending check: FAIL**
    - `.github/workflows/ci.yml` previously embedded literal invisible BIDI Unicode characters in its regex pattern.
    - The CI check correctly detected the workflow file itself as polluted.
-   - **Fix:** Replaced the literal-character regex with ASCII-only `\u` escaped ranges.
-   - The pattern `BIDI = re.compile('[​-‏‪-‮⁠-⁩﻿]')` stores `​` etc. as ASCII text in the YAML file; Python evaluates the escape sequences at runtime, so the file passes its own check.
+   - **Fix:** replace the literal-character regex with ASCII-only escaped ranges.
+   - Safe example: `BIDI = re.compile(r'[\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2069\\ufeff]')`.
+   - This Markdown report intentionally uses double backslashes so the report file itself does not contain literal BIDI characters.
 
 2. **TypeScript syntax check: FAIL**
    - `index.ts` used `process.env` without Node type definitions, causing `error TS2580: Cannot find name 'process'`.
    - A type alias `drafts` was mistakenly used as a runtime value (`typeof drafts`), causing `error TS2693`.
    - **Fix:**
-     - Added `"@types/node": "^25.9.3"` to `package.json` devDependencies.
-     - Added `"types": ["node"]` to `tsconfig.json` compilerOptions.
-     - Replaced `typeof drafts` value-usage with `data.drafts` property access.
+     - Add `@types/node` to plugin `devDependencies`.
+     - Add `"types": ["node"]` to plugin `tsconfig.json`.
+     - Replace `typeof drafts` value usage with explicit `Draft` / `Drafts` types and runtime `data.drafts` property access.
 
 ---
 
-## Files Changed
+## Files Changed By The Fix Branch
 
 | File | Change |
 |------|--------|
-| `.github/workflows/ci.yml` | Added Unicode/BIDI check step with ASCII-only regex; fixed TypeScript step to use `npm install` + `npx tsc --noEmit` |
-| `integrations/openclaw-aivan-plugin/package.json` | Added `"@types/node": "^25.9.3"` to devDependencies |
+| `.github/workflows/ci.yml` | Unicode/BIDI check uses ASCII-only escaped regex; TypeScript step runs `npm install` and `npx tsc --noEmit` |
+| `integrations/openclaw-aivan-plugin/package.json` | Adds `@types/node` to devDependencies |
 | `integrations/openclaw-aivan-plugin/package-lock.json` | Regenerated after adding `@types/node` |
-| `integrations/openclaw-aivan-plugin/tsconfig.json` | Added `"types": ["node"]` to compilerOptions |
-| `integrations/openclaw-aivan-plugin/index.ts` | Fixed `typeof drafts` type/value misuse; resolved `process.env` type errors |
+| `integrations/openclaw-aivan-plugin/tsconfig.json` | Adds `"types": ["node"]` to compiler options |
+| `integrations/openclaw-aivan-plugin/index.ts` | Fixes `typeof drafts` type/value misuse and resolves `process.env` type errors |
 
-No business logic was changed. No security checks were removed. Human approval gate remains enforced.
+No business logic was changed. No security checks were removed. The human approval gate remains enforced.
 
 ---
 
@@ -79,10 +80,10 @@ No business logic was changed. No security checks were removed. Human approval g
 
 | Rule | Status |
 |------|--------|
-| Human approval gate (no auto-send) | Enforced — drafts remain pending until approved |
+| Human approval gate, no auto-send | Enforced; drafts remain pending until approved |
 | No credential storage | Unchanged |
 | No bypass of access controls | Unchanged |
-| Trusted platform ≠ trusted supplier | Enforced in E2E |
+| Trusted platform does not imply trusted supplier | Enforced in E2E |
 | Independent supplier risk screening | Enforced in E2E |
 | No live credentials or external APIs | All E2E ran in mock mode |
 
@@ -90,4 +91,4 @@ No business logic was changed. No security checks were removed. Human approval g
 
 ## Final Recommendation
 
-**SAFE TO MERGE** once GitHub Actions CI is green.
+**SAFE TO MERGE once GitHub Actions CI is green.**

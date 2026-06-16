@@ -328,3 +328,45 @@ class TestDraftStateRegressions:
         resp = client.get("/api/openclaw/drafts/pending", params={"project_id": "proj_persist"})
         assert resp.status_code == 200
         assert resp.json()["pending_count"] == 0
+
+
+# ─── API key guard — /api/skill/invoke ───────────────────────────────────────
+
+def _make_skill_invoke_payload() -> dict:
+    return {
+        "source": "openclaw",
+        "channel": "openclaw-mock",
+        "channel_account_id": "acct-001",
+        "conversation_id": "conv-001",
+        "sender_id": "sender-001",
+        "message_text": "I need 100 cotton shirts.",
+        "project_id": "proj_skill_test",
+    }
+
+
+class TestSkillInvokeApiKeyGuard:
+    def test_no_key_configured_passes(self, client):
+        """When AIVAN_API_KEY is unset, /api/skill/invoke must accept any request."""
+        resp = client.post("/api/skill/invoke", json=_make_skill_invoke_payload())
+        assert resp.status_code == 200
+
+    def test_key_configured_missing_header_returns_401(self, client_with_key):
+        resp = client_with_key.post("/api/skill/invoke", json=_make_skill_invoke_payload())
+        assert resp.status_code == 401
+        assert "X-AIVAN-API-Key" in resp.json()["detail"]
+
+    def test_key_configured_wrong_key_returns_403(self, client_with_key):
+        resp = client_with_key.post(
+            "/api/skill/invoke",
+            json=_make_skill_invoke_payload(),
+            headers={"X-AIVAN-API-Key": "wrongkey"},
+        )
+        assert resp.status_code == 403
+
+    def test_key_configured_correct_key_returns_200(self, client_with_key):
+        resp = client_with_key.post(
+            "/api/skill/invoke",
+            json=_make_skill_invoke_payload(),
+            headers={"X-AIVAN-API-Key": "testkey"},
+        )
+        assert resp.status_code == 200

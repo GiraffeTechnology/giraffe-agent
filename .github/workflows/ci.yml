@@ -27,11 +27,11 @@ jobs:
       - name: Add pytest
         run: uv add --dev pytest
 
-      - name: Compile Python files
-        run: uv run python -m py_compile *.py
+      - name: Compile all Python sources
+        run: uv run python -m compileall src api scripts tests -q
 
-      - name: Run B-side and DB tests
-        run: uv run pytest tests/db/ -q
+      - name: Run full pytest suite
+        run: uv run pytest -q --tb=short
 
   mside-role-switching-tests:
     name: M-side Role-Switching Tests
@@ -54,8 +54,8 @@ jobs:
       - name: Add pytest
         run: uv add --dev pytest
 
-      - name: Compile Python files
-        run: uv run python -m py_compile *.py
+      - name: Compile all Python sources
+        run: uv run python -m compileall src api scripts tests -q
 
       - name: Run M-side role-switching tests
         run: uv run pytest tests/test_mside_role_switching.py -q
@@ -93,6 +93,9 @@ jobs:
           GIRAFFE_DB_MODE=on GIRAFFE_DB_URL=sqlite:///./ci_test.db uv run python run_bm_e2e_with_db.py
           uv run python verify_integration.py --db sqlite:///./ci_test.db --runs 5
 
+      - name: Run BM E2E MVP script
+        run: uv run python scripts/run_bm_e2e_mvp.py
+
   lead-time-model:
     name: Lead Time Path Model
     runs-on: ubuntu-latest
@@ -114,8 +117,8 @@ jobs:
       - name: Add pytest
         run: uv add --dev pytest
 
-      - name: Compile Python files
-        run: uv run python -m py_compile *.py
+      - name: Compile all Python sources
+        run: uv run python -m compileall src api scripts tests -q
 
       - name: Run lead time model unit tests
         run: uv run pytest tests/test_lead_time_imports.py tests/test_lead_time_model.py tests/test_lead_time_path_enumerator.py tests/test_b_side_feasibility_uses_lead_time_model.py tests/test_m_side_rollup_lead_time_components.py -q --tb=short
@@ -147,11 +150,14 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Compile Python sources
-        run: uv run python -m compileall api/ scripts/ -q
+      - name: Compile all Python sources
+        run: uv run python -m compileall src api scripts tests -q
 
       - name: Run full pytest suite (includes AIVAN endpoint tests)
         run: uv run pytest -q --tb=short
+
+      - name: Run OpenClaw integration tests
+        run: uv run pytest tests/test_openclaw_integration.py -q --tb=short
 
       - name: Validate ClawHub plugin metadata
         run: uv run python scripts/validate_clawhub_aivan_plugin.py
@@ -162,6 +168,12 @@ jobs:
           sleep 3
           AIVAN_BASE_URL=http://127.0.0.1:8000 uv run python scripts/run_aivan_openclaw_plugin_smoke_test.py
           kill %1
+
+      - name: Run QC LLM comparison MVP
+        run: uv run python scripts/run_qc_llm_comparison_mvp.py
+
+      - name: Run Qwen QC smoke test (skips if no key)
+        run: uv run python scripts/run_qwen_qc_smoke_test.py
 
       - name: Set up Node.js
         uses: actions/setup-node@v4

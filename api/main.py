@@ -21,6 +21,32 @@ def health():
     return {"status": "ok", "service": "giraffe-agent"}
 
 
+# ─── API key guard (shared by /api/skill/invoke and /api/openclaw/* routes) ───
+
+def _require_openclaw_api_key(
+    x_aivan_api_key: str | None = Header(default=None),
+) -> None:
+    """FastAPI dependency: enforce X-AIVAN-API-Key when AIVAN_API_KEY env var is set.
+
+    - AIVAN_API_KEY not set  → open access (useful for local-only / mock mode)
+    - Header missing          → 401 Unauthorized
+    - Header wrong            → 403 Forbidden
+    """
+    configured = os.environ.get("AIVAN_API_KEY", "")
+    if not configured:
+        return
+    if x_aivan_api_key is None:
+        raise HTTPException(
+            status_code=401,
+            detail="X-AIVAN-API-Key header is required",
+        )
+    if x_aivan_api_key != configured:
+        raise HTTPException(
+            status_code=403,
+            detail="Invalid API key",
+        )
+
+
 # ─── OpenClaw Skill Invocation ─────────────────────────────────────────────────
 
 class SkillInvokeRequest(BaseModel):
@@ -48,7 +74,10 @@ class SkillInvokeRequest(BaseModel):
 
 
 @app.post("/api/skill/invoke")
-def invoke_skill(request: SkillInvokeRequest):
+def invoke_skill(
+    request: SkillInvokeRequest,
+    _: None = Depends(_require_openclaw_api_key),
+):
     """
     OpenClaw skill invocation endpoint.
 
@@ -1216,32 +1245,6 @@ def buyer_qc_decision_endpoint(project_id: str, request: BuyerQCDecisionRequest)
         decision=request.decision,
         notes=request.notes,
     )
-
-
-# ─── AIVAN / OpenClaw API key guard ───────────────────────────────────────────
-
-def _require_openclaw_api_key(
-    x_aivan_api_key: str | None = Header(default=None),
-) -> None:
-    """FastAPI dependency: enforce X-AIVAN-API-Key when AIVAN_API_KEY env var is set.
-
-    - AIVAN_API_KEY not set  → open access (useful for local-only / mock mode)
-    - Header missing          → 401 Unauthorized
-    - Header wrong            → 403 Forbidden
-    """
-    configured = os.environ.get("AIVAN_API_KEY", "")
-    if not configured:
-        return
-    if x_aivan_api_key is None:
-        raise HTTPException(
-            status_code=401,
-            detail="X-AIVAN-API-Key header is required",
-        )
-    if x_aivan_api_key != configured:
-        raise HTTPException(
-            status_code=403,
-            detail="Invalid API key",
-        )
 
 
 # ─── AIVAN / OpenClaw events intake ───────────────────────────────────────────

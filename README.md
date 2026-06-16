@@ -38,29 +38,38 @@ Together, they produce an **Industrial Execution Graph**: an append-only executi
 
 ## Current Validation Status
 
-Latest main branch validation:
+Latest validated commit: `e56770e1ae67d89f314f895edfbf98b9146e0fd4`
 
-- Unit tests: `525 passed`
+CI workflow: **CI / AIVAN ClawHub Plugin** (and sibling jobs — see `.github/workflows/ci.yml`)
+
+Local validation report: [`MAIN_BRANCH_VALIDATION_REPORT.md`](MAIN_BRANCH_VALIDATION_REPORT.md)
+
+Summary of last local validation run:
+
+- Unit tests: 734 passed (result from that specific run; re-run to get current count)
 - B-side independent flow: PASS
 - M-side independent flow: PASS
-- B/M E2E: PASS
+- B/M E2E (DB-off): PASS
+- B/M E2E (DB-on, SQLite): PASS
+- SQLite `PRAGMA integrity_check`: ok
+- SQLite `PRAGMA foreign_key_check`: no violations
 - AI Merchandiser post-confirmation: PASS
 - Logistics ingestion: PASS
 - QC Intelligence interface: PASS
 - QC mock fallback: PASS
 - OpenClaw IM simulated events: PASS
-- DB-off mode: PASS
-- DB-on mode: PASS
-- 3x clean-state validation: PASS
+- Role switching (79 checks): PASS
+- Lead time model demo: PASS
 
 External-service status:
 
-- Real Qwen call: SKIPPED unless `DASHSCOPE_API_KEY` / `QWEN_API_KEY` is configured.
-- Real OpenClaw IM bridge: SKIPPED unless live OpenClaw channel credentials are configured.
+- **Real Qwen call: SKIPPED** unless `DASHSCOPE_API_KEY` / `QWEN_API_KEY` is configured.
+- **Real OpenClaw IM bridge: SKIPPED** unless live OpenClaw channel credentials are configured.
+- Local MVP validates interface contracts and mock paths, not production IM operation.
 
 Verdict: **PASS WITH GAPS** — all internal interfaces and mock paths pass; external production calls require credentials.
 
-See [`MAIN_3X_VALIDATION_REPORT.md`](MAIN_3X_VALIDATION_REPORT.md).
+See [`MAIN_BRANCH_VALIDATION_REPORT.md`](MAIN_BRANCH_VALIDATION_REPORT.md) for exact commands and output.
 
 ---
 
@@ -630,31 +639,32 @@ uv run python scripts/run_lead_time_model_demo.py
 
 Expected output: `LEAD TIME MODEL DEMO: PASS`
 
-### Main Branch 3x Validation
+### Main Branch Validation
 
-Latest main has been validated with three clean-state runs.
+Latest validated commit: `e56770e1ae67d89f314f895edfbf98b9146e0fd4`
+
+See [`MAIN_BRANCH_VALIDATION_REPORT.md`](MAIN_BRANCH_VALIDATION_REPORT.md) for exact commands, output, and verdict.
 
 Summary:
 
-- Unit tests: `525 passed`
+- Unit tests: 734 passed (from last documented run — re-run for current count)
 - B-side independent flow: PASS
 - M-side independent flow: PASS
-- B/M E2E: PASS
+- B/M E2E (DB-off and DB-on): PASS
 - AI Merchandiser: PASS
 - Logistics: PASS
 - QC Intelligence interface: PASS
 - OpenClaw IM simulated events: PASS
-- DB-off: PASS
-- DB-on: PASS
+- Role switching (79 checks): PASS
+- Lead time model: PASS
 
 Verdict: `PASS WITH GAPS`
 
-Gaps:
+Gaps (explicit — not failures):
 
-- Real Qwen call requires `DASHSCOPE_API_KEY` or `QWEN_API_KEY`
-- Real OpenClaw IM bridge requires live OpenClaw channel credentials
-
-See [`MAIN_3X_VALIDATION_REPORT.md`](MAIN_3X_VALIDATION_REPORT.md).
+- Real Qwen call: **SKIPPED** — requires `DASHSCOPE_API_KEY` or `QWEN_API_KEY`
+- Real OpenClaw IM bridge: **SKIPPED** — requires live OpenClaw channel credentials
+- Local MVP validates interface contracts and mock paths, not production IM operation
 
 ### MVP E2E Scripts
 

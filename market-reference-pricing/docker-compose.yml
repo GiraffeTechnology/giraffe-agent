@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: market_reference_db
+      POSTGRES_USER: ${DB_USER:-mrp_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-mrp_user} -d market_reference_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # Use port 5433 to avoid conflict with main app DB on 5432
+    ports:
+      - "5433:5432"
+
+  api:
+    build: .
+    env_file: .env.market-reference
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-mrp_user}:${DB_PASSWORD}@postgres:5432/market_reference_db
+    ports:
+      - "8001:8000"  # Use 8001 to avoid conflict with main giraffe-agent on 8000
+    volumes:
+      - ./data/snapshots:/data/snapshots
+      - ./data/logs:/data/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

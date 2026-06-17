@@ -1,0 +1,22 @@
+# Environment — never commit real credentials
+.env.market-reference
+.env.local
+
+# Data directories — too large and contain PII/proprietary data
+data/snapshots/
+data/logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp

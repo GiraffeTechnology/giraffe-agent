@@ -50,6 +50,7 @@ def test_render_process_card_for_llm_excludes_pricing(monkeypatch):
 
 def test_render_process_card_redacts_material_by_default(monkeypatch):
     monkeypatch.setenv("QC_ALLOW_CAD_TO_LLM", "false")
+    monkeypatch.setenv("QC_ALLOW_EXTERNAL_LLM", "false")
     card = create_process_card("PROJ-PC-RMAT-01", "apparel", material_spec="100% silk")
     rendered = render_process_card_for_llm(card)
     assert "100% silk" not in rendered

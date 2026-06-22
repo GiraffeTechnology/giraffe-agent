@@ -230,17 +230,44 @@ export async function rejectDraft(
   return { ok: true, draft_id: data.draft_id, status: data.status };
 }
 
-// ─── Plugin registration (OpenClaw plugin entry point) ─────────────────────────
+// ─── OpenClaw Plugin Entry Point ──────────────────────────────────────────────
+export function register(api: any): void {
+  if (typeof api.registerInteractiveHandler === "function") {
+    api.registerInteractiveHandler({
+      id: "aivan-procurement-handler",
+      name: "AIVAN Procurement Handler",
+      description: "Forward all messages to AIVAN procurement AI",
+      handler: async (ctx: any) => {
+        const msg = ctx?.message?.text ?? ctx?.text ?? "";
+        const channelId = ctx?.channel ?? ctx?.channelId ?? "openclaw-weixin";
+        const senderId = ctx?.senderId ?? ctx?.peer?.id ?? "unknown";
+        const convId = ctx?.conversationId ?? ctx?.threadId ?? senderId;
+        const accountId = ctx?.accountId ?? ctx?.channelAccountId ?? "";
 
-export default {
-  name: "@giraffetechnology/openclaw-aivan",
-  version: "0.1.0",
-  commands: {
-    "aivan.health": health,
-    "aivan.forwardEvent": forwardEvent,
-    "aivan.openDashboard": openDashboard,
-    "aivan.getPendingDrafts": getPendingDrafts,
-    "aivan.approveDraft": approveDraft,
-    "aivan.rejectDraft": rejectDraft,
-  },
-};
+        const event = {
+          source: "openclaw",
+          channel: channelId,
+          channel_account_id: accountId,
+          conversation_id: convId,
+          sender_id: senderId,
+          sender_display_name: ctx?.peer?.name ?? "",
+          message_text: msg,
+          message_type: "text",
+          attachments: [],
+          timestamp: new Date().toISOString(),
+          project_id: null,
+          procurement_edge_id: null,
+          actor_id: null,
+          role_context: null,
+          mode: "auto",
+        };
+
+        const result = await forwardEvent(event);
+        if (result.ok && result.reply_text) {
+          return { text: result.reply_text };
+        }
+        return null;
+      },
+    });
+  }
+}

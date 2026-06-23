@@ -260,56 +260,64 @@ export function register(api: any): void {
 
     api.registerAgentHarness({
       id: "openclaw-aivan",
-      supports: (_params: unknown) => true,
-      runAttempt: async (params: unknown) => {
-        // Log params shape on first real call to aid future debugging
-        const p = params as Record<string, unknown>;
-        process.stderr.write(
-          "[aivan] runAttempt params keys: " + JSON.stringify(Object.keys(p ?? {})) + "\n"
-        );
+      supports: (_params: any) => true,
+      runAttempt: async (params: any) => {
+        try {
+          // Extract message text from various possible param shapes
+          const msg: string =
+            params?.userMessage?.text ??
+            params?.message?.text ??
+            params?.text ??
+            params?.session?.latestUserMessage?.text ??
+            "";
 
-        const userMsg = p?.userMessage as Record<string, unknown> | undefined;
-        const msg =
-          (userMsg?.text as string | undefined) ??
-          ((p?.message as Record<string, unknown> | undefined)?.text as string | undefined) ??
-          (p?.text as string | undefined) ??
-          "";
+          const sessionId: string =
+            params?.session?.id ?? params?.sessionId ?? "unknown";
+          const peerId: string =
+            params?.session?.peerId ?? params?.peerId ?? "unknown";
 
-        const session = p?.session as Record<string, unknown> | undefined;
+          process.stderr.write(
+            "[aivan] runAttempt called, msg=" + msg.slice(0, 50) + "\n"
+          );
 
-        const result = await forwardEvent({
-          source: "openclaw",
-          channel: "openclaw-weixin",
-          channel_account_id: "",
-          conversation_id: (session?.id as string | undefined) ?? "unknown",
-          sender_id: (session?.peerId as string | undefined) ?? "unknown",
-          sender_display_name: "",
-          message_text: msg,
-          message_type: "text",
-          attachments: [],
-          timestamp: new Date().toISOString(),
-          project_id: null,
-          procurement_edge_id: null,
-          actor_id: null,
-          role_context: null,
-          mode: "auto",
-        });
+          const result = await forwardEvent({
+            source: "openclaw",
+            channel: "openclaw-weixin",
+            channel_account_id: "",
+            conversation_id: sessionId,
+            sender_id: peerId,
+            sender_display_name: "",
+            message_text: msg,
+            message_type: "text",
+            attachments: [],
+            timestamp: new Date().toISOString(),
+            project_id: null,
+            procurement_edge_id: null,
+            actor_id: null,
+            role_context: null,
+            mode: "auto",
+          });
 
-        if (result.ok && result.data) {
-          // reply_text lives inside the AIVAN response body (result.data)
-          const replyText = (result.data as { reply_text?: string })?.reply_text;
-          if (replyText) {
-            return { text: replyText };
+          if (result.ok && result.data) {
+            // reply_text lives inside the AIVAN response body (result.data)
+            const replyText = (result.data as { reply_text?: string })?.reply_text;
+            if (replyText) {
+              return { text: replyText };
+            }
           }
-        }
 
-        if (!result.ok) {
-          process.stderr.write("[aivan] forwardEvent error: " + String(result.error) + "\n");
+          if (!result.ok) {
+            process.stderr.write("[aivan] forwardEvent error: " + String(result.error) + "\n");
+          }
+        } catch (e) {
+          process.stderr.write("[aivan] runAttempt error: " + String(e) + "\n");
         }
 
         return undefined; // fall through to default AI
       },
     });
+
+    process.stderr.write("[aivan] registerAgentHarness registered\n");
   } catch (e) {
     process.stderr.write("[aivan] register() error: " + String(e) + "\n");
   }

@@ -96,10 +96,10 @@ export async function forwardEvent(event: {
   message_type?: string;
   attachments?: unknown[];
   timestamp?: string;
-  project_id?: string;
-  procurement_edge_id?: string;
-  actor_id?: string;
-  role_context?: string;
+  project_id?: string | null;
+  procurement_edge_id?: string | null;
+  actor_id?: string | null;
+  role_context?: string | null;
   mode?: string;
 }): Promise<{ ok: boolean; data?: unknown; error?: string }> {
   const payload = {
@@ -244,3 +244,73 @@ export default {
     "aivan.rejectDraft": rejectDraft,
   },
 };
+
+// ─── OpenClaw Gateway harness registration ────────────────────────────────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function register(api: any): void {
+  try {
+    if (typeof api.registerAgentHarness !== "function") {
+      process.stderr.write(
+        "[aivan] registerAgentHarness not available on this api object (keys: " +
+          JSON.stringify(Object.keys(api ?? {})) +
+          ")\n"
+      );
+      return;
+    }
+
+    api.registerAgentHarness({
+      id: "openclaw-aivan",
+      supports: (_params: unknown) => true,
+      runAttempt: async (params: unknown) => {
+        // Log params shape on first real call to aid future debugging
+        const p = params as Record<string, unknown>;
+        process.stderr.write(
+          "[aivan] runAttempt params keys: " + JSON.stringify(Object.keys(p ?? {})) + "\n"
+        );
+
+        const userMsg = p?.userMessage as Record<string, unknown> | undefined;
+        const msg =
+          (userMsg?.text as string | undefined) ??
+          ((p?.message as Record<string, unknown> | undefined)?.text as string | undefined) ??
+          (p?.text as string | undefined) ??
+          "";
+
+        const session = p?.session as Record<string, unknown> | undefined;
+
+        const result = await forwardEvent({
+          source: "openclaw",
+          channel: "openclaw-weixin",
+          channel_account_id: "",
+          conversation_id: (session?.id as string | undefined) ?? "unknown",
+          sender_id: (session?.peerId as string | undefined) ?? "unknown",
+          sender_display_name: "",
+          message_text: msg,
+          message_type: "text",
+          attachments: [],
+          timestamp: new Date().toISOString(),
+          project_id: null,
+          procurement_edge_id: null,
+          actor_id: null,
+          role_context: null,
+          mode: "auto",
+        });
+
+        if (result.ok && result.data) {
+          // reply_text lives inside the AIVAN response body (result.data)
+          const replyText = (result.data as { reply_text?: string })?.reply_text;
+          if (replyText) {
+            return { text: replyText };
+          }
+        }
+
+        if (!result.ok) {
+          process.stderr.write("[aivan] forwardEvent error: " + String(result.error) + "\n");
+        }
+
+        return undefined; // fall through to default AI
+      },
+    });
+  } catch (e) {
+    process.stderr.write("[aivan] register() error: " + String(e) + "\n");
+  }
+}

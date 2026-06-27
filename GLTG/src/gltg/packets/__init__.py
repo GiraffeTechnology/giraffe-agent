@@ -1,1 +1,0 @@
-"""GLTG packets submodule."""

@@ -21,8 +21,8 @@ from src.core_schema.b_side_types import (
     SupplierResponseRecord,
 )
 from src.b_side.workspace import get_b_workspace, save_b_workspace
-from src.lead_time.models import LeadTimePath, ProductionCapacity
-from src.gltg.engine import calculate_gltg_lead_time_path
+from src.lead_time.models import LeadTimePath
+from src.integrations.gltg_leadtime import estimate_lead_time_path
 from src.lead_time.path_ranker import assign_labels
 
 
@@ -174,7 +174,7 @@ def run_feasibility_simulation(b_workspace_id: str, max_recommended: int = 0) ->
     lt_paths: list[LeadTimePath] = []
     for resp in eligible:
         inputs = _response_to_path_input(resp)
-        lt_path = calculate_gltg_lead_time_path(
+        lt_path = estimate_lead_time_path(
             supplier_response_id=inputs["response_id"],
             supplier_id=inputs["supplier_id"],
             supplier_name=inputs["supplier_name"],

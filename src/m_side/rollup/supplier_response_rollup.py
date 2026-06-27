@@ -255,8 +255,8 @@ def generate_supplier_response_rollup(
 
     rollup_id = f"ROLLUP-{uuid.uuid4().hex[:10].upper()}"
 
-    # Calculate lead time using embedded GLTG
-    from src.gltg.engine import calculate_gltg_lead_time_path
+    # Calculate lead time via the standalone GLTG API
+    from src.integrations.gltg_leadtime import estimate_lead_time_path
     from src.lead_time.models import ProductionCapacity
 
     lt_fabric_days = lead_time_basis.get("fabric", {}).get("days")
@@ -279,7 +279,7 @@ def generate_supplier_response_rollup(
         confidence_score=0.7 if main_capacity_available else 0.3,
     )
 
-    lt_path = calculate_gltg_lead_time_path(
+    lt_path = estimate_lead_time_path(
         supplier_response_id=f"ROLLUP-{rollup_id}",
         supplier_id=main_supplier_actor_id,
         supplier_name=main_capacity_note,

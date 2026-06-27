@@ -154,7 +154,7 @@ def test_path_has_label(workspace_dir):
 
 def test_lead_time_model_supplier_a_capacity(workspace_dir):
     """Supplier A: 500 pcs/day, 10,000 pcs order → ~35 days ex-factory."""
-    from src.lead_time.lead_time_calculator import calculate_lead_time_path
+    from src.integrations.gltg_leadtime import estimate_lead_time_path as calculate_lead_time_path
 
     path = calculate_lead_time_path(
         supplier_response_id="r_sup_a",
@@ -186,7 +186,7 @@ def test_lead_time_model_supplier_a_capacity(workspace_dir):
 
 def test_lead_time_model_supplier_d_unrealistic(workspace_dir):
     """Supplier D: 1-day delivery claim must be flagged."""
-    from src.lead_time.lead_time_calculator import calculate_lead_time_path
+    from src.integrations.gltg_leadtime import estimate_lead_time_path as calculate_lead_time_path
 
     path = calculate_lead_time_path(
         supplier_response_id="r_sup_d",

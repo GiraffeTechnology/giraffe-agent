@@ -274,7 +274,7 @@ def test_rejected_draft_auditable(isolated_env):
 
 def test_lead_time_p80_used_for_feasibility():
     """P80 lead time is used as the primary feasibility benchmark."""
-    from src.lead_time.lead_time_calculator import calculate_lead_time_path
+    from src.integrations.gltg_leadtime import estimate_lead_time_path as calculate_lead_time_path
     from src.lead_time.path_ranker import assign_labels
 
     paths = [

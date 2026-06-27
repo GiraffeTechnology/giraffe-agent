@@ -292,6 +292,19 @@ GPM answers questions such as:
 
 ### GLTG — Giraffe Lead-Time Graph
 
+> **GLTG is now a standalone service:** https://github.com/GiraffeTechnology/GLTG
+>
+> giraffe-agent no longer vendors a GLTG engine. It calls GLTG over HTTP through
+> `src/integrations/gltg_client.py`. Configure the connection with:
+>
+> ```bash
+> GLTG_API_BASE_URL=http://localhost:8090
+> GLTG_API_TIMEOUT_SECONDS=30
+> ```
+>
+> The client returns a structured `GLTGClientResult(ok, data, error, status_code)`
+> and never falls back to a local calculation when GLTG is unavailable.
+
 GLTG is the lead-time and delivery-feasibility model. It estimates delivery paths using deterministic dependency logic and probability bands.
 
 GLTG should support:

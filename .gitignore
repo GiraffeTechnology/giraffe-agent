@@ -75,3 +75,5 @@ data/supplier_memory/
 data/industrial_execution_graph/
 test.db
 ci_test.db
+
+.venv/

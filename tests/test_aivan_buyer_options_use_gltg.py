@@ -129,14 +129,14 @@ def test_buyer_option_feasibility_basis_is_p80(workspace_dir):
 
 
 def test_buyer_option_fallback_is_false(workspace_dir):
-    """fallback_model_used must be False for embedded GLTG (never silent fallback)."""
+    """fallback_model_used must be False for GLTG-backed paths (never silent fallback)."""
     from src.b_side.feasibility_engine import run_feasibility_simulation
     ws = _setup_workspace(workspace_dir, "1000 shirts 45 days",
                           [_make_response("r1", "sup1", "Supplier A")])
     report = run_feasibility_simulation(ws.b_workspace_id)
     path = report.paths[0]
     assert path.fallback_model_used is False, (
-        f"fallback_model_used must be False for embedded GLTG, got: {path.fallback_model_used!r}"
+        f"fallback_model_used must be False for GLTG-backed paths, got: {path.fallback_model_used!r}"
     )
 
 

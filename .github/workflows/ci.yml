@@ -54,6 +54,12 @@ jobs:
       - name: Add pytest
         run: uv add --dev pytest
 
+      - name: Start GLTG mock server
+        run: |
+          nohup uv run python tests/ci_gltg_server.py 8090 > gltg_server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:8090/health && break; sleep 1; done
+          echo "GLTG_API_BASE_URL=http://localhost:8090" >> "$GITHUB_ENV"
+
       - name: Compile Python files
         run: uv run python -m py_compile *.py
 
@@ -83,6 +89,12 @@ jobs:
 
       - name: Add pytest
         run: uv add --dev pytest
+
+      - name: Start GLTG mock server
+        run: |
+          nohup uv run python tests/ci_gltg_server.py 8090 > gltg_server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:8090/health && break; sleep 1; done
+          echo "GLTG_API_BASE_URL=http://localhost:8090" >> "$GITHUB_ENV"
 
       - name: Run BM DB integration verifier (DB-off)
         run: GIRAFFE_DB_MODE=off uv run python run_bm_e2e_with_db.py
@@ -117,13 +129,22 @@ jobs:
       - name: Compile Python files
         run: uv run python -m py_compile *.py
 
-      - name: Run lead time model unit tests
-        run: uv run pytest tests/test_lead_time_imports.py tests/test_lead_time_model.py tests/test_lead_time_path_enumerator.py tests/test_b_side_feasibility_uses_lead_time_model.py tests/test_m_side_rollup_lead_time_components.py -q --tb=short
+      - name: Start GLTG mock server
+        run: |
+          nohup uv run python tests/ci_gltg_server.py 8090 > gltg_server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:8090/health && break; sleep 1; done
+          echo "GLTG_API_BASE_URL=http://localhost:8090" >> "$GITHUB_ENV"
 
-      - name: Run lead time model demo
-        run: uv run python scripts/run_lead_time_model_demo.py
+      - name: Run GLTG-integration lead-time tests
+        run: >-
+          uv run pytest
+          tests/test_gltg_client.py
+          tests/test_feasibility_uses_gltg_api.py
+          tests/test_b_side_feasibility_uses_lead_time_model.py
+          tests/test_m_side_rollup_lead_time_components.py
+          -q --tb=short
 
-      - name: Run BM E2E (DB-off) with lead time model
+      - name: Run BM E2E (DB-off) with GLTG-backed lead time
         run: GIRAFFE_DB_MODE=off uv run python run_bm_e2e_with_db.py
 
       - name: Run role switching tests
@@ -146,6 +167,12 @@ jobs:
 
       - name: Install dependencies
         run: uv sync
+
+      - name: Start GLTG mock server
+        run: |
+          nohup uv run python tests/ci_gltg_server.py 8090 > gltg_server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:8090/health && break; sleep 1; done
+          echo "GLTG_API_BASE_URL=http://localhost:8090" >> "$GITHUB_ENV"
 
       - name: Compile Python sources
         run: uv run python -m compileall api/ scripts/ -q

@@ -1,20 +1,22 @@
-"""Faithful in-memory fake of the standalone GLTG HTTP API for tests.
+"""Faithful in-memory fake of the standalone GLTG HTTP API for tests/CI.
 
-Provides an ``httpx.MockTransport`` that mirrors the GLTG endpoints
-deterministically, so AIVAN's unit tests exercise the real HTTP client and
-mapping code without a live GLTG server.
+`route()` is a pure function (no httpx) that maps an endpoint + JSON body to a
+(status, body) pair, mirroring the GLTG service deterministically. It is used
+both by `mock_transport()` (httpx.MockTransport, for unit tests) and by
+`tests/ci_gltg_server.py` (a real stdlib HTTP server, for CI E2E scripts).
+
+This is test/CI infrastructure only -- it is NOT product code and NOT a runtime
+fallback. Production always talks to the real standalone GLTG service.
 """
 
 from __future__ import annotations
 
 import json
 import math
-
-import httpx
+from datetime import date, timedelta
 
 
 def _baseline_total(quantity: int, supplier: dict) -> float:
-    # Mirrors GLTG baseline shape closely enough for assertions.
     stage = (
         (supplier.get("material_ready_days") or 0)
         + (supplier.get("production_days") or 0)
@@ -26,19 +28,24 @@ def _baseline_total(quantity: int, supplier: dict) -> float:
         if cap and quantity:
             stage = max(stage, math.ceil(quantity / cap))
         return float(stage)
-    # requirement-level: synthesize a baseline
     cap = supplier.get("capacity_per_day") or 500
     production = max(math.ceil(quantity / max(int(cap * 0.85), 1)), 1) + 2
-    return float(17 + production + 6 + 30)  # material + production + qc + logistics
+    return float(17 + production + 6 + 30)
+
+
+def _effective_deadline(order: dict) -> int | None:
+    if order.get("deadline_days") is not None:
+        return int(order["deadline_days"])
+    return None
 
 
 def _estimate(payload: dict) -> dict:
     order = payload.get("order", {})
     suppliers = payload.get("suppliers", []) or []
     quantity = order.get("quantity", 0) or 0
-    deadline = order.get("deadline_days")
+    deadline = _effective_deadline(order)
     n = len(suppliers)
-    warnings = []
+    warnings: list[dict] = []
     if n == 0:
         return {
             "status": "ok",
@@ -94,10 +101,13 @@ def _estimate(payload: dict) -> dict:
         warnings.append({"code": "LIMITED_COMPARISON", "message": "one supplier"})
     elif n == 2:
         warnings.append({"code": "LIMITED_SUPPLIER_POOL", "message": "two suppliers"})
+    if not feasible and deadline is not None:
+        warnings.append({"code": "TARGET_NOT_MET", "message": "deadline not met"})
+    earliest = (date.today() + timedelta(days=int(math.ceil(total)))).isoformat()
     return {
         "status": "ok",
         "estimated_lead_time_days": total,
-        "earliest_delivery_date": None,
+        "earliest_delivery_date": earliest,
         "feasible": feasible,
         "supplier_count": n,
         "selected_supplier_id": selected.get("supplier_id"),
@@ -111,55 +121,69 @@ def _estimate(payload: dict) -> dict:
     }
 
 
-def handler(request: httpx.Request) -> httpx.Response:
-    path = request.url.path
+def _paths(payload: dict) -> dict:
+    est = _estimate(payload)
+    paths = []
+    for i, t in enumerate(est["calculation_trace"], start=1):
+        paths.append(
+            {
+                "path_id": f"single:{t['supplier_id']}",
+                "rank": i,
+                "mode": "SINGLE_SOURCE",
+                "supplier_ids": [t["supplier_id"]],
+                "estimated_lead_time_days": t["total_lead_time_days"],
+                "earliest_delivery_date": est["earliest_delivery_date"],
+                "feasible": t["feasible"],
+                "confidence": t["confidence"],
+                "score": 1.0,
+                "warnings": [],
+            }
+        )
+    return {"status": "ok", "supplier_count": est["supplier_count"], "paths": paths, "warnings": est["warnings"]}
+
+
+def _reforecast(payload: dict) -> dict:
+    est = _estimate(payload)
+    return {
+        "status": "ok",
+        "baseline_lead_time_days": est["estimated_lead_time_days"],
+        "updated_lead_time_days": est["estimated_lead_time_days"],
+        "delta_days": 0,
+        "earliest_delivery_date": est["earliest_delivery_date"],
+        "feasible": est["feasible"],
+        "supplier_count": est["supplier_count"],
+        "selected_supplier_id": est["selected_supplier_id"],
+        "applied_events": [],
+        "warnings": est["warnings"],
+        "calculation_trace": est["calculation_trace"],
+    }
+
+
+def route(method: str, path: str, body: dict | None) -> tuple[int, dict]:
+    """Pure GLTG endpoint router (no HTTP library dependency)."""
     if path == "/health":
-        return httpx.Response(200, json={"status": "ok", "service": "gltg"})
+        return 200, {"status": "ok", "service": "gltg"}
     if path == "/version":
-        return httpx.Response(200, json={"service": "gltg", "version": "1.0.0", "api_version": "v1"})
-    payload = json.loads(request.content.decode() or "{}")
+        return 200, {"service": "gltg", "version": "1.0.0", "api_version": "v1"}
+    body = body or {}
     if path == "/v1/lead-time/estimate":
-        return httpx.Response(200, json=_estimate(payload))
-    if path == "/v1/reforecast":
-        est = _estimate(payload)
-        return httpx.Response(
-            200,
-            json={
-                "status": "ok",
-                "baseline_lead_time_days": est["estimated_lead_time_days"],
-                "updated_lead_time_days": est["estimated_lead_time_days"],
-                "delta_days": 0,
-                "feasible": est["feasible"],
-                "supplier_count": est["supplier_count"],
-                "selected_supplier_id": est["selected_supplier_id"],
-                "applied_events": [],
-                "warnings": est["warnings"],
-                "calculation_trace": est["calculation_trace"],
-            },
-        )
+        return 200, _estimate(body)
     if path == "/v1/paths/enumerate":
-        est = _estimate(payload)
-        paths = []
-        for i, t in enumerate(est["calculation_trace"], start=1):
-            paths.append(
-                {
-                    "path_id": f"single:{t['supplier_id']}",
-                    "rank": i,
-                    "mode": "SINGLE_SOURCE",
-                    "supplier_ids": [t["supplier_id"]],
-                    "estimated_lead_time_days": t["total_lead_time_days"],
-                    "earliest_delivery_date": None,
-                    "feasible": t["feasible"],
-                    "confidence": t["confidence"],
-                    "score": 1.0,
-                    "warnings": [],
-                }
-            )
-        return httpx.Response(
-            200, json={"status": "ok", "supplier_count": est["supplier_count"], "paths": paths, "warnings": est["warnings"]}
-        )
-    return httpx.Response(404, json={"detail": "not found"})
+        return 200, _paths(body)
+    if path == "/v1/reforecast":
+        return 200, _reforecast(body)
+    return 404, {"detail": "not found"}
 
 
-def mock_transport() -> httpx.MockTransport:
+# --------------------------------------------------------------------------- #
+# httpx MockTransport for unit tests
+# --------------------------------------------------------------------------- #
+def mock_transport():
+    import httpx
+
+    def handler(request: "httpx.Request") -> "httpx.Response":
+        body = json.loads(request.content.decode() or "{}") if request.content else {}
+        status, payload = route(request.method, request.url.path, body)
+        return httpx.Response(status, json=payload)
+
     return httpx.MockTransport(handler)

@@ -177,6 +177,9 @@ jobs:
       - name: Compile Python sources
         run: uv run python -m compileall api/ scripts/ -q
 
+      - name: Unified giraffe-db data-ID contract scan
+        run: uv run python scripts/check_unified_data_ids.py --repo .
+
       - name: Run full pytest suite (includes AIVAN endpoint tests)
         run: uv run pytest -q --tb=short
 

@@ -2,9 +2,13 @@
 Giraffe Agent FastAPI application — B-side + M-side endpoints + OpenClaw skill invocation.
 """
 
+import logging
 import os
+import traceback
+import uuid
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 app = FastAPI(
@@ -13,10 +17,84 @@ app = FastAPI(
     version="0.1.0",
 )
 
+logger = logging.getLogger("giraffe_agent.api")
+
+# OpenClaw-facing skill routes: an exception here must fail soft, never raw 500.
+# OpenClaw treats a 500 from a skill as "skill broken" and the WeChat user sees
+# "Agent couldn't generate a response"; a 200 carrying {"status":"error", ...} is
+# a recoverable error the user can read and retry.
+SKILL_INVOKE_PATHS = frozenset(
+    {"/invoke", "/api/skill/invoke", "/api/openclaw/events"}
+)
+
+# WeChat-visible degraded reply when the backend pipeline fails. Must be
+# human-readable and must never leak a traceback or raw exception text.
+ERROR_REPLY_TEXT = "AIVAN 处理请求时遇到后端依赖错误，请稍后再试。"
+
+
+@app.exception_handler(Exception)
+async def _unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Fail soft for OpenClaw skill routes; keep normal HTTP semantics elsewhere.
+
+    An uncaught exception on a skill-invocation route (e.g. GLTG/DB/LLM dependency
+    down) is logged and converted to a 200 error envelope carrying both `output`
+    and `reply_text` so the OpenClaw bridge always has visible text to send to
+    WeChat. Non-skill routes keep standard 500 semantics; explicit HTTPException
+    (401/403/404/...) is handled by FastAPI's own handler and keeps its status.
+    """
+    logger.error(
+        "Unhandled exception on %s %s: %s: %s\n%s",
+        request.method,
+        request.url.path,
+        type(exc).__name__,
+        exc,
+        traceback.format_exc(),
+    )
+    if request.url.path not in SKILL_INVOKE_PATHS:
+        return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
+    return JSONResponse(
+        status_code=200,
+        content={
+            "status": "error",
+            "output": ERROR_REPLY_TEXT,
+            "reply_text": ERROR_REPLY_TEXT,
+        },
+    )
+
+
+def _first_non_empty(*values: object) -> str:
+    for value in values:
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return ""
+
+
+def _skill_envelope(result: object) -> object:
+    """Add the OpenClaw skill envelope (status/output/reply_text) to a result.
+
+    The OpenClaw bridge sends `reply_text` (and a hardened bridge reads `output`)
+    back to WeChat, so both must be present and non-empty. Existing keys (ok,
+    project_id, status, message_drafts, ...) are preserved. Non-dict results pass
+    through unchanged.
+    """
+    if not isinstance(result, dict):
+        return result
+    reply_text = _first_non_empty(
+        result.get("reply_text"),
+        result.get("output"),
+        result.get("message"),
+        "已收到您的请求。",
+    )
+    status = result.get("status")
+    if status not in ("ok", "error"):
+        status = "ok" if result.get("ok", True) else "error"
+    return {**result, "status": status, "output": reply_text, "reply_text": reply_text}
+
 
 # ─── Health ───────────────────────────────────────────────────────────────────
 
 @app.get("/health")
+@app.get("/healthz")
 def health():
     return {"status": "ok", "service": "giraffe-agent"}
 
@@ -78,7 +156,7 @@ def invoke_skill(request: SkillInvokeRequest):
             "role_context": request.role_context,
             "mode": request.mode,
         }
-        return adapt_openclaw_event(event_data)
+        return _skill_envelope(adapt_openclaw_event(event_data))
 
     # Legacy action-based invocation
     if not request.action:
@@ -91,6 +169,87 @@ def invoke_skill(request: SkillInvokeRequest):
     if request.channel:
         params.setdefault("channel", request.channel)
     return route_action(request.action, params)
+
+
+def _normalize_invoke_payload(raw: dict) -> dict:
+    """Normalize any supported /invoke body into a native OpenClaw event dict.
+
+    Accepts the OpenClaw-standard ({session_id,user_input,context}), WeChat-webhook
+    ({content,from_user,room_id}) and native OpenClaw-event ({message_text,...})
+    shapes and maps them onto the fields adapt_openclaw_event reads, preserving
+    project_id/role_context so follow-up turns attach to the existing project.
+    """
+    if not isinstance(raw, dict):
+        raise ValueError("payload must be a JSON object")
+
+    if "message_text" in raw:
+        return dict(raw)
+
+    if "user_input" in raw:
+        context = raw.get("context")
+        if not isinstance(context, dict):
+            context = {}
+        event = {
+            "source": "openclaw",
+            "channel": _first_non_empty(context.get("channel")) or "openclaw",
+            "channel_account_id": _first_non_empty(context.get("channel_account_id")),
+            "conversation_id": _first_non_empty(raw.get("session_id"), context.get("conversation_id"))
+            or str(uuid.uuid4()),
+            "sender_id": _first_non_empty(context.get("sender_id")) or "openclaw-user",
+            "message_text": raw.get("user_input") or "",
+            "message_type": "text",
+            "mode": _first_non_empty(context.get("mode")) or "auto",
+        }
+        if _first_non_empty(context.get("project_id")):
+            event["project_id"] = context["project_id"]
+        if _first_non_empty(context.get("role_context")):
+            event["role_context"] = context["role_context"]
+        return event
+
+    if "content" in raw:
+        return {
+            "source": "wechat",
+            "channel": "wechat",
+            "channel_account_id": _first_non_empty(raw.get("channel_account_id")),
+            "conversation_id": _first_non_empty(raw.get("room_id"), raw.get("from_user"))
+            or str(uuid.uuid4()),
+            "sender_id": _first_non_empty(raw.get("from_user")) or "wechat-user",
+            "message_text": raw.get("content") or "",
+            "message_type": _first_non_empty(raw.get("msg_type")) or "text",
+            "mode": "auto",
+        }
+
+    raise ValueError(f"unrecognized payload keys: {sorted(raw.keys())}")
+
+
+@app.post("/invoke")
+async def invoke(request: Request):
+    """OpenClaw / WeChat skill invocation endpoint (root path).
+
+    The real harness probes POST /invoke. In SKILL_INVOKE_PATHS, so it always
+    fails soft: never 404, never 500.
+    """
+    try:
+        raw = await request.json()
+    except Exception:
+        return JSONResponse(
+            status_code=200,
+            content={"status": "error", "output": "Invalid JSON body.", "reply_text": "Invalid JSON body."},
+        )
+    try:
+        event_data = _normalize_invoke_payload(raw)
+    except Exception as exc:
+        logger.warning("invoke payload normalization failed: %s", exc)
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": "error",
+                "output": "Unrecognized request format.",
+                "reply_text": "无法识别的请求格式，请检查消息内容。",
+            },
+        )
+    from src.openclaw_skill.openclaw_event_adapter import adapt_openclaw_event
+    return _skill_envelope(adapt_openclaw_event(event_data))
 
 
 # ─── B-side workspace endpoints ────────────────────────────────────────────────
@@ -1276,7 +1435,7 @@ def receive_openclaw_event(
     AIVAN never receives raw IM credentials or channel tokens.
     """
     from src.openclaw_skill.openclaw_event_adapter import adapt_openclaw_event
-    return adapt_openclaw_event(event.model_dump())
+    return _skill_envelope(adapt_openclaw_event(event.model_dump()))
 
 
 @app.get("/api/openclaw/drafts/pending")

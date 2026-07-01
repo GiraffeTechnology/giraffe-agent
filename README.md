@@ -1,8 +1,8 @@
 # Giraffe Agent
 
-> Open-core industrial agent infrastructure for private-domain procurement, trade execution, quality control, and auditable order orchestration.
+> Open-core industrial execution infrastructure for private-domain procurement, cross-border trade execution, supplier coordination, QC evidence, and auditable order orchestration.
 >
-> Industrial Execution Graph + Neutral Actor Model + GPM/GLTG feasibility reasoning + OpenClaw-compatible channel runtime.
+> Industrial Execution Graph + Neutral Actor Model + Giraffe DB facts + GPM/GLTG feasibility models + OpenClaw-compatible channel runtime + human approval.
 
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-ready-green)](https://fastapi.tiangolo.com/)
@@ -16,110 +16,88 @@
 
 Giraffe Agent is the open-core orchestration layer of the Giraffe industrial AI system.
 
-It is designed for industrial procurement, cross-border trade execution, supplier coordination, order follow-up, QC evidence handling, logistics tracking, and private-domain business memory. It converts fragmented real-world trade communication into structured, auditable, human-confirmable execution state.
+It converts fragmented trade communication into structured, auditable, human-confirmable execution state. It is designed for apparel and textile procurement, cross-border supplier coordination, RFQ execution, quotation comparison, lead-time feasibility, order follow-up, QC evidence handling, logistics tracking, and private-domain business memory.
 
-Giraffe Agent is not a CRM, ERP, marketplace, supplier directory, generic chatbot, or single-purpose demo.
+Giraffe Agent is not a generic chatbot, CRM, ERP, supplier directory, marketplace, or one-off demo.
 
-It is an **industrial execution infrastructure layer** that sits between communication channels, private-domain data, deterministic feasibility models, AI reasoning, human approval, and auditable order execution.
+It is an **industrial execution infrastructure layer** that sits between:
+
+```text
+communication channels
+private-domain business facts
+deterministic feasibility models
+LLM-assisted reasoning and drafting
+human approval
+append-only execution records
+```
 
 The core output is an **Industrial Execution Graph**: an append-only record of requirements, supplier inquiries, quotations, delivery assumptions, approvals, production events, QC evidence, logistics updates, exceptions, and sign-off decisions.
 
 ---
 
-## Product Category
+## Current Repository Status
 
-Classical procurement tools assume clean forms, known suppliers, stable master data, and formal RFQs.
+This repository is the **open-core orchestration reference implementation**.
 
-Real industrial trade usually starts elsewhere:
+Current package metadata:
 
-- buyer requirements arrive as incomplete IM messages, emails, screenshots, drawings, spreadsheets, PDFs, photos, or voice notes;
-- suppliers reply in inconsistent formats;
-- a manufacturer can be the supplier in one edge and the buyer in another edge;
-- upstream material, trim, subcontracting, packaging, QC, and logistics dependencies are often hidden;
-- lead-time promises require evidence and simulation, not blind trust;
-- quality inspection requires visual comparison against confirmed detection points, not general language guessing;
-- humans and legal entities still carry commercial and legal responsibility.
+```text
+package: giraffe-agent
+version: 0.1.0
+python: >=3.11
+runtime: FastAPI / SQLAlchemy / Pydantic v2 / httpx
+```
 
-Giraffe Agent creates the execution layer for this environment:
+Current local validation status recorded in this repository:
 
-> **Industrial agentic AI for private-domain trade execution — turning communication into auditable workflow primitives, execution graphs, and reusable business data.**
+```text
+unit tests: 525 passed
+B-side independent flow: PASS
+M-side independent flow: PASS
+B/M E2E: PASS
+AI Merchandiser post-confirmation: PASS
+Logistics ingestion: PASS
+QC Intelligence interface: PASS
+QC mock fallback: PASS
+OpenClaw IM simulated events: PASS
+DB-off mode: PASS
+DB-on mode: PASS
+3x clean-state validation: PASS
+```
+
+Repository-local verdict:
+
+```text
+PASS WITH GAPS
+```
+
+Meaning: internal interfaces and mock paths pass, but production integrations require live credentials, deployed services, and cross-repository validation.
 
 ---
 
-## Ecosystem Map
+## Ecosystem Boundary
 
-Giraffe Agent is the orchestration repository. It should not be confused with every downstream product built on the Giraffe architecture.
+Giraffe Agent coordinates the broader Giraffe industrial AI stack. It must not silently absorb every downstream product, runtime, database, or model.
 
-| Component | Role in the Giraffe ecosystem | Repository / boundary |
+| Component | Responsibility | Boundary |
 |---|---|---|
-| **giraffe-agent** | Open-core orchestration layer, workflow state, Neutral Actor Model, B/M-side execution, Industrial Execution Graph, OpenClaw-compatible skill interface | This repository |
-| **AIVAN** | Standalone AI trade salesperson for private-domain RFQ execution: buyer inquiry intake, supplier sourcing, GLTG calls, draft creation, human approval, email-first outbound | [`GiraffeTechnology/aivan`](https://github.com/GiraffeTechnology/aivan) |
-| **abcdYi** | Apparel and textile industry application layer aligned with the Giraffe C2M / order execution patent family | Separate application repository |
-| **GPM** | Giraffe Procurement Model: broader procurement graph reasoning, supplier-set feasibility, procurement-path planning, role/edge reasoning | Model layer / callable service boundary |
-| **GLTG** | Giraffe Lead-Time Graph: deterministic lead-time and delivery-feasibility simulation, including P50/P80/P90 estimates and fallback triggers | Model layer / library boundary |
-| **Giraffe DB** | Private-domain source of truth for customers, suppliers, RFQs, quotations, lead-time history, approval history, and order/quote/procurement data | Should be treated as an independent data layer, not as LLM memory |
-| **giraffe-qc-model** | AI-native QC inference system with Pad and Server editions; manages sample DB, standard photos, inspection requirements, detection points, and QC inference | [`GiraffeTechnology/giraffe-qc-model`](https://github.com/GiraffeTechnology/giraffe-qc-model) |
+| **giraffe-agent** | Open-core orchestration, Neutral Actor Model, B/M-side workflows, Industrial Execution Graph, reference adapters | This repository |
+| **AIVAN** | Standalone AI trade salesperson for private-domain RFQ execution, OpenClaw Gateway intake, buyer/supplier workflow, draft generation, human approval | `GiraffeTechnology/aivan` |
+| **giraffe-db** | Private-domain facts: RFQs, quotes, supplier history, buyer/supplier behavior snapshots, lead-time observations, execution evidence | `GiraffeTechnology/giraffe-db` |
+| **GLTG** | Lead-time simulation, P50/P80/P90 quantiles, behavioral/statistical lead-time adjustment, fallback/manual-review flags | `GiraffeTechnology/GLTG` |
+| **GPM** | Procurement graph reasoning, supplier-set feasibility, known-suppliers-first path logic, fallback planning | Model/service boundary |
+| **abcdYi** | Apparel/textile application layer aligned with the Giraffe C2M patent family | Separate application repository |
+| **giraffe-qc-model** | AI-native QC inference, standard photos, inspection requirements, detection points, Pad/Server runtime | `GiraffeTechnology/giraffe-qc-model` |
 
-`giraffe-agent` coordinates these capabilities. It should not silently absorb every product's runtime, credentials, database ownership, or deployment policy.
+The product boundary should remain:
 
----
-
-## Repository Boundary
-
-This repository owns or demonstrates:
-
-- OpenClaw-compatible normalized event intake;
-- B-side / M-side role-aware workflow orchestration;
-- Neutral Actor Model and role switching;
-- supplier inquiry and response packets;
-- delivery-feasibility workflow hooks;
-- AI Buyer and AI Merchandiser reference workflows;
-- QC evidence ingestion and QC service interface;
-- logistics ingestion patterns;
-- append-only Industrial Execution Graph events;
-- local development persistence and validation scripts;
-- reference implementation of the industrial execution model.
-
-This repository does **not** own:
-
-- IM account login, cookies, session tokens, CAPTCHA bypass, or platform anti-bot bypass;
-- AIVAN runtime and OpenClaw Gateway product fixes, which belong in `aivan` first;
-- canonical order/quote/procurement business database ownership, which should live in Giraffe DB;
-- QC model inference runtime ownership, which belongs in `giraffe-qc-model`;
-- final legal, credit, sanctions, compliance, payment, or contractual decisions.
-
----
-
-## Current Validation Status
-
-Latest main-branch local validation:
-
-- Unit tests: `525 passed`
-- B-side independent flow: PASS
-- M-side independent flow: PASS
-- B/M E2E: PASS
-- AI Merchandiser post-confirmation: PASS
-- Logistics ingestion: PASS
-- QC Intelligence interface: PASS
-- QC mock fallback: PASS
-- OpenClaw IM simulated events: PASS
-- DB-off mode: PASS
-- DB-on mode: PASS
-- 3x clean-state validation: PASS
-
-External-service status:
-
-- Real Qwen call: SKIPPED unless `DASHSCOPE_API_KEY` / `QWEN_API_KEY` is configured.
-- Real OpenClaw IM bridge inside this repository: SKIPPED unless live OpenClaw channel credentials are configured.
-
-Repository-local verdict: **PASS WITH GAPS** — internal interfaces and mock paths pass; external production calls require credentials.
-
-Important ecosystem distinction:
-
-- AIVAN has its own standalone OpenClaw Gateway / WeChat bot bridge validation status in the `aivan` repository.
-- `giraffe-qc-model` has its own QC runtime, sample DB, Android Pad, and Server edition validation status in the `giraffe-qc-model` repository.
-
-See [`MAIN_3X_VALIDATION_REPORT.md`](MAIN_3X_VALIDATION_REPORT.md).
+```text
+facts live in giraffe-db
+simulation lives in GLTG / GPM
+execution lives in AIVAN and giraffe-agent workflows
+connectivity lives in OpenClaw or compatible channel runtime
+legal/commercial approval lives with humans and legal entities
+```
 
 ---
 
@@ -131,10 +109,10 @@ User IM / Email / Marketplace input
 -> normalized event
 -> Giraffe Agent workflow router
 -> role-aware requirement structuring
--> Giraffe DB private-domain lookup
+-> giraffe-db private-domain lookup
 -> GPM procurement-path reasoning
 -> GLTG lead-time / delivery-feasibility simulation
--> draft inquiry / draft quote / draft response
+-> buyer option generation / supplier inquiry drafting
 -> human approval gate
 -> authorized outbound execution
 -> order execution state
@@ -142,114 +120,55 @@ User IM / Email / Marketplace input
 -> QC evidence ingestion / QC service call
 -> logistics / exception tracking
 -> buyer sign-off
--> Supplier Memory / Giraffe DB update
+-> Supplier Memory / giraffe-db update
 -> append-only Industrial Execution Graph
 ```
 
-The system is designed so that private-domain facts come from the database, deterministic feasibility comes from GPM/GLTG, visual QC comes from the QC model, and the LLM provides controlled reasoning, summarization, classification, and drafting.
+The LLM is allowed to classify, summarize, explain, and draft. It must not become the fact source, the lead-time calculator, the QC judge, or the legal decision-maker.
 
 ---
 
-## Legal and Operating Boundary
-
-Giraffe Agent does not replace the legal parties to a transaction.
-
-It does not become the buyer, seller, manufacturer, freight forwarder, payment obligor, insurer, bank, customs declarant, or contracting party.
-
-Human users and their legal entities remain responsible for:
-
-- approving supplier inquiries;
-- confirming quotations;
-- selecting delivery paths;
-- accepting production schedules;
-- approving order commitments;
-- releasing payments;
-- signing contracts;
-- accepting commercial, legal, credit, sanctions, logistics, and quality risk.
-
-Giraffe Agent assists by producing:
-
-- structured requirements;
-- clarification questions;
-- bilingual inquiry drafts;
-- supplier response packets;
-- private-domain context packets;
-- delivery feasibility reports;
-- ranked options and risk flags;
-- production and QC milestone records;
-- QC comparison reports and corrective feedback;
-- logistics updates;
-- exception reports;
-- supplier memory updates;
-- append-only execution events.
-
-High-stake actions must remain human-confirmed.
-
----
-
-## Core Product Principles
+## Product Principles
 
 ### 1. Conversation is the real interface
 
-Industrial trade does not start in a clean SaaS form. It starts in WeChat, WhatsApp, DingTalk, LINE, email, phone notes, drawings, screenshots, PDFs, informal buyer messages, and supplier fragments.
+Industrial trade does not start in a clean SaaS form. It starts in WeChat, WhatsApp, DingTalk, LINE, email, voice notes, drawings, photos, PDFs, screenshots, spreadsheets, and informal buyer messages.
 
-Giraffe Agent works through an OpenClaw-compatible channel runtime and normalized event interface.
+Giraffe Agent works through normalized channel events, not through fragile direct platform credential handling.
 
 ### 2. Private-domain data is the source of truth
 
-The LLM must not invent supplier facts, customer history, historical prices, lead-time history, approval history, or user preference memory.
+The LLM must not invent supplier facts, customer history, historical prices, lead-time history, approval history, buyer behavior, supplier behavior, or user preference memory.
 
-Those facts must come from Giraffe DB or from explicitly provided evidence. The LLM may reason over database context, but it is not the business fact source.
+Those facts must come from `giraffe-db` or from explicitly provided evidence.
 
 ### 3. Deterministic models calculate feasibility
 
-Lead-time and delivery feasibility should not be guessed by the LLM.
+Lead-time, delivery feasibility, supplier path ranking, and risk buffers must not be guessed by the LLM.
 
-GPM and GLTG provide procurement-path reasoning and delivery-feasibility simulation. The LLM may explain their outputs, but it must not replace their calculations.
+GLTG and GPM own the calculations. The LLM may explain their outputs, but it must not replace them.
 
 ### 4. Roles are contextual, not fixed
 
-The same company can be:
-
-- a supplier to the original buyer;
-- a buyer to its own upstream supplier;
-- a coordinator for subcontracting, packaging, or logistics;
-- a merchandiser after an order is confirmed.
-
-Giraffe Agent uses the Neutral Actor Model instead of hardcoding B-side and M-side as permanent identities.
+A company can be a supplier in one edge and a buyer in another edge. Giraffe Agent uses the Neutral Actor Model instead of hardcoding permanent B-side and M-side identities.
 
 ### 5. Evidence matters more than promises
 
 Supplier-stated lead time is preserved as evidence but not trusted blindly.
 
-Delivery feasibility must consider full path dependencies:
-
-- material;
-- trim;
-- packaging material;
-- subcontracting;
-- production;
-- QC;
-- packaging;
-- logistics.
-
-Missing fields become risk flags, not fake certainty.
+Delivery feasibility must consider material, trims, packaging, subcontracting, production, QC, logistics, supplier behavior, buyer behavior, and historical reliability.
 
 ### 6. QC must inspect confirmed detection points
 
-Quality control must compare actual visual evidence against approved standard photos, inspection requirements, and detection points.
+QC must compare actual visual evidence against approved standards and inspection points. It must not infer pass/fail from general language alone.
 
-The QC model must not infer pass/fail results from general language alone. If a detection point cannot be inspected with sufficient confidence, the result must be marked for review.
+### 7. Human approval is mandatory for high-stake actions
 
-### 7. The execution record must be append-only
-
-Industrial execution needs auditability.
-
-Giraffe Agent records state transitions in an append-only Industrial Execution Graph. Events are appended, not rewritten.
+The system may draft, recommend, and route. It must not commit legally or commercially without human approval.
 
 ---
 
-## Core Concept: Neutral Actor Model
+## Neutral Actor Model
 
 > Do not treat B-side and M-side as permanent identities.
 
@@ -258,7 +177,7 @@ An actor's role is contextual. It depends on the project, procurement edge, and 
 | Role | Meaning |
 |---|---|
 | `MAIN_M_SIDE` | Main supplier to the original buyer |
-| `UPSTREAM_B_SIDE` | Same manufacturer acting as buyer to its own upstream suppliers |
+| `UPSTREAM_B_SIDE` | Same manufacturer acting as buyer to upstream suppliers |
 
 Example:
 
@@ -270,137 +189,340 @@ Manufacturer M -> Fabric Supplier F1
 M is UPSTREAM_B_SIDE to F1.
 ```
 
-Every workflow is project-aware and edge-aware. This enables recursive supply-chain execution instead of a flat buyer-supplier form.
+Every workflow is project-aware and edge-aware. This enables recursive supply-chain execution instead of a flat buyer/supplier form.
 
 ---
 
-## GPM and GLTG
+## GLTG Integration Status
 
-GPM and GLTG should be treated as related but distinct model layers.
+GLTG is now a standalone service:
 
-### GPM — Giraffe Procurement Model
+```text
+https://github.com/GiraffeTechnology/GLTG
+```
 
-GPM is the broader procurement graph model. It is responsible for supplier-set reasoning, procurement-path planning, known-suppliers-first feasibility, fallback decisions, and role/edge-aware procurement logic.
+Current giraffe-agent integration:
 
-GPM answers questions such as:
+```text
+src/integrations/gltg_client.py
+src/integrations/gltg_leadtime.py
+```
 
-- Which known suppliers should be tried first?
-- Which missing procurement edges create risk?
-- When should the system trigger public bidding or external supplier search?
-- How should upstream evidence roll up into a buyer-facing option?
-- Which procurement path is feasible, risky, or blocked?
+Current environment variables:
 
-### GLTG — Giraffe Lead-Time Graph
+```bash
+GLTG_API_BASE_URL=http://localhost:8090
+GLTG_API_TIMEOUT_SECONDS=30
+```
 
-> **GLTG is now a standalone service:** https://github.com/GiraffeTechnology/GLTG
->
-> giraffe-agent no longer vendors a GLTG engine. It calls GLTG over HTTP through
-> `src/integrations/gltg_client.py`. Configure the connection with:
->
-> ```bash
-> GLTG_API_BASE_URL=http://localhost:8090
-> GLTG_API_TIMEOUT_SECONDS=30
-> ```
->
-> The client returns a structured `GLTGClientResult(ok, data, error, status_code)`
-> and never falls back to a local calculation when GLTG is unavailable.
+Current v1 client endpoints:
 
-GLTG is the lead-time and delivery-feasibility model. It estimates delivery paths using deterministic dependency logic and probability bands.
+```text
+GET  /health
+GET  /version
+POST /v1/lead-time/estimate
+POST /v1/paths/enumerate
+POST /v1/reforecast
+```
 
-GLTG should support:
+Current contract:
 
-- P50 / P80 / P90 lead-time estimates;
-- minimum feasible lead time;
-- dependency-aware parallel and sequential calculations;
-- known-suppliers-first feasibility;
-- fallback trigger recommendations;
-- fewer-than-three-supplier outputs without crashing;
-- explicit risk flags for missing data.
+```text
+giraffe-agent adapter builds payloads only
+GLTG service owns lead-time math
+giraffe-agent does not calculate lead time locally
+giraffe-agent does not silently fall back when GLTG fails
+GLTG failures surface as structured errors
+P80 is the conservative feasibility basis
+```
 
-The LLM may translate GPM/GLTG results into user-friendly language, but it must not invent lead-time values or supplier feasibility.
+Current adapter behavior:
+
+```text
+v1 output p50_days -> LeadTimePath.p50_lead_time_days
+v1 output p80_days -> LeadTimePath.p80_lead_time_days
+v1 output p90_days -> LeadTimePath.p90_lead_time_days
+v1 output warnings -> risk flags
+v1 calculation_trace -> component evidence source
+```
 
 ---
 
-## Giraffe DB and Private-Domain Memory
+## GLTG Behavioral + Statistical Model Porting Target
 
-Giraffe DB is the private-domain business memory layer.
+The active GLTG iteration upgrades the model from deterministic v1 lead-time simulation into a behavior-aware, statistically calibrated model.
 
-It should store or expose:
+Target model version:
 
-- customer profiles and preferences;
-- supplier profiles and relationships;
-- historical RFQs;
-- historical quotations;
-- historical lead-time records;
-- order/quote/procurement data;
-- approval history;
-- draft revision history;
-- risk flags;
-- project and execution memory.
+```text
+gltg-hybrid-v0.1.0
+```
 
-Giraffe Agent should query Giraffe DB through explicit adapters or APIs. The LLM must never reconstruct these facts from general knowledge.
+Target rule version:
 
-Data categories should remain structurally separated where appropriate:
+```text
+behavior-rules-v0.1.0
+```
 
-- API-imported data;
-- private customer data;
-- system-generated historical data;
-- QC sample / inspection data, which belongs to the QC system and should not be mixed into ordinary order/quote DB tables.
+Target v2 endpoints:
+
+```text
+POST /v2/lead-time/simulate
+POST /v2/paths/enumerate
+POST /v2/reforecast
+```
+
+This repository should port the same contract after AIVAN validates it first.
+
+Required future changes in giraffe-agent:
+
+```text
+src/integrations/gltg_client.py
+src/integrations/gltg_leadtime.py
+src/b_side/feasibility_engine.py
+src/m_side/rollup/supplier_response_rollup.py
+buyer option generation tests
+E2E trade salesperson flow tests
+```
+
+Required future test fixtures:
+
+```text
+tests/fixtures/gltg_v2_simulation_request.json
+tests/fixtures/gltg_v2_simulation_response.json
+```
+
+v2 must preserve the same boundary:
+
+```text
+GLTG service owns simulation
+giraffe-agent adapter owns mapping only
+no local lead-time math
+no silent fallback
+no LLM-generated lead-time replacement
+```
+
+---
+
+## Target GLTG v2 Data Contract
+
+GLTG v2 should consume behavior-aware inputs from giraffe-db:
+
+```text
+communication_events
+behavior_observations
+buyer_behavior_feature_snapshots
+supplier_behavior_feature_snapshots
+buyer_supplier_behavior_metrics
+leadtime_observations
+rfq_outcomes
+supplier_quotes
+supplier_quote_line_items
+```
+
+GLTG v2 should return or persist:
+
+```text
+gltg_run_id
+model_version
+rule_version
+calibration_version
+quantiles.p50_days
+quantiles.p80_days
+quantiles.p90_days
+components.base_production_days
+components.base_procurement_days
+components.supplier_response_buffer_days
+components.supplier_uncertainty_buffer_days
+components.buyer_decision_buffer_days
+components.logistics_buffer_days
+components.risk_buffer_days
+risk.deadline_risk_level
+risk.confidence_score
+risk.fallback_supplier_required
+risk.manual_review_required
+risk.deadline_feasible
+risk.selected_confidence_days
+explanation_json
+warnings
+source_observation_ids
+```
+
+New fields to map into Giraffe Agent lead-time / option DTOs:
+
+```text
+gltg_run_id
+model_version
+rule_version
+p50_days
+p80_days
+p90_days
+supplier_response_buffer_days
+supplier_uncertainty_buffer_days
+buyer_decision_buffer_days
+deadline_risk_level
+fallback_supplier_required
+manual_review_required
+explanation_json
+source_observation_ids
+```
+
+---
+
+## Behavioral Signals for GLTG v2
+
+GLTG v2 should not treat lead time as only:
+
+```text
+material days + production days + QC days + logistics days
+```
+
+It should adjust forecasts using behavior signals such as:
+
+```text
+supplier response delay ratio
+business-hours delay ratio
+quote completeness score
+missing quote fields
+quote revision count
+lead-time revision count
+upstream confirmation signal
+supplier current load signal
+historical on-time delivery rate
+historical quoted-vs-actual error
+buyer requirement change count
+buyer requirement volatility
+buyer decision delay score
+buyer response delay ratio
+buyer-supplier pair conversion rate
+relationship strength score
+recommended pairing score
+```
+
+Important interpretation rule:
+
+```text
+Behavior signals are risk signals, not hard facts.
+```
+
+For example, a slow supplier response may indicate low engagement, but it may also indicate upstream material confirmation, holiday, timezone mismatch, capacity pressure, or internal approval.
+
+Therefore, GLTG v2 must explain high-impact adjustments instead of returning an opaque lead-time number.
 
 ---
 
 ## AIVAN Boundary
 
-AIVAN is a standalone AI trade salesperson product extracted from the broader Giraffe Agent architecture.
+AIVAN is the standalone AI trade salesperson product extracted from the broader Giraffe Agent architecture.
 
-AIVAN owns the private-domain RFQ execution workflow:
+AIVAN owns:
 
 ```text
-User IM command or customer email
--> OpenClaw Gateway
--> AIVAN event intake
--> LLM strategy interpretation
--> Giraffe DB private-domain lookup
--> GLTG lead-time simulation
--> RFQ/project creation
--> pending supplier inquiry email drafts
--> user IM summary / approval request
--> approved email sent through OpenClaw email integration
+OpenClaw Gateway / WeChat bot bridge
+private-domain RFQ intake
+buyer inquiry parsing
+Giraffe DB lookup
+GLTG call orchestration
+supplier inquiry drafts
+human approval prompts
+approved outbound execution
+AIVAN-specific runtime and deployment status
 ```
 
-AIVAN should be developed and validated in its own repository first. Stable capabilities can later be ported or integrated into `abcdYi` and the broader `giraffe-agent` framework.
+Giraffe Agent should not be the active home for AIVAN runtime fixes, OpenClaw Gateway fixes, ClawHub packaging details, or AIVAN product state.
 
-`giraffe-agent` should not become the active development home for AIVAN runtime fixes, OpenClaw Gateway fixes, ClawHub packaging details, or AIVAN-specific product state.
+Stable AIVAN capabilities can later be ported into this repository as framework patterns.
+
+---
+
+## giraffe-db Boundary
+
+giraffe-db is the private-domain business fact layer.
+
+It should store or expose:
+
+```text
+customers
+buyers
+suppliers
+supplier products
+historical RFQs
+historical quotes
+leadtime observations
+supplier capacity snapshots
+communication events
+behavior observations
+buyer behavior feature snapshots
+supplier behavior feature snapshots
+buyer-supplier behavior metrics
+gltg simulation runs
+gltg behavior inputs
+pricing decision inputs
+execution events
+audit records
+```
+
+Giraffe Agent should query giraffe-db through explicit adapters or APIs. The LLM must never reconstruct these facts from general knowledge.
+
+Synthetic records from `synthetic_private_v1` must remain clearly labeled as synthetic and must not be represented as real transaction history.
+
+---
+
+## GPM Boundary
+
+GPM is the broader procurement graph model.
+
+GPM answers:
+
+```text
+which known suppliers should be tried first
+which missing procurement edges create risk
+when public bidding or external supplier search is needed
+how upstream evidence rolls up into a buyer-facing option
+which procurement path is feasible, risky, or blocked
+```
+
+GLTG answers:
+
+```text
+how many days at P50 / P80 / P90
+which behavior changed the forecast
+which risk buffers were added
+whether fallback supplier is required
+whether manual review is required
+```
+
+GPM and GLTG are related, but they must not be collapsed into an LLM prompt.
 
 ---
 
 ## QC Model Boundary
 
-QC capability is moving into `giraffe-qc-model` as an AI-native QC inference system.
+QC capability belongs to `giraffe-qc-model`.
 
 The QC model owns:
 
-- sample DB;
-- standard photos;
-- inspection requirements;
-- detection points;
-- ROI definitions;
-- Pad and Server runtime editions;
-- Qwen3-VL-based visual inspection;
-- local-first / fail-closed QC inference policy;
-- QC result conventions.
+```text
+sample DB
+standard photos
+inspection requirements
+detection points
+ROI definitions
+Pad and Server runtime editions
+Qwen3-VL-based visual inspection
+local-first / fail-closed QC policy
+QC result conventions
+```
 
-Giraffe Agent should call QC capability as a service or integration boundary. It should ingest QC evidence, request inspection, record the returned QC report, route corrective feedback, and append events into the Industrial Execution Graph.
+Giraffe Agent may ingest QC evidence, request QC inspection, record returned QC reports, route corrective feedback, and append QC events into the Industrial Execution Graph.
 
-Giraffe Agent must not fake QC pass/fail results. If real QC inference is unavailable, the result must be marked as skipped, mock, pending, or `review_required` according to the execution context.
+Giraffe Agent must not fake QC pass/fail results.
 
 ---
 
-## OpenClaw / IM / Email Integration
+## OpenClaw / IM / Email Boundary
 
-Giraffe Agent is designed as an **OpenClaw-compatible skill layer**.
-
-The channel architecture is:
+Giraffe Agent is designed as an OpenClaw-compatible skill layer.
 
 ```text
 WeChat / WhatsApp / DingTalk / LINE / Email / Web / other channels
@@ -411,552 +533,160 @@ WeChat / WhatsApp / DingTalk / LINE / Email / Web / other channels
 -> Giraffe workflow router
 ```
 
-Giraffe Agent does not directly store IM platform credentials. IM account control, message sending, and message receiving are expected to be handled by OpenClaw or a compatible runtime.
+Giraffe Agent does not directly own IM account login, cookies, session tokens, CAPTCHA bypass, or platform anti-bot bypass.
 
-### User-control IM vs counterparty outbound
-
-WeChat, LINE, WhatsApp, DingTalk, and similar IM channels are primarily user-control channels in the current product boundary.
-
-They may be used for:
-
-- user commands;
-- approval requests;
-- customer email summaries;
-- RFQ/project progress notifications;
-- revision requests;
-- internal status updates.
-
-Current counterparty commercial outbound should be draft-first and human-approved. Email is the current default formal outbound execution channel unless another official, API-permitted, auditable, authorized channel is explicitly integrated.
-
-Giraffe Agent and downstream products must not automatically send commercial messages to customers or suppliers through personal IM accounts without explicit human approval and proper channel authorization.
+OpenClaw or a compatible runtime owns channel connectivity. Giraffe Agent owns normalized workflow handling after the event arrives.
 
 ---
 
-## Architecture
+## Legal and Operating Boundary
+
+Giraffe Agent does not replace the legal parties to a transaction.
+
+It does not become the buyer, seller, manufacturer, freight forwarder, payment obligor, insurer, bank, customs declarant, or contracting party.
+
+Human users and their legal entities remain responsible for:
 
 ```text
-+--------------------------------------------------------------------------------+
-| Channel Runtime Layer                                                          |
-|   OpenClaw / compatible IM-email runtime                                       |
-|   WeChat / WhatsApp / DingTalk / LINE / Email / Web / marketplace channels     |
-|   Giraffe does not store IM platform credentials directly                      |
-+--------------------------------------------------------------------------------+
-| OpenClaw-Compatible Skill Layer                                                |
-|   /api/skill/invoke                                                            |
-|   normalized event adapter  role-aware router  workflow dispatcher             |
-+--------------------------------------------------------------------------------+
-| Orchestration Layer                                                            |
-|   AI Buyer  Supplier Response Agent  Role-Switching Procurement Agent          |
-|   AI Merchandiser  Logistics ingestion  QC evidence routing                    |
-+--------------------------------------------------------------------------------+
-| Private-Domain Data and Model Layer                                            |
-|   Giraffe DB adapter  GPM procurement graph reasoning  GLTG lead-time graph    |
-|   Supplier Memory  approval history  RFQ/order/quote context                   |
-+--------------------------------------------------------------------------------+
-| Intelligence Layer                                                             |
-|   Qwen / Tongyi Qianwen default requested provider                             |
-|   Mock fallback for local/CI when no key is configured                         |
-|   Optional provider registry: Qwen  Mock  OpenAI  Anthropic  DeepSeek          |
-+--------------------------------------------------------------------------------+
-| Service Boundaries                                                             |
-|   AIVAN RFQ product  giraffe-qc-model QC inference  abcdYi industry app        |
-+--------------------------------------------------------------------------------+
-| Persistence / Execution Record                                                 |
-|   Local JSON/SQLite reference stores  PostgreSQL-portable ORM                  |
-|   Append-only Industrial Execution Graph + procurement_edges                   |
-+--------------------------------------------------------------------------------+
+approving supplier inquiries
+confirming quotations
+selecting delivery paths
+accepting production schedules
+approving order commitments
+releasing payments
+signing contracts
+accepting commercial, legal, credit, sanctions, logistics, and quality risk
 ```
 
----
-
-## Main Modules
-
-| # | Module | Purpose |
-|---:|---|---|
-| 1 | OpenClaw Skill Layer | Normalized IM/email event intake via `/api/skill/invoke` |
-| 2 | Neutral Actor Model | Contextual B/M-side role resolution per project and procurement edge |
-| 3 | AI Buyer | Requirement structuring, inquiry drafting, feasibility workflow initiation |
-| 4 | Supplier Response Agent | M-side intake, normalization, `SupplierResponsePacket` generation |
-| 5 | Role-Switching Procurement Agent | Recursive `UPSTREAM_B_SIDE` logic, upstream inquiry builder, option engine, approval gate |
-| 6 | Professional Free CAD->CNC Matching | CAD Requirement Packet, Capability Fit Report, machine profile matching |
-| 7 | AI Merchandiser | Production milestones, QC/media confirmation, exception reporting, logistics handover, buyer sign-off |
-| 8 | GPM / GLTG Integration | Procurement graph reasoning and lead-time / delivery-feasibility simulation boundary |
-| 9 | QC Service Interface | QC evidence ingestion, QC report handling, M-side corrective feedback, buyer escalation |
-| 10 | Logistics Ingestion | Carrier API normalization and shipment tracking ingestion |
-| 11 | LLM Provider Layer | Qwen default requested provider, deterministic mock fallback, optional providers |
-| 12 | Database / Adapter Layer | SQLAlchemy local reference models, SQLite->PostgreSQL portability, future Giraffe DB adapter boundary |
-| 13 | Dynamic Self-Learning Schema | AI observes and proposes new fields without altering physical tables at runtime |
-| 14 | Industrial Execution Graph | Append-only event log for state transitions across actors and project edges |
+High-stake actions must remain human-confirmed.
 
 ---
 
-## Quick Start
-
-### Prerequisites
-
-- Python 3.11+
-- [`uv`](https://docs.astral.sh/uv/) package manager
-
-### Setup
+## Installation
 
 ```bash
 git clone https://github.com/GiraffeTechnology/giraffe-agent.git
 cd giraffe-agent
+python -m pip install -e .
+```
 
+With development dependencies:
+
+```bash
+python -m pip install -e . pytest
+```
+
+With `uv`:
+
+```bash
 uv sync
-
-uv run python scripts/init_db.py
-uv run python scripts/seed_mvp_data.py
-
-uv run uvicorn api.main:app --reload
 ```
-
-The API will be available at `http://localhost:8000`.
-Interactive docs: `http://localhost:8000/docs`
 
 ---
 
-## LLM Configuration
+## Environment
 
-Giraffe Agent uses **Qwen / Tongyi Qianwen** as the default requested LLM provider.
-
-Local and CI behavior uses safe defaults:
+Copy the example file:
 
 ```bash
-LLM_PROVIDER=qwen
-QC_AUTO_COMPARE_PROVIDER=qwen
-LLM_ENABLE_REAL_CALLS=false
-QC_ALLOW_EXTERNAL_LLM=false
+cp .env.example .env
 ```
 
-When no Qwen API key is available, the provider registry falls back to the deterministic mock provider. Reports must still record:
-
-```json
-{
-  "requested_provider": "qwen",
-  "provider_name": "mock",
-  "fallback_used": true
-}
-```
-
-To enable real Qwen calls:
+Core settings:
 
 ```bash
-export DASHSCOPE_API_KEY="..."
-# or
-export QWEN_API_KEY="..."
-export LLM_ENABLE_REAL_CALLS=true
-export QC_ALLOW_EXTERNAL_LLM=true
-export LLM_PROVIDER=qwen
-export QC_AUTO_COMPARE_PROVIDER=qwen
+GIRAFFE_DB_MODE=off
+# GIRAFFE_DB_URL=sqlite:///./giraffe_agent.db
+
+GLTG_API_BASE_URL=http://localhost:8090
+GLTG_API_TIMEOUT_SECONDS=30
+
+# DASHSCOPE_API_KEY=your-dashscope-api-key-here
+# QWEN_API_KEY=your-qwen-api-key-here
 ```
 
-Data safety defaults:
-
-```bash
-QC_ALLOW_EXTERNAL_LLM=false
-QC_ALLOW_CAD_TO_LLM=false
-QC_ALLOW_BOM_TO_LLM=false
-QC_REDACT_PROCESS_CARD=true
-```
-
-By default, confidential CAD, BOM, contract, pricing, customer, and supplier information is not sent to external LLMs.
+Channel credentials should not be placed in this repository. IM/email credentials belong to OpenClaw or the relevant channel runtime.
 
 ---
 
-## E2E Verification
-
-Run the verification suite after setup.
-
-### B/M-side DB Integration Baseline
+## Running Tests
 
 ```bash
-GIRAFFE_DB_MODE=off uv run python run_bm_e2e_with_db.py
-
-GIRAFFE_DB_MODE=on GIRAFFE_DB_URL=sqlite:///./test.db uv run python build_schema.py
-GIRAFFE_DB_MODE=on GIRAFFE_DB_URL=sqlite:///./test.db uv run python run_bm_e2e_with_db.py
-
-uv run python verify_integration.py --db sqlite:///./test.db --runs 5
+pytest
 ```
 
-Expected successful baseline:
+GLTG-specific tests currently include:
 
 ```text
-run 1/5: PASS  run 2/5: PASS  run 3/5: PASS  run 4/5: PASS  run 5/5: PASS
-PRAGMA integrity_check: ok
-PRAGMA foreign_key_check: ok
-Result: 5/5 passed
+tests/test_gltg_client.py
+tests/test_gltg_client_integration.py
+tests/test_feasibility_uses_gltg_api.py
+tests/test_aivan_buyer_options_use_gltg.py
 ```
 
-### Lead-Time / Delivery-Feasibility Verification
-
-The current repository includes a path-based lead-time calculation reference.
-
-Key rules:
-
-- Material, trim, packaging-material, and subcontract dependencies run in parallel, so use `max()`.
-- Production, QC, packaging, and logistics run sequentially, so use `sum()`.
-- Supplier-stated lead time is preserved as evidence but not trusted blindly.
-- Missing fields create `risk_flags`; never use fake sentinel values such as `999`.
-
-Run:
-
-```bash
-uv run python scripts/run_lead_time_model_demo.py
-```
-
-Expected output: `LEAD TIME MODEL DEMO: PASS`
-
-### Main Branch 3x Validation
-
-Latest main has been validated with three clean-state runs.
-
-Summary:
-
-- Unit tests: `525 passed`
-- B-side independent flow: PASS
-- M-side independent flow: PASS
-- B/M E2E: PASS
-- AI Merchandiser: PASS
-- Logistics: PASS
-- QC Intelligence interface: PASS
-- OpenClaw IM simulated events: PASS
-- DB-off: PASS
-- DB-on: PASS
-
-Verdict: `PASS WITH GAPS`
-
-Gaps:
-
-- Real Qwen call requires `DASHSCOPE_API_KEY` or `QWEN_API_KEY`.
-- Real OpenClaw IM bridge requires live OpenClaw channel credentials.
-
-See [`MAIN_3X_VALIDATION_REPORT.md`](MAIN_3X_VALIDATION_REPORT.md).
-
-### Verification Scripts
-
-| Script | What it verifies |
-|---|---|
-| `scripts/run_db_smoke_test.py` | Database models, migrations, seed data |
-| `scripts/run_bm_e2e_mvp.py` | Full B+M minimum loop |
-| `scripts/run_role_switching_mvp.py` | Role-Switching Agent |
-| `scripts/run_mside_professional_free_cad_cnc_mvp.py` | CAD->CNC matching |
-| `scripts/run_mside_send_receive_role_switch_test.py` | M-side send/receive role switching |
-| `scripts/run_merchandiser_e2e_mvp.py` | AI Merchandiser full flow |
-| `scripts/run_logistics_cainiao_like_api_mvp.py` | Logistics ingestion and normalization |
-| `scripts/run_integrated_post_confirmation_mvp.py` | Integrated post-confirmation |
-| `scripts/run_lead_time_model_demo.py` | Lead Time Path Model deterministic verification |
-| `scripts/run_qc_llm_comparison_mvp.py` | QC comparison with Qwen-requested provider and mock fallback |
-| `scripts/run_qwen_qc_smoke_test.py` | Real Qwen smoke test if key exists; safe skip if no key |
-
-```bash
-uv run pytest
-```
-
----
-
-## API Overview
-
-The FastAPI application entry point is `api.main:app`.
-
-The root `main.py` is only a lightweight helper for local developer guidance.
-
-Primary route groups:
-
-| Route | Purpose |
-|---|---|
-| `GET /health` | Health check |
-| `POST /api/skill/invoke` | OpenClaw skill invocation for normalized IM/email events |
-| `POST /api/b-side/workspaces` | Create a B-side Enquiry Workspace |
-| `POST /api/b-side/workspaces/{id}/structure-requirement` | Structure raw buyer requirement |
-| `POST /api/b-side/workspaces/{id}/draft-inquiry` | Draft bilingual supplier inquiry |
-| `POST /api/b-side/workspaces/{id}/run-feasibility` | Run delivery feasibility simulation |
-| `POST /api/m-side/suppliers` | Create supplier profile |
-| `POST /api/bm/dispatch-inquiry` | Dispatch inquiry to supplier workspaces |
-| `POST /api/bm/push-response-to-b-side` | Push M-side response back to B-side |
-| `POST /api/bm/create-order-execution` | Create order execution from selected delivery path |
-| `POST /api/m-side/orders/{id}/acknowledge` | Supplier order acknowledgement |
-| `POST /api/m-side/orders/{id}/production-update` | Submit production update |
-| `POST /api/m-side/orders/{id}/qc-update` | Submit QC confirmation |
-| `POST /api/m-side/orders/{id}/logistics-update` | Submit logistics handover |
-| `GET /api/qc/health` | QC module health check |
-| `POST /api/qc/{project_id}/reference-images` | Add QC reference / golden sample image |
-| `GET /api/qc/{project_id}/reference-images` | List QC reference images |
-| `POST /api/qc/{project_id}/process-card` | Create process card / 工艺卡 |
-| `GET /api/qc/{project_id}/process-card` | Get latest process card |
-| `POST /api/qc/{project_id}/compare` | Run Qwen-requested QC comparison |
-| `GET /api/qc/{project_id}/reports` | List QC reports |
-| `GET /api/qc/reports/{report_id}` | Get QC report |
-| `POST /api/qc/{project_id}/buyer-decision` | Record buyer QC decision |
-
-Full interactive documentation is available at `/docs` when the server is running.
-
----
-
-## Repository Structure
+Future GLTG v2 tests should cover:
 
 ```text
-giraffe-agent/
-+-- api/                        # FastAPI application
-|   +-- main.py
-+-- src/
-|   +-- b_side/                 # AI Buyer: requirement structurer, inquiry drafter, feasibility workflow
-|   +-- m_side/                 # Supplier Response Agent, Role-Switching Agent, AI Merchandiser
-|   |   +-- professional_free/  # CAD->CNC matching
-|   |   +-- rollup/             # SupplierResponseRollup builder
-|   |   +-- upstream/           # Upstream inquiry builder, option engine, approval gate
-|   +-- bm_bridge/              # Inquiry dispatcher, response bridge, order bridge
-|   +-- channels/               # Optional local channel helpers; production IM through OpenClaw
-|   +-- llm/                    # Qwen-first provider layer, mock fallback, optional providers
-|   +-- openclaw_skill/         # OpenClaw skill manifest, event adapter, skill router
-|   +-- actors/                 # Neutral actor model, role resolver
-|   +-- projects/               # Project graph
-|   +-- core_schema/            # Pydantic types for B-side and M-side
-|   +-- merchandiser/           # Post-confirmation execution engine
-|   |   +-- qc/                 # QC reference images, process cards, comparison, reports, policy
-|   +-- logistics/              # Logistics ingestion
-|   +-- db/                     # SQLAlchemy reference models, mixins, Alembic config
-+-- scripts/                    # Setup, seed, and E2E verification scripts
-+-- alembic/                    # Database migrations
-+-- docs/                       # Product requirement documents
-+-- data/                       # Runtime workspace files and event log
-+-- openclaw/                   # OpenClaw skill packaging
-+-- PATENT_NOTICE.md
-+-- LICENSE_NOTICE.md
-+-- LICENSE
-+-- pyproject.toml
+v2 request builder includes case_context
+v2 request builder includes behavior_features when available
+v2 request builder includes source_observation_ids
+v2 response maps quantiles into existing DTOs
+v2 response maps risk and explanation fields
+v1 compatibility remains intact
+GLTG unavailability surfaces structured error
+no local fallback calculation is used
 ```
 
 ---
 
-## Design Constraints
+## Current Known Limitations
 
-These invariants are non-negotiable.
-
-### Neutral Actor Model
-
-Never hardcode B-side or M-side as fixed actor identities. Roles are contextual per `Project` and `ProcurementEdge`.
-
-### Human Confirmation
-
-Giraffe Agent must not create commercial commitments without human approval. High-stake actions require explicit confirmation.
-
-### No Faked Business Facts
-
-If parsing is uncertain, surface a clarification question or risk flag.
-
-Never invent supplier data, prices, dates, capacity, material availability, logistics status, CAD properties, customer preferences, approval history, or buyer approvals.
-
-### No Faked QC Results
-
-QC must inspect confirmed detection points against approved standard photos, inspection requirements, and evidence.
-
-If inference is unavailable or insufficient, mark the result as skipped, mock, pending, or `review_required`. Do not convert uncertainty into pass/fail.
-
-### Append-Only Execution Graph
-
-`execution_events` must never be updated or deleted. State changes are appended.
-
-### Dynamic Schema Rule
-
-AI may observe and propose new fields. It must not directly alter physical database table definitions at runtime.
-
-### OpenClaw Boundary
-
-Giraffe Agent should receive normalized IM/email events from OpenClaw or compatible runtimes. It should not directly store IM platform credentials for any channel.
-
-### AI Is Not a Legal Actor
-
-AI-generated recommendations, QC feedback, delivery paths, and supplier comparisons are decision-support artifacts. Human/legal entities remain responsible for acceptance and contractual decisions.
-
-### External LLM Safety
-
-External LLM calls are disabled by default. CAD, BOM, pricing, buyer identity, supplier contacts, and contract terms must not be sent externally unless explicitly enabled and redacted.
-
-### Mock Is Not Real Provider
-
-When Qwen credentials are absent, mock fallback is allowed for tests, but README, reports, and audit records must say the real Qwen call was skipped.
+1. This repository currently integrates GLTG through v1 HTTP endpoints.
+2. GLTG v2 behavioral/statistical simulation is a porting target, not yet the default in this repository.
+3. AIVAN production OpenClaw / WeChat bridge status belongs to the `aivan` repository.
+4. Canonical private-domain data ownership belongs to `giraffe-db`, not this repository.
+5. QC runtime ownership belongs to `giraffe-qc-model`.
+6. Real Qwen calls require configured API credentials.
+7. Real channel execution requires deployed OpenClaw or compatible runtime.
 
 ---
 
-## Tech Stack
+## Release Gate for GLTG v2 Port
 
-| Component | Choice |
-|---|---|
-| Language | Python 3.11+ |
-| API framework | FastAPI + Uvicorn |
-| Data validation | Pydantic v2 |
-| ORM | SQLAlchemy 2.x |
-| Migrations | Alembic |
-| Local database | SQLite |
-| Production-portable database | PostgreSQL |
-| Package manager | `uv` |
-| Default LLM provider | Qwen / Tongyi Qianwen |
-| Local/CI LLM fallback | Deterministic mock provider |
-| Channel runtime | OpenClaw-compatible IM/email runtime |
-| Private-domain memory | Giraffe DB adapter boundary |
-| Procurement model | GPM boundary |
-| Lead-time model | GLTG boundary |
-| QC intelligence | `giraffe-qc-model` service boundary plus local reference interface |
+Do not mark the GLTG v2 port complete in giraffe-agent until:
+
+1. `GLTG_API_VERSION` is supported.
+2. v2 request/response DTOs exist.
+3. v2 mock transport tests exist.
+4. v1 regression tests still pass.
+5. behavior feature payloads are mapped when available.
+6. source observation IDs are preserved.
+7. P50/P80/P90, buffers, risk, fallback, manual review, and explanation JSON are mapped.
+8. no local GLTG math is added.
+9. no silent fallback is added.
+10. cross-repository fixtures match AIVAN and GLTG.
 
 ---
 
-## How to Contribute
+## Commercial / IP Positioning
 
-Giraffe Agent is an open-core industrial AI infrastructure project.
+Giraffe Agent is part of Giraffe Technology's industrial procurement and cross-border supply-chain AI infrastructure.
 
-Good contribution paths include:
-
-### Industrial Execution Graph
-
-- Add richer graph query and replay APIs.
-- Improve event provenance and audit metadata.
-- Add regression tests for state transitions and exception scenarios.
-
-### GPM / GLTG
-
-- Improve procurement-path reasoning.
-- Add deterministic lead-time simulation adapters.
-- Add P50/P80/P90 feasibility packets.
-- Support fewer-than-three supplier options without failure.
-- Improve fallback trigger logic and risk flags.
-
-### Giraffe DB Integration
-
-- Add explicit adapters for private-domain customer, supplier, RFQ, quotation, approval, and lead-time history.
-- Keep API-imported data, private customer data, and system-generated historical data separable.
-- Do not mix QC sample DB tables into ordinary order/quote DB tables.
-
-### OpenClaw and Channels
-
-- Build production OpenClaw deployment examples for WeChat, WhatsApp, DingTalk, LINE, email, and other channel runtimes.
-- Add real credential-based OpenClaw bridge smoke tests outside the default CI path.
-- Add channel-specific human confirmation flows.
-
-### AIVAN Integration
-
-- Keep AIVAN runtime fixes in `aivan` first.
-- Add stable adapter contracts so AIVAN can call Giraffe DB, GPM, GLTG, and execution-graph services cleanly.
-- Preserve email-first outbound and human approval.
-
-### QC Integration
-
-- Treat `giraffe-qc-model` as the QC inference boundary.
-- Improve QC report ingestion, corrective feedback routing, and buyer escalation workflow.
-- Preserve fail-closed / no-fake-result behavior.
-
-### Production / Ops
-
-- Add authentication middleware.
-- Add tenant/project permission model.
-- Add observability and audit logs.
-- Add deployment packaging.
-- Build buyer-facing and supplier-facing UI.
-
-Before submitting a PR, run the E2E suite and make sure the relevant scripts still pass.
-
----
-
-## Open-Core and Commercial Deployment Boundary
-
-This repository is released as open-core software for development, research, learning, SME experimentation, and non-enterprise use within the license and patent notice terms.
-
-Commercial deployment may include:
-
-- private-domain deployment;
-- VPC or on-premise deployment;
-- enterprise permission model;
-- audit logs and compliance controls;
-- Giraffe DB integration;
-- GPM / GLTG service integration;
-- QC model integration;
-- ERP / MES / WMS integration;
-- supplier-network integration;
-- SLA, maintenance, and support;
-- high-volume workflow execution;
-- token / API / workflow / execution-graph usage billing.
-
-Separate written authorization may be required depending on use case, patent scope, commercial scale, and integration pattern.
-
----
-
-## Patent Notice and License
-
-This repository is released under the Apache-2.0 software license.
-
-Certain workflows, system logic, role-based participant coordination mechanisms, multi-party C2M workflows, textile and apparel customization workflows, supplier coordination workflows, and order execution mechanisms in this project may be covered by patents owned by Giraffe Technology Holding Limited.
-
-Patent family description:
-
-> **Textile and Garment Customization Operation Platform System Based on a Multi-Party Coordinated C2M Model**  
-> Chinese title: **基于多方配合的C2M模式的纺织品及服装定制运营平台系统**
-
-| Jurisdiction | Patent |
-|---|---|
-| China | ZL 2023 1 1645939.9 / CN 117670482 B |
-| Japan | P7644545 / 特許第7644545号 |
-
-Giraffe Technology Holding Limited grants a Global Free Patent License to:
-
-- individuals;
-- developers;
-- researchers;
-- students;
-- SMEs for their own procurement, production coordination, and sourcing;
-- educational institutions for teaching and non-commercial use;
-- research institutions for non-commercial research.
-
-Separate written permission is required for:
-
-- enterprise deployment;
-- platform operation;
-- high-volume commercial production use;
-- third-party system integration;
-- white-label, OEM, or resale;
-- Enterprise CAP;
-- use of Giraffe commercial assets, trademarks, supplier/buyer network data, or order archives.
-
-Access to this source code does not automatically grant patent rights beyond the free license scope.
-
-See:
-
-- [`PATENT_NOTICE.md`](PATENT_NOTICE.md)
-- [`LICENSE_NOTICE.md`](LICENSE_NOTICE.md)
-- [`LICENSE`](LICENSE)
-
-Authorization contact:
+The broader company scope includes:
 
 ```text
-mich@giraffe.technology
+industrial procurement execution
+cross-border supply-chain AI infrastructure
+high-quality data cleaning
+data asset management
+computing-power operation
+private deployment
 ```
+
+Enterprise deployment, large-scale commercial use, platform operation, white-label resale, third-party system integration, commercial asset use, and sublicensing may require separate written authorization.
 
 ---
 
-## Project Status
+## License
 
-Giraffe Agent is an open-core reference implementation of the Giraffe industrial execution model.
-
-The repository demonstrates the core execution chain:
-
-```text
-IM/email/marketplace input
--> OpenClaw-compatible channel runtime
--> normalized event
--> role-aware structured requirement
--> private-domain data lookup
--> GPM / GLTG feasibility reasoning
--> supplier inquiry
--> recursive upstream sourcing
--> human confirmation
--> order execution
--> AI Merchandiser
--> QC service interface
--> logistics / exception tracking
--> buyer sign-off
--> Supplier Memory / Giraffe DB update
--> Industrial Execution Graph
-```
-
-It is ready for developer contribution, technical review, scenario extension, model-layer integration, and deeper channel integration.
-
-It is not yet a turnkey production enterprise deployment by itself. Production use requires explicit deployment architecture, credential handling, security hardening, permission model, observability, commercial authorization where applicable, and integration with the relevant Giraffe ecosystem services.
+See `LICENSE`.

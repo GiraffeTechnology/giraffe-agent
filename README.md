@@ -172,12 +172,14 @@ The system may draft, recommend, and route. It must not commit legally or commer
 
 > Do not treat B-side and M-side as permanent identities.
 
-An actor's role is contextual. It depends on the project, procurement edge, and counterparty.
+An actor's role is contextual. It depends on the project, procurement edge, and counterparty. This role-switching is a first-class behavior: the same actor can switch roles across edges — for example a supplier switching into an upstream-buyer role — instead of being locked to a permanent identity.
 
 | Role | Meaning |
 |---|---|
 | `MAIN_M_SIDE` | Main supplier to the original buyer |
 | `UPSTREAM_B_SIDE` | Same manufacturer acting as buyer to upstream suppliers |
+
+M-side role switching supports supplier-to-upstream-buyer transitions so that recursive procurement (M buying from its own suppliers) is modeled explicitly.
 
 Example:
 

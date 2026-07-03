@@ -51,7 +51,7 @@ Current local validation recorded in this repository:
 ```text
 unit tests: 525 passed
 B-side independent flow: PASS
-M-side independent flow: PASS
+M-side role-switching flow: PASS
 B/M E2E: PASS
 B/M real communication closure through private-domain IM + email: PASS
 AI Merchandiser post-confirmation: PASS
@@ -177,8 +177,8 @@ B-side or operator RFQ from IM
 -> M-side supplier email draft pending human approval
 -> approval request returned to IM
 -> operator approval from IM
--> authorized outbound email from the private-domain mailbox
--> supplier reply received by the private-domain mailbox
+-> authorized outbound email through the configured channel boundary
+-> supplier reply received through the configured channel boundary
 -> supplier quote summary returned to IM
 -> append-only execution/audit record
 ```
@@ -186,11 +186,11 @@ B-side or operator RFQ from IM
 Controlled-test requirements:
 
 ```text
-runtime: private-domain server
+runtime: controlled channel runtime
 channels: IM inbound/outbound plus email send/receive
-counterparty scope: one-off allowlisted test recipient unless supplier exists in DB
+counterparty scope: DB-authorized counterparty or controlled validation counterparty
 approval gate: mandatory before any counterparty email is sent
-credential handling: mailbox credentials stay in deployment secrets, never in git
+credential handling: channel credentials stay in runtime secrets, never in git
 ```
 
 Observed supplier-reply fields that must be captured for B-M closure:

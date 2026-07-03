@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import Optional
 from datetime import datetime, timezone
 from sqlalchemy import String, Integer, JSON, Index, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
@@ -15,13 +17,13 @@ class Project(Base):
 
     project_id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_uuid)
     original_buyer_actor_id: Mapped[str] = mapped_column(String(36), ForeignKey("actors.actor_id"), nullable=False)
-    main_supplier_actor_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("actors.actor_id"), nullable=True)
-    category: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    product_summary: Mapped[str | None] = mapped_column(String(1024), nullable=True)
-    quantity: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    main_supplier_actor_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("actors.actor_id"), nullable=True)
+    category: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    product_summary: Mapped[Optional[str]] = mapped_column(String(1024), nullable=True)
+    quantity: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     status: Mapped[str] = mapped_column(String(64), nullable=False, default="CREATED")
     product_tier: Mapped[str] = mapped_column(String(32), nullable=False, default="free")
-    created_by_channel: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    created_by_channel: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow, nullable=False)
     metadata_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)

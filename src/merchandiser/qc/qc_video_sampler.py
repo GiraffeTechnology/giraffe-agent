@@ -2,6 +2,7 @@
 QC video sampler — samples frames from video files or accepts pre-sampled frame paths.
 Does not require OpenCV or FFmpeg for MVP. Uses pre-extracted frame paths.
 """
+from __future__ import annotations
 import os
 from pathlib import Path
 from src.m_side.m_event_logger import log_m_event

@@ -2,6 +2,9 @@
 SQLAlchemy ORM models for QC reference images, process cards, and comparison reports.
 Only active when GIRAFFE_DB_MODE=on.
 """
+from __future__ import annotations
+from typing import Optional
+
 from sqlalchemy import String, Float, Boolean, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from src.db.base import Base
@@ -12,9 +15,9 @@ class QCReferenceImageORM(Base):
 
     ref_image_id: Mapped[str] = mapped_column(String(36), primary_key=True)
     project_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
-    milestone_type: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    milestone_type: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     image_path: Mapped[str] = mapped_column(String(512), nullable=False)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     uploaded_by_actor_id: Mapped[str] = mapped_column(String(36), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[str] = mapped_column(String(32), nullable=False)
@@ -26,12 +29,12 @@ class QCProcessCardORM(Base):
     process_card_id: Mapped[str] = mapped_column(String(36), primary_key=True)
     project_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     category: Mapped[str] = mapped_column(String(64), nullable=False)
-    material_spec: Mapped[str | None] = mapped_column(Text, nullable=True)
-    color_spec: Mapped[str | None] = mapped_column(String(256), nullable=True)
-    size_spec: Mapped[str | None] = mapped_column(Text, nullable=True)
-    finish_spec: Mapped[str | None] = mapped_column(String(256), nullable=True)
-    defect_criteria: Mapped[str | None] = mapped_column(Text, nullable=True)
-    supplier_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    material_spec: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    color_spec: Mapped[Optional[str]] = mapped_column(String(256), nullable=True)
+    size_spec: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    finish_spec: Mapped[Optional[str]] = mapped_column(String(256), nullable=True)
+    defect_criteria: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    supplier_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[str] = mapped_column(String(32), nullable=False)
     updated_at: Mapped[str] = mapped_column(String(32), nullable=False)
@@ -42,7 +45,7 @@ class QCComparisonReportORM(Base):
 
     report_id: Mapped[str] = mapped_column(String(36), primary_key=True)
     project_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
-    milestone_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    milestone_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     overall_result: Mapped[str] = mapped_column(String(32), nullable=False)
     overall_score: Mapped[float] = mapped_column(Float, default=0.0)
     severity: Mapped[str] = mapped_column(String(16), nullable=False)

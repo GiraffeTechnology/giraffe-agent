@@ -2,6 +2,7 @@
 Upstream Option Engine — generates 1–3 recommended options from upstream supplier responses.
 """
 
+from __future__ import annotations
 import uuid
 from typing import Literal
 from pydantic import BaseModel, Field

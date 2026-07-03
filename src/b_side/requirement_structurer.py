@@ -3,6 +3,7 @@ Deterministic buyer requirement parser for B-side AI Buyer.
 No LLM required — uses regex and keyword matching.
 """
 
+from __future__ import annotations
 import re
 import uuid
 from datetime import datetime, timezone

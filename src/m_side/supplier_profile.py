@@ -2,6 +2,7 @@
 M-side supplier profile persistence — JSON file storage under data/supplier_profiles/.
 """
 
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

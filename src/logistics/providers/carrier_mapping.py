@@ -1,5 +1,6 @@
 """Carrier name → carrier code mapping (configurable, not exhaustive)."""
 
+from __future__ import annotations
 CARRIER_NAME_TO_CODE: dict[str, str] = {
     "顺丰": "SF",
     "sf express": "SF",

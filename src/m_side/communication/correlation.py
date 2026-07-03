@@ -2,6 +2,7 @@
 Correlation token — links upstream supplier replies back to the correct project + dependency.
 Format: GFR-{project_short}-DEP-{dep_type}-{supplier_short}
 """
+from __future__ import annotations
 import re
 from dataclasses import dataclass
 

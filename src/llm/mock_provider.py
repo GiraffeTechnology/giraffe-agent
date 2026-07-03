@@ -2,6 +2,7 @@
 Mock LLM provider — deterministic, no API key required.
 Used in local/test mode when real provider key is absent or real calls disabled.
 """
+from __future__ import annotations
 import json
 from src.llm.provider_base import (
     MultimodalLLMProviderBase,

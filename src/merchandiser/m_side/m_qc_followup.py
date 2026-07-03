@@ -1,4 +1,5 @@
 """M-side QC follow-up — sends AI QC comparison feedback to supplier."""
+from __future__ import annotations
 from src.merchandiser.qc.qc_models import QCComparisonReport
 from src.merchandiser.qc.qc_feedback_generator import generate_m_side_qc_feedback
 from src.m_side.m_event_logger import log_m_event

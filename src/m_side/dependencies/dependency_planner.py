@@ -2,6 +2,7 @@
 Dependency Planner — identifies upstream dependencies for a procurement project.
 """
 
+from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING, Literal
 from pydantic import BaseModel, Field

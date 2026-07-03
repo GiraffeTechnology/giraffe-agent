@@ -2,6 +2,7 @@
 CAD Requirement Packet — structured manufacturing requirement from buyer CAD/STEP/BOM input.
 """
 
+from __future__ import annotations
 import uuid
 from typing import Literal
 from datetime import datetime, timezone

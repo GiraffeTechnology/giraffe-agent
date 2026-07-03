@@ -11,6 +11,7 @@ Data layout:
   data/upstream/{project_id}/rollup.json
 """
 
+from __future__ import annotations
 import json
 from pathlib import Path
 

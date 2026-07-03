@@ -2,6 +2,7 @@
 Media evidence — links uploaded media to milestones for buyer review.
 Persisted under data/merchandiser/media/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

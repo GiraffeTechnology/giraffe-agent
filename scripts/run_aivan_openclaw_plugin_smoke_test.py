@@ -19,6 +19,7 @@ Usage:
   python scripts/run_aivan_openclaw_plugin_smoke_test.py
 """
 
+from __future__ import annotations
 import json
 import os
 import sys

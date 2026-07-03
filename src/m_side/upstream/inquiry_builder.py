@@ -2,6 +2,7 @@
 Upstream Inquiry Builder — generates structured bilingual inquiries to upstream suppliers.
 """
 
+from __future__ import annotations
 import uuid
 from datetime import datetime, timezone, timedelta
 from pydantic import BaseModel, Field

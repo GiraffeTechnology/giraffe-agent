@@ -2,6 +2,7 @@
 Cainiao-like API request/response models.
 Field names use adapter mapping so real API fields can be changed in config.
 """
+from __future__ import annotations
 from pydantic import BaseModel
 
 

@@ -2,6 +2,7 @@
 Logistics event status normalizer — maps provider-specific statuses to canonical values.
 Canonical: label_created | picked_up | in_transit | customs | out_for_delivery | delivered | exception | unknown
 """
+from __future__ import annotations
 import hashlib
 import json
 

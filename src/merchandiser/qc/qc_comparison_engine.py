@@ -13,6 +13,7 @@ Usage:
         standard_images=["path/to/standard1.jpg"],
     )
 """
+from __future__ import annotations
 import os
 from src.llm.provider_registry import get_llm_provider
 from src.llm.mock_provider import MockLLMProvider

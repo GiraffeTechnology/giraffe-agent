@@ -2,6 +2,7 @@
 M-side supplier clarification — generates one-question-at-a-time prompts for missing fields.
 """
 
+from __future__ import annotations
 from src.core_schema.m_side_types import MSideWorkspace
 
 _CLARIFICATION_QUESTIONS_ZH = {

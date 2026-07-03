@@ -2,6 +2,7 @@
 M-side logistics update handler. Extracts tracking numbers and logistics status.
 """
 
+from __future__ import annotations
 import re
 import uuid
 from datetime import datetime, timezone

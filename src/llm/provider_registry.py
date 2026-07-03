@@ -12,6 +12,7 @@ Fallback rules:
   local/test mode + qwen key missing → MockProvider + log warning
   production mode  + qwen key missing → RuntimeError
 """
+from __future__ import annotations
 import os
 
 from src.llm.provider_base import MultimodalLLMProviderBase

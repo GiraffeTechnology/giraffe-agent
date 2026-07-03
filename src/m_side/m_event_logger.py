@@ -3,6 +3,7 @@ M-side Industrial Execution Graph event logger.
 Writes JSONL events to data/industrial_execution_graph/events.jsonl.
 """
 
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

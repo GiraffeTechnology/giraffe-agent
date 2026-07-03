@@ -2,6 +2,7 @@
 Anthropic / Claude provider — optional fallback.
 Requires ANTHROPIC_API_KEY and anthropic SDK (not in default dependencies).
 """
+from __future__ import annotations
 import json
 from src.llm.provider_base import (
     MultimodalLLMProviderBase,

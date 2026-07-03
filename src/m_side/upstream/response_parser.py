@@ -3,6 +3,7 @@ Upstream Response Parser — parses raw supplier messages into structured Upstre
 Uses deterministic regex parsing; no LLM required.
 """
 
+from __future__ import annotations
 import re
 import uuid
 from datetime import datetime, timezone

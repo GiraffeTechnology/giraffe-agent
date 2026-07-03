@@ -2,6 +2,7 @@
 B-side core Pydantic v2 models for Giraffe Agent AI Buyer.
 """
 
+from __future__ import annotations
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import Optional
 from datetime import datetime, timezone
 from sqlalchemy import String, Boolean, JSON, Index, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
@@ -16,7 +18,7 @@ class Actor(Base):
     actor_id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_uuid)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     actor_type: Mapped[str] = mapped_column(String(64), nullable=False)
-    default_language: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    default_language: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
     contact_channels_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     capabilities_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     profile_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)

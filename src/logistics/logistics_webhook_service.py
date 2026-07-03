@@ -2,6 +2,7 @@
 Logistics webhook handler — receives push notifications from logistics providers.
 Signature verification must not be bypassed in production mode.
 """
+from __future__ import annotations
 from src.logistics.providers.provider_registry import get_logistics_provider
 from src.logistics.logistics_models import get_shipment, get_shipments_for_project, LogisticsEvent
 from src.logistics.logistics_ingestion_service import _normalize_and_store_events

@@ -1,5 +1,6 @@
 """Evidence tracking utilities for lead time components."""
 
+from __future__ import annotations
 EVIDENCE_TYPE_SUPPLIER_STATED = "supplier_stated"
 EVIDENCE_TYPE_AI_CALCULATED = "ai_calculated"
 EVIDENCE_TYPE_HUMAN_CONFIRMED = "human_confirmed"

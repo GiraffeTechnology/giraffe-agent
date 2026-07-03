@@ -2,6 +2,7 @@
 Giraffe Agent FastAPI application — B-side + M-side endpoints + OpenClaw skill invocation.
 """
 
+from __future__ import annotations
 import os
 
 from fastapi import Depends, FastAPI, Header, HTTPException

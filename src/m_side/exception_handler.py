@@ -2,6 +2,7 @@
 M-side exception handler — classifies and structures exception reports from supplier messages.
 """
 
+from __future__ import annotations
 import re
 import uuid
 from datetime import datetime, timezone

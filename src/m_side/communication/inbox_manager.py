@@ -2,6 +2,7 @@
 Inbox manager — receives and routes inbound messages.
 Persisted under data/communication/inbox/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

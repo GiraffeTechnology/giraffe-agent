@@ -2,6 +2,7 @@
 M-side core Pydantic v2 models for Giraffe Agent AI Merchandiser / Supplier Response Agent.
 """
 
+from __future__ import annotations
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 

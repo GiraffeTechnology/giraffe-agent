@@ -1,4 +1,5 @@
 """Lead Time Path Model — canonical data models."""
+from __future__ import annotations
 import math
 from typing import Literal
 from pydantic import BaseModel, Field

@@ -1,6 +1,7 @@
 """
 Logistics shipment and event models — persisted as JSON under data/logistics/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

@@ -1,4 +1,5 @@
 """Tooling inventory profile for shop capability."""
+from __future__ import annotations
 from pydantic import BaseModel, Field
 
 

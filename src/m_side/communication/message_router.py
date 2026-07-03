@@ -1,6 +1,7 @@
 """
 Message router — determines direction, business role, and parser target for incoming messages.
 """
+from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 

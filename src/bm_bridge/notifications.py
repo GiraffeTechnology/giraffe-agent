@@ -4,6 +4,7 @@ All notifications log to console in MVP mode; production would use real push ser
 """
 
 
+from __future__ import annotations
 def notify_supplier_inquiry_dispatched(
     supplier_id: str,
     m_workspace_id: str,

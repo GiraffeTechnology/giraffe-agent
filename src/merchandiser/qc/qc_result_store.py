@@ -1,6 +1,7 @@
 """
 QC result store — persists QCComparisonReport to data/merchandiser/qc/reports/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

@@ -1,4 +1,5 @@
 """B-side logistics update push."""
+from __future__ import annotations
 from src.merchandiser.b_side.b_merchandiser_service import send_logistics_update_to_buyer
 
 

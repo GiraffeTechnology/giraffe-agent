@@ -4,6 +4,7 @@ Converts CADRequirementPacket into ManufacturingFeatureSet using deterministic h
 No external API or real CAD parser required.
 """
 
+from __future__ import annotations
 import uuid
 from typing import Literal
 from pydantic import BaseModel, Field

@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import Optional
 from datetime import datetime, timezone
 from sqlalchemy import String, Float, Integer, JSON, Index, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
@@ -31,8 +33,8 @@ class FieldDefinition(Base):
     field_name: Mapped[str] = mapped_column(String(128), nullable=False)
     normalized_field_name: Mapped[str] = mapped_column(String(128), nullable=False)
     field_type: Mapped[str] = mapped_column(String(32), nullable=False)
-    unit: Mapped[str | None] = mapped_column(String(32), nullable=True)
-    description: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    unit: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
     required_level: Mapped[str] = mapped_column(String(32), nullable=False, default="optional")
     validation_rule_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     example_values_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
@@ -50,17 +52,17 @@ class ObservedField(Base):
     __tablename__ = "observed_fields"
 
     observed_field_id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_uuid)
-    project_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("projects.project_id"), nullable=True)
-    actor_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("actors.actor_id"), nullable=True)
-    source_message_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("messages.message_id"), nullable=True)
-    source_artifact_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("artifacts.artifact_id"), nullable=True)
+    project_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("projects.project_id"), nullable=True)
+    actor_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("actors.actor_id"), nullable=True)
+    source_message_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("messages.message_id"), nullable=True)
+    source_artifact_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("artifacts.artifact_id"), nullable=True)
     candidate_field_name: Mapped[str] = mapped_column(String(128), nullable=False)
-    normalized_field_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    candidate_value: Mapped[str | None] = mapped_column(String(512), nullable=True)
-    candidate_unit: Mapped[str | None] = mapped_column(String(32), nullable=True)
-    normalized_value: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    normalized_field_name: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    candidate_value: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
+    candidate_unit: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    normalized_value: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
     confidence_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
-    evidence_text: Mapped[str | None] = mapped_column(String(2048), nullable=True)
+    evidence_text: Mapped[Optional[str]] = mapped_column(String(2048), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, nullable=False)
     metadata_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
 
@@ -77,8 +79,8 @@ class FieldProposal(Base):
     candidate_field_name: Mapped[str] = mapped_column(String(128), nullable=False)
     normalized_field_name: Mapped[str] = mapped_column(String(128), nullable=False)
     field_type: Mapped[str] = mapped_column(String(32), nullable=False)
-    suggested_unit: Mapped[str | None] = mapped_column(String(32), nullable=True)
-    business_reason: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    suggested_unit: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    business_reason: Mapped[Optional[str]] = mapped_column(String(1024), nullable=True)
     example_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     project_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     supplier_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
@@ -98,11 +100,11 @@ class EntityDynamicValue(Base):
     entity_id: Mapped[str] = mapped_column(String(36), nullable=False)
     field_id: Mapped[str] = mapped_column(String(36), ForeignKey("field_definitions.field_id"), nullable=False)
     field_value: Mapped[str] = mapped_column(String(1024), nullable=False)
-    unit: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    unit: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
     confidence_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
-    source: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    source_message_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("messages.message_id"), nullable=True)
-    source_artifact_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("artifacts.artifact_id"), nullable=True)
+    source: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    source_message_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("messages.message_id"), nullable=True)
+    source_artifact_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("artifacts.artifact_id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, nullable=False)
     metadata_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
 
@@ -117,7 +119,7 @@ class FieldAlias(Base):
     alias_id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_uuid)
     field_id: Mapped[str] = mapped_column(String(36), ForeignKey("field_definitions.field_id"), nullable=False)
     alias_text: Mapped[str] = mapped_column(String(256), nullable=False)
-    language: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    language: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, nullable=False)
 
 
@@ -139,6 +141,6 @@ class FieldPromotionDecision(Base):
     proposal_id: Mapped[str] = mapped_column(String(36), ForeignKey("field_proposals.proposal_id"), nullable=False)
     decision: Mapped[str] = mapped_column(String(32), nullable=False)
     decided_by: Mapped[str] = mapped_column(String(128), nullable=False)
-    reason: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    reason: Mapped[Optional[str]] = mapped_column(String(1024), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, nullable=False)
     metadata_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)

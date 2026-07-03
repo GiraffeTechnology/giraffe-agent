@@ -1,4 +1,5 @@
 """B-side AI Merchandiser — handles buyer-facing status, milestones, and sign-off."""
+from __future__ import annotations
 from src.m_side.m_event_logger import log_m_event
 
 

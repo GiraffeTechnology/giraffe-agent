@@ -1,6 +1,7 @@
 """
 Procurement project and edge models — the spine of the execution graph.
 """
+from __future__ import annotations
 from typing import Literal
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field

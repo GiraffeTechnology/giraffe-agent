@@ -2,6 +2,7 @@
 M-side response collector — appends supplier messages and builds SupplierResponsePacket.
 """
 
+from __future__ import annotations
 from src.core_schema.m_side_types import MSideWorkspace, SupplierResponsePacket
 from src.m_side.supplier_workspace import get_m_workspace, save_m_workspace
 from src.m_side.response_normalizer import normalize_supplier_response_text

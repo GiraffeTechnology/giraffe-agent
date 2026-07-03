@@ -3,6 +3,7 @@ M-side supplier identity resolution and invitation token management.
 Supports: known supplier mode, invitation token mode, manual mapping mode.
 """
 
+from __future__ import annotations
 import json
 import random
 import string

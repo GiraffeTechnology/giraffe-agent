@@ -4,7 +4,7 @@
 >
 > Industrial Execution Graph + Neutral Actor Model + giraffe-language-skill + giraffe-db facts + GPM/GLTG feasibility models + OpenClaw-compatible channel runtime + human approval.
 
-[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
+[![Python 3.11+](https://img.shields.io/badge/Python%203.11%2B-blue)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-ready-green)](https://fastapi.tiangolo.com/)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-v2-purple)](https://docs.pydantic.dev/)
 [![uv](https://img.shields.io/badge/uv-supported-black)](https://docs.astral.sh/uv/)
@@ -53,6 +53,7 @@ unit tests: 525 passed
 B-side independent flow: PASS
 M-side independent flow: PASS
 B/M E2E: PASS
+B/M real communication closure through private-domain IM + email: PASS
 AI Merchandiser post-confirmation: PASS
 Logistics ingestion: PASS
 QC Intelligence interface: PASS
@@ -157,6 +158,74 @@ User IM / Email / Marketplace input
 ```
 
 The LLM may classify, summarize, explain, and draft. It must not become the fact source, language boundary, lead-time calculator, QC judge, or legal decision-maker.
+
+---
+
+## B-M Real Communication Closure
+
+The B-M real communication closure validates the live-channel path that
+giraffe-agent is expected to orchestrate and that AIVAN currently executes as
+the standalone trade worker.
+
+Validated path:
+
+```text
+B-side or operator RFQ from IM
+-> channel runtime normalized inbound event
+-> giraffe-language-skill canonical English packet
+-> trade execution workflow
+-> M-side supplier email draft pending human approval
+-> approval request returned to IM
+-> operator approval from IM
+-> authorized outbound email from the private-domain mailbox
+-> supplier reply received by the private-domain mailbox
+-> supplier quote summary returned to IM
+-> append-only execution/audit record
+```
+
+Controlled-test requirements:
+
+```text
+runtime: private-domain server
+channels: IM inbound/outbound plus email send/receive
+counterparty scope: one-off allowlisted test recipient unless supplier exists in DB
+approval gate: mandatory before any counterparty email is sent
+credential handling: mailbox credentials stay in deployment secrets, never in git
+```
+
+Observed supplier-reply fields that must be captured for B-M closure:
+
+```text
+unit price
+trade term / Incoterm
+MOQ
+production capacity
+lead time
+payment terms
+packaging assumptions
+quotation validity
+risk / repricing terms
+```
+
+Architecture findings:
+
+```text
+Non-English RFQs must pass through giraffe-language-skill first. Mixed-language
+canonical text is invalid and must block product workflow execution.
+
+The channel runtime must route RFQ, approval, and supplier-reply events into
+the trade workflow instead of the default chat path.
+
+If GLTG returns incomplete quantiles, orchestration must surface a structured
+dependency state and must not fabricate lead-time values.
+
+Real channel sends require explicit human approval and an allowlisted or
+DB-authorized counterparty. Test-only counterparties must not be inserted into
+giraffe-db.
+```
+
+This is a live-channel validation pattern, not a standing production
+configuration.
 
 ---
 
@@ -328,7 +397,7 @@ AIVAN is the standalone AI trade execution worker.
 AIVAN owns:
 
 ```text
-OpenClaw Gateway / WeChat bot bridge
+OpenClaw Gateway / IM bot bridge
 private-domain RFQ intake
 buyer inquiry parsing
 giraffe-language-skill enforcement

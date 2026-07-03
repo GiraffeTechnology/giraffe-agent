@@ -2,6 +2,7 @@
 DeepSeek provider — optional fallback (OpenAI-compatible API).
 Requires DEEPSEEK_API_KEY. Uses httpx with OpenAI-compatible endpoint.
 """
+from __future__ import annotations
 import json
 import httpx
 from src.llm.provider_base import (

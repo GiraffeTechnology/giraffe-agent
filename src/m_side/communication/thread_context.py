@@ -2,6 +2,7 @@
 ConversationThread — one per edge-level conversation, with routing metadata.
 Persisted as JSON under data/communication/threads/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

@@ -10,6 +10,7 @@ Environment variables:
   QWEN_BASE_URL                      — defaults to DashScope production endpoint
   LLM_TIMEOUT_SECONDS                — default 60
 """
+from __future__ import annotations
 import base64
 import json
 import re

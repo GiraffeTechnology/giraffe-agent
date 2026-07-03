@@ -2,6 +2,7 @@
 Shared IM message types for Giraffe Agent channel adapters.
 """
 
+from __future__ import annotations
 from pydantic import BaseModel
 
 

@@ -2,6 +2,7 @@
 Logistics IM message parser — extracts carrier and tracking number from free-text IM messages.
 Supports Chinese (SF Express, 顺丰, etc.) and English formats.
 """
+from __future__ import annotations
 import re
 from dataclasses import dataclass
 

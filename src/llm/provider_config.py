@@ -10,6 +10,7 @@ Known stable model IDs (as of mid-2025):
   Vision: qwen-vl-plus, qwen-vl-max
   Video:  no native video model yet; frame-sampling fallback is used.
 """
+from __future__ import annotations
 import os
 
 DEFAULT_LLM_PROVIDER = "qwen"

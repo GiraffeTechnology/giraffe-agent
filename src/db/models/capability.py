@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import Optional
 from datetime import datetime, timezone
 from sqlalchemy import String, JSON, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
@@ -15,7 +17,7 @@ class ShopCapabilityProfile(Base):
 
     profile_id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_uuid)
     actor_id: Mapped[str] = mapped_column(String(36), ForeignKey("actors.actor_id"), nullable=False)
-    profile_name: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    profile_name: Mapped[Optional[str]] = mapped_column(String(256), nullable=True)
     machines_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     tooling_inventory_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     qc_equipment_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)

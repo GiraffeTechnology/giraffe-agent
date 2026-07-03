@@ -2,6 +2,7 @@
 Exception manager — raises, tracks, and resolves order exceptions.
 Persisted under data/merchandiser/exceptions/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

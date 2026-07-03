@@ -2,6 +2,7 @@
 RoleSwitchFrame — attaches every inbound/outbound message to its role and direction context.
 Persisted as JSON under data/communication/frames/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

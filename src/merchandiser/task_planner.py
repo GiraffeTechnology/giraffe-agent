@@ -2,6 +2,7 @@
 Merchandiser task planner — creates execution tasks after order confirmation.
 Persisted under data/merchandiser/tasks/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

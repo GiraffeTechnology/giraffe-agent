@@ -1,5 +1,6 @@
 """Builds QC comparison prompts — Chinese-first / bilingual."""
 
+from __future__ import annotations
 _QC_SYSTEM_PROMPT = (
     "你是 Giraffe Agent 的 AI QC 助理。请对比：\n"
     "1. M 端上传的生产图片 / 视频帧；\n"

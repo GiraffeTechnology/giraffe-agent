@@ -9,6 +9,7 @@ Same actor can be:
   - UPSTREAM_B_SIDE when asking upstream suppliers
   - ORIGINAL_BUYER when initiating a project
 """
+from __future__ import annotations
 from src.actors.role_context import RoleContext
 from src.m_side.m_event_logger import log_m_event
 

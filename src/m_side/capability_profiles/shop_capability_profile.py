@@ -2,6 +2,7 @@
 Shop Capability Profile — represents a manufacturer's complete shop-floor capability.
 """
 
+from __future__ import annotations
 import json
 from pathlib import Path
 from pydantic import BaseModel, Field

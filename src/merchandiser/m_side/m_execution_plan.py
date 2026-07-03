@@ -1,4 +1,5 @@
 """M-side execution plan creation after order confirmation."""
+from __future__ import annotations
 from src.merchandiser.merchandiser_engine import create_execution_plan, ExecutionPlan
 
 

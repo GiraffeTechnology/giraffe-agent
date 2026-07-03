@@ -2,6 +2,7 @@
 M-side capacity checker — infers capacity signal from supplier messages and profile.
 """
 
+from __future__ import annotations
 import re
 from src.core_schema.m_side_types import CapacitySignal, MSideSupplierProfile
 from src.m_side.response_normalizer import _parse_can_make

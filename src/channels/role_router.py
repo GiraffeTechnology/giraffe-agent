@@ -2,6 +2,7 @@
 Role-aware IM router — routes inbound messages to B-side or M-side workflow.
 """
 
+from __future__ import annotations
 import re
 from src.channels.message_types import InboundMessage
 

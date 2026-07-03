@@ -3,6 +3,7 @@ Provider registry — selects the logistics provider based on config.
 LOGISTICS_PROVIDER=mock → MockProvider
 LOGISTICS_PROVIDER=cainiao_like → CainiaoLikeProvider
 """
+from __future__ import annotations
 from src.logistics.providers.base_provider import LogisticsProviderBase
 from src.logistics.providers.provider_config import get_provider_name, is_production_mode
 from src.m_side.m_event_logger import log_m_event

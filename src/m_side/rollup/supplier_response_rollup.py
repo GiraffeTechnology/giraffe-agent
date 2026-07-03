@@ -3,6 +3,7 @@ Supplier Response Rollup — merges approved upstream dependency options
 into a structured buyer-facing response for Manufacturer M.
 """
 
+from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field

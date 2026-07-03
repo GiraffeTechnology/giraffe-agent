@@ -2,6 +2,7 @@
 M-side production update handler.
 """
 
+from __future__ import annotations
 import re
 import uuid
 from datetime import datetime, timezone

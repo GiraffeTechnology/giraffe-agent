@@ -3,6 +3,7 @@ OpenClaw skill response formatter — formats action responses for B-side and M-
 """
 
 
+from __future__ import annotations
 def format_ok(data: dict | None = None, message: str | None = None) -> dict:
     """Format a successful response."""
     resp: dict = {"ok": True}

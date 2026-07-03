@@ -1,6 +1,7 @@
 """
 B-side QC review — escalates QC issues requiring buyer confirmation.
 """
+from __future__ import annotations
 from src.merchandiser.qc.qc_models import QCComparisonReport
 from src.m_side.m_event_logger import log_m_event
 

@@ -2,6 +2,7 @@
 RoleContext — describes the contextual role of an actor within a project edge.
 The same actor can hold multiple roles in one project.
 """
+from __future__ import annotations
 from typing import Literal
 from pydantic import BaseModel
 

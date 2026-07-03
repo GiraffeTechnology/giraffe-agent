@@ -2,6 +2,7 @@
 Channel session store — in-memory + JSON file persistence under data/channel_sessions/.
 """
 
+from __future__ import annotations
 import json
 import os
 import uuid

@@ -14,6 +14,7 @@ Covers:
 10. SupplierResponseRecord has lead_time_breakdown field
 """
 
+from __future__ import annotations
 import sys
 from pathlib import Path
 

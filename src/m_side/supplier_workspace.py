@@ -2,6 +2,7 @@
 M-side supplier workspace persistence — JSON file storage under data/m_side_workspaces/.
 """
 
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

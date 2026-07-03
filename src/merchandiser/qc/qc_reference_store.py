@@ -2,6 +2,7 @@
 QC reference image store — saves golden-sample / approved-sample images per project+milestone.
 Persisted under data/merchandiser/qc/reference_images/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

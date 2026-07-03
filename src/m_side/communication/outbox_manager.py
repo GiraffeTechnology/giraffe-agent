@@ -2,6 +2,7 @@
 Outbox manager — creates and tracks outbound messages requiring approval.
 Persisted under data/communication/outbox/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

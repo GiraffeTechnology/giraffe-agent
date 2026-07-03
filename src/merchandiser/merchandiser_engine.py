@@ -2,6 +2,7 @@
 Merchandiser engine — orchestrates post-confirmation execution for both B-side and M-side.
 Persists execution state under data/merchandiser/executions/.
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone

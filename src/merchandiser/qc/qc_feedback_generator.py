@@ -1,6 +1,7 @@
 """
 QC feedback generator — formats Chinese/English M-side feedback from QCComparisonReport.
 """
+from __future__ import annotations
 from src.merchandiser.qc.qc_models import QCComparisonReport
 
 

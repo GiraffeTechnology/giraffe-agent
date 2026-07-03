@@ -5,6 +5,7 @@ Persisted under data/merchandiser/qc/process_cards/.
 Security: By default, pricing / contact info is redacted before sending to LLM.
 Control via QC_ALLOW_EXTERNAL_LLM (default: false), QC_ALLOW_CAD_TO_LLM (default: false).
 """
+from __future__ import annotations
 import json
 import os
 import uuid

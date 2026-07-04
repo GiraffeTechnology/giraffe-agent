@@ -2,7 +2,7 @@
 
 > Open-core industrial execution infrastructure for private-domain procurement, cross-border trade execution, supplier coordination, QC evidence, and auditable order orchestration.
 >
-> Industrial Execution Graph + Neutral Actor Model + giraffe-language-skill + giraffe-db facts + GPM/GLTG feasibility models + OpenClaw-compatible channel runtime + human approval.
+> Industrial Execution Graph + Neutral Actor Model + giraffe-language-skill + giraffe-db facts + GPM/GLTG feasibility models + giraffe-qc-model API + OpenClaw-compatible channel runtime + human approval.
 
 [![Python 3.11+](https://img.shields.io/badge/Python%203.11%2B-blue)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-ready-green)](https://fastapi.tiangolo.com/)
@@ -70,7 +70,7 @@ Repository-local verdict:
 PASS WITH GAPS
 ```
 
-Internal mock paths and repository interfaces pass. Production integrations still require live OpenClaw, model providers, giraffe-db, GLTG, and channel credentials.
+Internal mock paths and repository interfaces pass. Production integrations still require live OpenClaw, model providers, giraffe-db, GLTG, giraffe-qc-model, and channel credentials.
 
 ---
 
@@ -86,7 +86,7 @@ Internal mock paths and repository interfaces pass. Production integrations stil
 | **giraffe-agent** | Open-core orchestration reference, Neutral Actor Model, B/M workflows, Industrial Execution Graph | This repository |
 | **abcdYi** | Apparel/textile B2M industry edition | `GiraffeTechnology/abcdYi` |
 | **Giraffe-JP** | Merchant-owned C-B-M backend deployment package | `GiraffeTechnology/Giraffe-JP` |
-| **giraffe-qc-model** | Visual QC training, rule learning, sample learning, readiness gates, Pad/Server QC runtime | `GiraffeTechnology/giraffe-qc-model` |
+| **giraffe-qc-model** | Digital QC worker skill authoring, mature skill packaging, Pad/Server QC runtime, and checkpoint-level verdict evidence | `GiraffeTechnology/giraffe-qc-model` |
 | **OpenClaw** | Channel/account runtime and normalized event bridge | OpenClaw / Giraffe fork boundary |
 
 Strict product split:
@@ -95,6 +95,7 @@ Strict product split:
 language normalization lives in giraffe-language-skill
 facts live in giraffe-db
 simulation lives in GLTG / GPM
+QC intelligence and mature QC worker skills live in giraffe-qc-model
 execution lives in AIVAN and giraffe-agent workflows
 connectivity lives in OpenClaw or compatible runtime
 legal/commercial responsibility remains human
@@ -150,7 +151,7 @@ User IM / Email / Marketplace input
 -> authorized outbound execution
 -> order execution state
 -> AI Merchandiser follow-up
--> QC evidence ingestion / QC service call
+-> QC evidence ingestion / giraffe-qc-model API call
 -> logistics / exception tracking
 -> buyer sign-off
 -> Supplier Memory / giraffe-db update
@@ -382,11 +383,40 @@ Synthetic data must remain clearly labeled synthetic.
 
 ## QC Boundary
 
-QC capability belongs to `giraffe-qc-model`.
+QC intelligence belongs to `giraffe-qc-model`.
 
-Giraffe Agent may ingest QC evidence, request QC inspection, record QC reports, route corrective feedback, and append QC events. It must not fake QC pass/fail results.
+Giraffe Agent may ingest QC evidence, request QC skill authoring or inspection, record QC reports, route corrective feedback, and append QC events to the Industrial Execution Graph. It must not fake QC pass/fail results or implement its own visual QC model.
 
-QC requirement text in non-English must also pass through `giraffe-language-skill` before detection points, rule proposals, or decision packets are created.
+`giraffe-qc-model` owns:
+
+```text
+digital QC worker skill authoring
+standard photo / process-card ingestion for QC standards
+detection point proposals and confirmation workflow
+region / evidence grounding
+mature QC skill package generation
+Pad / workstation QC runtime
+server-side QC verdict recomputation
+probation, qualification, and requalification state
+checkpoint-level evidence discipline
+```
+
+Giraffe Agent owns the orchestration around QC:
+
+```text
+collecting QC requirements from IM / email / marketplace / order context
+passing canonical QC source packets to giraffe-qc-model APIs
+attaching QC reports to orders and execution graph nodes
+routing review_required / reject / false-pass events to humans
+triggering supplier corrective-action workflows after human approval
+preserving QC evidence links and audit records
+```
+
+QC requirement text in non-English must also pass through `giraffe-language-skill` before detection points, rule proposals, skill packages, or decision packets are created.
+
+For the same SKU and confirmed standard, a mature digital QC worker skill can be replicated across many Pad workstations without retraining every human operator or device. Giraffe Agent should treat that mature skill package as an external QC capability exposed by `giraffe-qc-model`, not as local orchestration logic.
+
+Visual pass/fail decisions must be produced by `giraffe-qc-model` or human review. A Giraffe Agent workflow must never let an LLM-generated summary override a checkpoint-level fail or a server-side QC recomputation result.
 
 ---
 

@@ -1,5 +1,7 @@
 # Main Branch 3x Validation Report
 
+Historical evidence note: original non-English documentation examples have been translated into English for readability. Recorded outcomes refer to the original test inputs at the source revision, not to a new run of the translated examples. Source code and test fixtures have not been changed.
+
 ## 1. Summary
 
 - **Branch:** `main` (validated at HEAD, working tree: `claude/main-3x-validation-ep6z5p`, same commit)
@@ -174,7 +176,7 @@ uv run python scripts/run_qwen_qc_smoke_test.py
 # --- OpenClaw WeChat simulated events ---
 uv run python - <<'PY'
 from src.openclaw_skill.openclaw_event_adapter import adapt_openclaw_event
-r = adapt_openclaw_event({"source":"openclaw","channel":"wechat","channel_account_id":"x","conversation_id":"c1","sender_id":"u1","sender_display_name":"Test","message_text":"我需要采购100件纯棉polo衫","message_type":"text","attachments":[],"mode":"b_side"})
+r = adapt_openclaw_event({"source":"openclaw","channel":"wechat","channel_account_id":"x","conversation_id":"c1","sender_id":"u1","sender_display_name":"Test","message_text":"I need to source 100 pure-cotton polo shirts","message_type":"text","attachments":[],"mode":"b_side"})
 assert r.get("ok") is not False
 print("OPENCLAW_WECHAT_BUYER: PASS")
 PY
@@ -207,3 +209,4 @@ done
 ---
 
 *Validated: 2026-06-14 | Branch: main @ a88121f | PR #12: merged*
+

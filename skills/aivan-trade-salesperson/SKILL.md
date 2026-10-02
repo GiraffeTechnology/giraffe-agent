@@ -36,7 +36,7 @@ This skill teaches OpenClaw when to route trade salesperson conversations and wo
 AIVAN handles:
 - Buyer inquiry intake from IM channels (WeChat, WhatsApp, email, web)
 - Structured requirement extraction from informal trade messages
-- Bilingual supplier inquiry drafting (Chinese / English)
+- Standard-English supplier inquiry drafting; requested non-English output is dynamically translated through giraffe-language-skill
 - Delivery feasibility simulation
 - Supplier quotation normalization
 - Order execution tracking
@@ -99,7 +99,7 @@ When an OpenClaw trade channel event arrives:
   "channel": "openclaw-weixin",
   "conversation_id": "conv_abc123",
   "sender_id": "wechat_user_xyz",
-  "message_text": "你好，我需要采购1000件棉质T恤，能否提供报价？",
+  "message_text": "Hello, I need to source 1,000 cotton T-shirts. Could you provide a quotation?",
   "project_id": "proj_456"
 }
 ```
@@ -153,3 +153,4 @@ clawhub skill publish skills/aivan-trade-salesperson \
 Apache-2.0 — see [LICENSE](../../LICENSE)
 
 Patent notice — see [PATENT_NOTICE.md](../../PATENT_NOTICE.md)
+

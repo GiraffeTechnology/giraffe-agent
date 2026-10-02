@@ -1,5 +1,7 @@
 # OpenClaw B/M Integration — Full Test Results (5× Run)
 
+Historical evidence note: original non-English documentation examples have been translated into English for readability. Recorded outcomes refer to the original test inputs at the source revision, not to a new run of the translated examples. Source code and test fixtures have not been changed.
+
 **Date:** 2026-06-14 07:20 UTC
 **Branch:** `claude/openclaw-bside-mside-integration-ew9z7f`
 **Pre-push commit:** `54f13bb8d22d8a8fce04bd362639a42c9f37f0c5`
@@ -55,8 +57,8 @@ uv run python scripts/test_openclaw_mside_invoke.py
 | Conversation binding created on first contact | PASS |
 | Conversation binding reused on follow-up | PASS |
 | Human approval gate: draft saved as pending_approval | PASS |
-| Human approval gate: 确认发送 / approve / send it triggers approval | PASS |
-| Human approval gate: 取消 / reject / do not send triggers rejection | PASS |
+| Human approval gate: approve sending / approve / send it triggers approval | PASS |
+| Human approval gate: reject / reject / do not send triggers rejection | PASS |
 | Approved outbound payload returned to OpenClaw (not sent by Giraffe) | PASS |
 | One-supplier scenario: single_supplier_option_ready | PASS |
 | Two-supplier scenario: available_supplier_options_ready | PASS |
@@ -125,7 +127,7 @@ Customer WeChat / Email
   → missing_fields returned as clarification
   → Follow-up message: fields provided
   → Supplier inquiry draft generated (approval_required=true, outbound_messages=[])
-  → Human approves ("确认发送")
+  → Human approves ("approve sending")
   → status=approved_for_dispatch, outbound_messages populated
   → OpenClaw dispatches supplier inquiry (Giraffe does NOT send directly)
 
@@ -139,3 +141,4 @@ Supplier WeChat / Email
   → Execution event appended
   → Giraffe does NOT directly send Email or WeChat
 ```
+

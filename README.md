@@ -14,7 +14,7 @@
 
 ## What Is Giraffe Agent?
 
-Giraffe Agent is the open-core orchestration reference implementation for the Giraffe industrial AI system.
+Giraffe Agent is the common agent application foundation. Aivan is its frontend application for inquiry, quotation and order confirmation. abcdYi is its apparel and textile industry application, and its frontend calls Aivan. MyAivan is Aivan's web version; OpenClaw-aivan supplies IM and email access. GLTG and GPM are dependency modules invoked through APIs.
 
 It converts fragmented trade communication into structured, auditable, human-confirmable execution state. It is designed for apparel and textile procurement, cross-border supplier coordination, RFQ execution, quotation comparison, lead-time feasibility, order follow-up, QC evidence handling, logistics tracking, and private-domain business memory.
 
@@ -70,7 +70,7 @@ Repository-local verdict:
 PASS WITH GAPS
 ```
 
-Internal mock paths and repository interfaces pass. Production integrations still require live OpenClaw, model providers, giraffe-db, GLTG, giraffe-qc-model, and channel credentials.
+The list above records historical repository validation, not a current acceptance verdict. Product acceptance must exercise the selected workflow and its actual API/persistence boundaries. The owner's designated simulated DBs are valid acceptance sources. A simulated dataset is different from a mocked service response; skipped integration checks are not passes. Live channel delivery can only be claimed for a configured, authorized channel that was actually exercised. No production-customer-data or all-channel prerequisite is added.
 
 ---
 
@@ -79,10 +79,10 @@ Internal mock paths and repository interfaces pass. Production integrations stil
 | Component | Responsibility | Repository / boundary |
 |---|---|---|
 | **giraffe-language-skill** | P0 canonical English language boundary and localized output rendering | `GiraffeTechnology/giraffe-language-skill` |
-| **giraffe-db** | Private business facts, evidence, behavior snapshots, lead-time observations, GLTG/GPM context | `GiraffeTechnology/giraffe-db` |
+| **giraffe-db** | Replaceable reference private DB for historical and ongoing process facts, evidence and model records | `GiraffeTechnology/giraffe-db` |
 | **GLTG** | Lead-time simulation, P50/P80/P90 quantiles, behavioral/statistical lead-time adjustment, fallback/manual-review flags | `GiraffeTechnology/GLTG` |
-| **GPM** | Procurement graph reasoning, known-suppliers-first planning, fallback procurement logic | Model/service boundary |
-| **AIVAN** | Standalone AI trade execution worker for private-domain RFQ execution | `GiraffeTechnology/aivan` |
+| **GPM** | Quote and pricing guidance through the existing module API | Model/service boundary |
+| **AIVAN** | Giraffe Agent frontend application for inquiry, quotation and order confirmation | `GiraffeTechnology/aivan` |
 | **giraffe-agent** | Open-core orchestration reference, Neutral Actor Model, B/M workflows, Industrial Execution Graph | This repository |
 | **abcdYi** | Apparel/textile B2M industry edition | `GiraffeTechnology/abcdYi` |
 | **Giraffe-JP** | Merchant-owned C-B-M backend deployment package | `GiraffeTechnology/Giraffe-JP` |
@@ -93,7 +93,7 @@ Strict product split:
 
 ```text
 language normalization lives in giraffe-language-skill
-facts live in giraffe-db
+history and process facts live in the selected replaceable private DB
 simulation lives in GLTG / GPM
 QC intelligence and mature QC worker skills live in giraffe-qc-model
 execution lives in AIVAN and giraffe-agent workflows
@@ -105,7 +105,11 @@ legal/commercial responsibility remains human
 
 ## P0 Language Boundary
 
-Standard English is the only internal working language across Giraffe products.
+Standard English is the product working and interaction language across Giraffe products. Non-English input and requested output use dynamic translation through giraffe-language-skill.
+
+Standard English is the product working and interaction language. Non-English input passes through `giraffe-language-skill` before entering a business workflow. Requested non-English output is translated dynamically by that same module from the English result. GLTG, GPM, Aivan, abcdYi and Giraffe Agent consume standard-English business packets rather than running parallel raw multilingual business paths.
+
+The selected private DB stores business history, process records and results in standard English. Enterprise and user profile information is the only exception that may retain non-English profile values. Raw business text, localized output, evidence payloads, audit fields and side tables do not create additional exceptions. Language tags, translation trace IDs, source references and hashes may be retained without duplicating non-English business content. This documentation update does not delete or migrate existing data.
 
 All raw multilingual user, operator, buyer, supplier, QC, IM, email, and marketplace input must pass through `giraffe-language-skill` before product workflow code extracts business fields, routes suppliers, runs GLTG, writes graph data, creates QC test points, generates decision packets, or creates outbound drafts.
 
@@ -144,7 +148,7 @@ User IM / Email / Marketplace input
 -> Giraffe Agent workflow router
 -> role-aware requirement structuring
 -> giraffe-db private-domain lookup
--> GPM procurement-path reasoning
+-> GPM quote and pricing guidance
 -> GLTG lead-time / delivery-feasibility simulation
 -> buyer option generation / supplier inquiry drafting
 -> human approval gate
@@ -166,7 +170,7 @@ The LLM may classify, summarize, explain, and draft. It must not become the fact
 
 The B-M real communication closure validates the live-channel path that
 giraffe-agent is expected to orchestrate and that AIVAN currently executes as
-the standalone trade worker.
+the shared frontend application for inquiry, quotation and order confirmation.
 
 Validated path:
 
@@ -301,7 +305,7 @@ P80 is the conservative feasibility basis
 
 ## GLTG v2 Porting Target
 
-The active GLTG iteration upgrades the model into a behavior-aware, statistically calibrated lead-time forecast.
+The GLTG target includes behavior-aware trade/processing factors and explanatory lead-time forecasts. Statistical calibration is a later phase once sufficient observations exist; it is not a prerequisite for accepting the initial model iteration using the designated simulated DBs.
 
 Target:
 
@@ -337,7 +341,7 @@ explanation_json
 source_observation_ids
 ```
 
-Release gate:
+Applicable client verification, without adding a separate product-launch prerequisite:
 
 ```text
 v1 regression tests pass
@@ -353,9 +357,13 @@ no LLM-generated lead-time replacement is added
 
 ## giraffe-db Boundary
 
-giraffe-db stores canonical private-domain business facts and evidence.
+The selected, replaceable private DB is the authoritative source for both business history and ongoing process data. Giraffe Agent, Aivan and abcdYi share this data dependency. `giraffe-db` is the reference provider and may be hot-swapped with a user's private DB through a compatible provider contract. Product identity does not depend on a particular instance, SQL engine, hosting vendor, or physical table layout.
 
-Giraffe Agent should query giraffe-db through explicit adapters or APIs. It must not reconstruct facts from general LLM knowledge.
+Inquiry revisions, quotations, decisions, approvals, order confirmations, execution events, model inputs and outputs, and their lineage must be recorded in that selected DB. Conversation context, browser state, LLM memory and in-memory stores may support presentation or processing; they are not the authoritative record. A failed write must remain visibly failed or pending rather than being reported as persisted business state.
+
+The owner's two designated simulated databases are valid sources for product testing and acceptance. Acceptance cannot be refused solely because their records are simulated rather than production customer transactions. Preserve synthetic labels and provenance, execute the actual selected service/API/persistence path, and report skipped or unexecuted checks accurately. Selecting a different provider must preserve tenant and authorization boundaries, stable record relationships, and truthful read/write behavior.
+
+Giraffe Agent queries the selected provider through explicit compatible adapters or APIs. It does not reconstruct authoritative facts from conversation context, general LLM knowledge or in-memory state.
 
 Important data classes:
 
@@ -422,7 +430,7 @@ Visual pass/fail decisions must be produced by `giraffe-qc-model` or human revie
 
 ## AIVAN Boundary
 
-AIVAN is the standalone AI trade execution worker.
+Aivan is Giraffe Agent's frontend application for inquiry, quotation and order confirmation. abcdYi's frontend calls Aivan; MyAivan provides its conversation-first web version. OpenClaw-aivan supplies IM/email access, with the selected channel's declared manual-send or approved-send behavior.
 
 AIVAN owns:
 
@@ -439,7 +447,7 @@ approved outbound execution
 AIVAN-specific deployment status
 ```
 
-Stable AIVAN capabilities can later be ported into this repository as framework patterns.
+Existing embedded Aivan code is retained for compatibility and review. It does not define a second competing frontend product or replace the shared Aivan business contract.
 
 ---
 
@@ -462,7 +470,7 @@ Environment:
 ```bash
 cp .env.example .env
 
-GIRAFFE_DB_MODE=off
+GIRAFFE_DB_MODE=off  # isolated fixture mode; not DB-backed product acceptance
 GLTG_API_BASE_URL=http://localhost:8090
 GLTG_API_TIMEOUT_SECONDS=30
 # GIRAFFE_LANGUAGE_SKILL_BASE_URL=http://localhost:8780

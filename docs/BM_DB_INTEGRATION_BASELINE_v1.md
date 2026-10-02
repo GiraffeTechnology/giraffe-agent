@@ -1,5 +1,7 @@
 # B/M-side DB Integration — Baseline v1
 
+This is a historical implementation baseline. Current data ownership and acceptance follow the source-aligned PRD and the selected private DB contract. Existing fixtures and compatibility code are retained.
+
 **Status:** Baseline v1 — first reproducible result  
 **Date:** 2026-06-13  
 **Branch:** `claude/bm-db-integration-reproducible-olu7a0`
@@ -46,7 +48,7 @@ broader scenario testing.**
 
 ### DB-off mode
 
-No database installation required.  The adapter runs entirely in memory.
+This historical fixture mode requires no DB installation and runs in memory. It remains a retained isolated-test utility. It does not satisfy the current requirement that business history and process records use the selected replaceable private DB, and must not be reported as durable product acceptance.
 `src.db` is never imported.
 
 ```bash
@@ -207,3 +209,4 @@ Suggested next steps for hardening:
 - Run against PostgreSQL
 - Add concurrent-session stress tests
 - Wire into CI with `pytest` fixtures
+

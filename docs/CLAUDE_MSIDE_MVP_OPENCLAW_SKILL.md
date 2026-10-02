@@ -306,7 +306,7 @@ class MSideSupplierProfile(BaseModel):
     channel: str | None = None
     external_user_id: str | None = None
     phone_or_handle: str | None = None
-    language_preference: str = "zh"
+    language_preference: str = "en"
     region: str | None = None
     capability: SupplierCapability = Field(default_factory=SupplierCapability)
     created_at: datetime
@@ -578,7 +578,7 @@ GQ-7421
 A supplier can reply:
 
 ```text
-接受 GQ-7421
+Accept GQ-7421
 Accept GQ-7421
 ```
 
@@ -612,25 +612,25 @@ Input source:
 Supplier dispatch message format:
 
 ```text
-【Giraffe Agent 供应商询盘】
-询盘编号：{rfq_id}
-供应商工作区：{m_workspace_id}
-验证码：{invitation_token}
+[Giraffe Agent Supplier Inquiry]
+Inquiry ID: {rfq_id}
+Supplier workspace: {m_workspace_id}
+Verification code: {invitation_token}
 
-买方需求摘要：
+Buyer requirement summary:
 {buyer_requirement_summary}
 
-请回复以下信息：
-1. 是否可以生产 / 接单
-2. 可用产能与最早开工时间
-3. 物料是否可得
-4. 报价 / MOQ / 模具费 / 打样费
-5. 预计交期
-6. QC / 图片或视频更新能力
-7. 包装与物流安排
-8. 主要风险或限制
+Please provide the following information:
+1. Can you manufacture the product or accept the order?
+2. Available capacity and earliest production start
+3. Material availability
+4. Quotation / MOQ / tooling charge / sample charge
+5. Estimated lead time
+6. QC / capability to provide photo or video updates
+7. Packaging and logistics arrangements
+8. Main risks or limitations
 
-你可以直接用自然语言回复。Giraffe Agent 会自动整理为结构化供应商响应。
+You can reply in natural language. Non-English input is translated through giraffe-language-skill before Giraffe Agent structures the supplier response.
 ```
 
 English version should also be supported.
@@ -707,7 +707,7 @@ Implement `src/m_side/inquiry_receiver.py`.
 def receive_supplier_inquiry(context: SupplierInquiryContext) -> MSideWorkspace:
     """Create or resume a supplier workspace from a dispatched inquiry."""
 
-def format_inquiry_for_supplier(context: SupplierInquiryContext, language: str = "zh") -> str:
+def format_inquiry_for_supplier(context: SupplierInquiryContext, language: str = "en") -> str:
     """Format inquiry message for supplier IM channel."""
 ```
 
@@ -738,7 +738,7 @@ Required fields:
 The supplier should be able to answer naturally:
 
 ```text
-可以做，6061材料有现货，最快下周三开工，样品7天，大货25天，单价4.8美元，MOQ 500，阳极氧化要外协，可能多3天。
+We can make it. 6061 material is in stock. The earliest start is next Wednesday. Samples take 7 days and bulk production 25 days. Unit price is USD 4.80, MOQ 500. Anodizing requires a subcontractor and may add 3 days.
 ```
 
 ### 9.3 Response collector and normalizer
@@ -765,7 +765,7 @@ Use deterministic parsing first. Use LLM connector only when available.
 Minimum parsing support:
 
 - numbers with currencies: RMB / CNY / USD / EUR / HKD
-- lead time: days / weeks / 日期
+- lead time: days / weeks / date
 - MOQ
 - can / cannot make
 - material available / unavailable
@@ -818,7 +818,7 @@ def acknowledge_order(order_execution_id: str, supplier_message: str) -> OrderEx
 Supplier can reply:
 
 ```text
-确认接单，按报价执行，预计6月15日完成。
+Order accepted under the quotation terms; expected completion June 15.
 Confirm order. We will start on Monday and finish by June 15.
 ```
 
@@ -837,9 +837,9 @@ def update_milestone_from_message(order_execution_id: str, message: str) -> Orde
 Support messages:
 
 ```text
-材料已到，明天开机。
-已完成50%，今天上传中期照片。
-生产延误两天，阳极氧化外协排队。
+Materials have arrived; production starts tomorrow.
+Production is 50% complete; progress photos will be uploaded today.
+Production is delayed by two days because of the anodizing subcontractor queue.
 ```
 
 ### 9.8 QC updates
@@ -916,18 +916,18 @@ Routing rules:
 Supplier response phrases include:
 
 ```text
-可以做
-不能做
-报价
-交期
+can make
+cannot make
+quotation
+lead time
 MOQ
-材料
-产能
-开工
-样品
-大货
+material
+capacity
+production start
+sample
+bulk production
 QC
-物流
+logistics
 EXW
 FOB
 DDP
@@ -978,7 +978,7 @@ Example action payload:
   "channel": "openclaw",
   "external_user_id": "supplier_001",
   "m_workspace_id": "mw_123",
-  "message": "可以做，6061材料有现货，25天交货，单价4.8美元，MOQ 500，阳极氧化外协多3天。"
+  "message": "We can make it. 6061 material is in stock. Delivery takes 25 days. Unit price is USD 4.80, MOQ 500. Subcontracted anodizing adds 3 days."
 }
 ```
 
@@ -997,7 +997,7 @@ Expected response:
     "currency": "USD",
     "red_flags": ["anodizing outsourced; may add 3 days"]
   },
-  "next_message": "已整理为结构化供应商响应。请确认是否提交给买方：回复“确认提交”。"
+  "next_message": "The supplier response has been structured. To submit it to the buyer, reply: approve submission."
 }
 ```
 
@@ -1296,7 +1296,7 @@ Test M-side supplier message manually:
 curl -X POST http://localhost:8000/api/m-side/workspaces/{m_workspace_id}/message \
   -H "Content-Type: application/json" \
   -d '{
-    "text": "可以做，6061材料有现货，最快下周三开工，样品7天，大货25天，单价4.8美元，MOQ 500，阳极氧化要外协，可能多3天。"
+    "text": "We can make it. 6061 material is in stock. The earliest start is next Wednesday. Samples take 7 days and bulk production 25 days. Unit price is USD 4.80, MOQ 500. Anodizing requires a subcontractor and may add 3 days."
   }'
 ```
 
@@ -1434,3 +1434,4 @@ Industrial Execution Graph events are logged
 ```
 
 At that point, the Giraffe Agent MVP is no longer just a B-side AI Buyer. It becomes a runnable minimum B+M procurement execution loop.
+

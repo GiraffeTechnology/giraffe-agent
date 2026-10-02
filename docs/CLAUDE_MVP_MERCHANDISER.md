@@ -775,19 +775,19 @@ M-side responsibilities:
 Example M-side messages:
 
 ```text
-老板，订单 SHIRT-100 已确认。今天需要确认布料是否到仓。请回复：
-A. 已到仓
-B. 未到仓
-C. 有问题，需要说明
+Order SHIRT-100 is confirmed. Please confirm today whether the fabric has arrived at the warehouse:
+A. Received at the warehouse
+B. Not yet received
+C. There is an issue; please explain
 ```
 
 ```text
-请上传裁剪阶段照片：正面、背面、细节各一张。拍清楚一点，方便 buyer 确认。
+Please upload three clear cutting-stage photos: front, back and detail, so the buyer can review them.
 ```
 
 ```text
-订单已到物流交接阶段。请回复物流公司、运单号，并上传面单照片。
-例如：已发顺丰，单号 SF123456789，今天下午发出。
+The order is ready for logistics handover. Please provide the carrier and tracking number and upload a photo of the shipping label.
+Example: Sent by SF Express, tracking number SF123456789, dispatched this afternoon.
 ```
 
 ---
@@ -977,7 +977,7 @@ The supplier reported a fabric delay. Two options are available: wait 3 extra da
 M-side message:
 
 ```text
-请确认是否采用备用布料方案，或继续等待原布料。若影响交期，请说明新的预计完成时间。
+Please confirm whether to use the alternative fabric or wait for the original fabric. If delivery is affected, provide the revised expected completion time.
 ```
 
 ---
@@ -1169,12 +1169,12 @@ Support configurable mapping:
 
 ```python
 {
-  "顺丰": "SF",
   "SF Express": "SF",
-  "中通": "ZTO",
-  "圆通": "YTO",
-  "申通": "STO",
-  "韵达": "YD",
+  "SF Express": "SF",
+  "ZTO Express": "ZTO",
+  "YTO Express": "YTO",
+  "STO Express": "STO",
+  "Yunda Express": "YD",
   "EMS": "EMS",
   "DHL": "DHL",
   "FedEx": "FEDEX",
@@ -1215,14 +1215,14 @@ LogisticsInfoExtract
 Examples:
 
 ```text
-已发顺丰，单号 SF123456789，今天下午发出
+Sent by SF Express, tracking number SF123456789, dispatched this afternoon
 ```
 
 Extract:
 
 ```json
 {
-  "carrier_name": "顺丰",
+  "carrier_name": "SF Express",
   "carrier_code": "SF",
   "tracking_number": "SF123456789"
 }
@@ -1399,12 +1399,12 @@ unknown
 Chinese examples:
 
 ```text
-已揽收 → picked_up
-运输中 → in_transit
-清关中 → customs
-派送中 → out_for_delivery
-已签收 → delivered
-异常 → exception
+picked up → picked_up
+in transit → in_transit
+customs clearance → customs
+out for delivery → out_for_delivery
+delivered → delivered
+delivery exception → exception
 ```
 
 English examples:
@@ -1906,7 +1906,7 @@ Must run:
 
 ```text
 1. Create project and confirmed order.
-2. M-side sends IM message: 已发顺丰，单号 SF123456789，今天下午发出.
+2. M-side sends IM message: Sent by SF Express, tracking number SF123456789, dispatched this afternoon.
 3. System extracts carrier and tracking number.
 4. System creates LogisticsShipment.
 5. Provider registry selects CainiaoLikeProvider in mock mode.
@@ -2070,3 +2070,4 @@ Industrial Execution Graph = memory of what actually happened
 ```
 
 Together, these three modules turn Giraffe from an inquiry tool into an order execution agent.
+

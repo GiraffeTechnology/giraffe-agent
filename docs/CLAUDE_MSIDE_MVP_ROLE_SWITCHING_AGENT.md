@@ -46,8 +46,8 @@ Certain workflows, business methods, system designs, data structures, role-based
 
 The relevant patent family includes, without limitation:
 
-- China invention patent: **ZL 2023 1 1645939.9**, publication / grant number **CN 117670482 B**, titled **“基于多方配合的C2M模式的纺织品及服装定制运营平台系统”**.
-- Japan patent: **P7644545 / 特許第7644545号**, application number **P2024-57581**, titled **“協働型C2Mモデルに基づく繊維及びアパレルカスタマイズ運用プラットフォームシステム”**.
+- China invention patent: **ZL 2023 1 1645939.9**, publication / grant number **CN 117670482 B**, titled **“Textile and Apparel Customization Operation Platform System Based on a Multi-party Collaborative C2M Model”**.
+- Japan patent: **P7644545 / Patent No. 7644545**, application number **P2024-57581**, titled **“Textile and Apparel Customization Operation Platform System Based on a Collaborative C2M Model”**.
 
 The patent owner is **Giraffe Technology Holding Limited**.
 
@@ -145,7 +145,7 @@ src/legal/patent_notice.py
 The patent notice must clearly state:
 
 - China patent: ZL 2023 1 1645939.9 / CN 117670482 B.
-- Japan patent: P7644545 / 特許第7644545号.
+- Japan patent: P7644545 / Patent No. 7644545.
 - Patent owner: Giraffe Technology Holding Limited.
 - Free patent license applies globally to individuals, SMEs, educational institutions, and research institutions for compliant use.
 - Enterprise deployment, platform operation, large-scale commercial use, third-party system integration, white-label resale, Enterprise CAP, and use of Giraffe commercial assets require separate written permission.
@@ -172,14 +172,14 @@ For authorization outside the global free patent license scope, contact: mich@gi
 Use the following Chinese notice where appropriate:
 
 ```text
-专利提示：
-本项目中的部分工作流、系统逻辑、参与者协同机制、动态表单机制、生产监控机制、质量检测机制、角色切换式采购执行流程及多方 C2M / 订单执行流程，可能涉及长颈鹿科技（控股）有限公司拥有的相关专利，包括中国发明专利 ZL 2023 1 1645939.9 / CN 117670482 B 及日本专利 P7644545 / 特許第7644545号。
+Patent notice:
+Certain workflows, system logic, participant coordination, dynamic forms, production monitoring, quality inspection, role-switching procurement execution and multi-party C2M/order execution processes in this project may involve patents owned by Giraffe Technology Holding Limited, including China invention patent ZL 2023 1 1645939.9 / CN 117670482 B and Japan patent P7644545 / Patent No. 7644545.
 
-长颈鹿科技（控股）有限公司向全球范围内的个人、中小企业（SME）、教育机构及科研机构，就合规使用相关专利工作流与系统逻辑授予免费专利许可。企业级部署、平台化运营、大规模商业生产使用、为第三方提供系统集成或托管服务、白标/OEM/转售、Enterprise CAP、以及使用长颈鹿商标、供应商网络、买方数据、交易数据、订单档案、Industrial Execution Graph 数据或商业运营权，须另行取得书面许可。
+Giraffe Technology Holding Limited grants individuals, small and medium-sized enterprises (SMEs), educational institutions and research institutions worldwide a free patent license for compliant use of the relevant patented workflows and system logic. Enterprise deployments, platform operations, large-scale commercial production, third-party systems integration or hosting, white-label/OEM/resale, Enterprise CAP, and use of Giraffe trademarks, supplier networks, buyer data, transaction data, order records, Industrial Execution Graph data or commercial operating rights require separate written authorization.
 
-取得本项目开源代码，并不当然取得超出上述免费专利许可范围之外的任何专利权、商标权、商业运营权、数据权利或平台运营权。
+Access to this project's open-source code does not automatically grant patent, trademark, commercial operating, data or platform operating rights beyond the free patent license described above.
 
-如需申请超出全球免费专利许可范围之外的授权，请联系：mich@giraffe.technology。
+For authorization beyond the worldwide free patent license, contact: mich@giraffe.technology.
 ```
 
 
@@ -929,3 +929,4 @@ Most procurement products treat buyer and supplier as fixed identities. Giraffe 
 The M-side agent must help the manufacturer ask upstream and subcontractor suppliers, structure their responses, compare feasible dependency options, secure approval, and generate a credible buyer-facing delivery response.
 
 This is how Giraffe turns supplier replies into delivery feasibility simulation.
+

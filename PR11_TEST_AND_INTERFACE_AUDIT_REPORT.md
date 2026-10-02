@@ -1,5 +1,7 @@
 # PR #11 Test and Interface Audit Report
 
+Historical evidence note: original non-English documentation examples have been translated into English for readability. Recorded outcomes refer to the original test inputs at the source revision, not to a new run of the translated examples. Source code and test fixtures have not been changed.
+
 ## 1. Executive Summary
 - **PR #11 commit tested:** `2ded3bc feat: implement AI Merchandiser & Logistics post-confirmation layer`
 - **Branch:** `claude/ai-merchandiser-logistics-wy93i7`
@@ -68,14 +70,14 @@
 
 ### 4.2 Logistics
 - **Script result:** PASS
-- **IM message extraction (Chinese SF):** Carrier name and code extracted (`carrier_name=顺丰`, `carrier_code=SF`) but tracking number was `None` for the Chinese-only message `"已发顺丰，单号SF123456789012，今天下午发出"`. The regex `\bSF\d{12}\b` requires a word boundary before `SF`; the Chinese comma `，` before `SF` does not create one.
-- **Tracking number extracted:** Yes — using `"SF123456789012 已发顺丰快递"` (leading Latin chars create word boundary). Tracking `SF123456789012` extracted correctly.
+- **IM message extraction (Chinese SF):** Historical report: carrier name and code were extracted (`carrier_name="\u987a\u4e30"`, `carrier_code=SF`), but tracking was `None` for the original input represented here with Unicode escapes: `"\u5df2\u53d1\u987a\u4e30\uff0c\u5355\u53f7SF123456789012\uff0c\u4eca\u5929\u4e0b\u5348\u53d1\u51fa"`. English gloss: Sent by SF Express, tracking number SF123456789012, dispatched this afternoon. The character immediately before `SF` is U+53F7, a Unicode word character, so Python's default Unicode `\bSF\d{12}\b` does not find a boundary there. The original explanation blaming the comma was inaccurate.
+- **Tracking number extracted:** Historical report: yes for original input `"SF123456789012 \u5df2\u53d1\u987a\u4e30\u5feb\u9012"` (Unicode-escaped representation; English gloss: SF123456789012 dispatched by SF Express). Here the tracking token starts at a word boundary. This documentation translation did not rerun the historical parser.
 - **Provider:** `mock` (env `LOGISTICS_PROVIDER=mock`)
 - **Shipment created:** ok — shipment ID `SHIP-0B084DF037`, tracking `SF123456789012`
 - **Events synced:** 4 events from mock provider
 - **delivered → DELIVERED (not ORDER_CLOSED):** PASS — `map_logistics_status_to_order_state("delivered")` returns `"DELIVERED"`
 - **Bugs:**
-  - Minor: Chinese-format SF tracking number `"单号SF123456789012"` does not extract tracking because `，SF` lacks an ASCII word boundary before `SF`. English and space-prefixed formats work. This is a known regex edge case with CJK punctuation, not a blocker for the overall flow since carrier is still identified.
+  - Minor: the reported failing prefix is `"\u5355\u53f7SF123456789012"` (Unicode-escaped original). U+53F7 is directly adjacent to `SF`, with no Unicode word boundary. A comma directly before `SF`, whether ASCII U+002C or fullwidth U+FF0C, would create a boundary; punctuation alone was not the demonstrated cause. The historical observation and its original severity are preserved without treating the translated English gloss as executed test input.
   - Spec discrepancy: The original audit spec example `SF123456789` (9 digits) does not match `\bSF\d{12}\b`; this audit used the correct 12-digit form `SF123456789012`.
 
 ---
@@ -166,7 +168,7 @@ Full table list (40 tables):
 
 | ID | Severity | Module | Summary | Fixed | Retest |
 |---|---|---|---|---|---|
-| BUG-001 | Low | `logistics_message_parser.py` | Chinese CJK punctuation (，) before tracking number does not create a word boundary for `\bSF\d{12}\b` regex, causing tracking extraction to fail from Chinese-format messages like `"单号SF123456789012"` while carrier name/code is still identified | No (by design / known regex limitation) | Verified: carrier extracted, tracking None for CJK-adjacent format |
+| BUG-001 | Low | `logistics_message_parser.py` | Historical CJK-adjacent input `"\u5355\u53f7SF123456789012"` (escaped original) did not yield tracking although the carrier was identified. A Unicode word character immediately before `SF` prevents the boundary required by `\bSF\d{12}\b`; the earlier comma explanation is corrected. | Historical report: not fixed | Recorded carrier extraction and missing tracking; not rerun in this documentation pass |
 
 ---
 
@@ -244,3 +246,4 @@ PY
 # OpenClaw runtime test
 uv run python /tmp/test_openclaw_runtime.py
 ```
+

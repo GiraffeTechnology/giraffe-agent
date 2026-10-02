@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 Logistics event status normalizer — maps provider-specific statuses to canonical values.
 Canonical: label_created | picked_up | in_transit | customs | out_for_delivery | delivered | exception | unknown
@@ -7,13 +9,13 @@ import hashlib
 import json
 
 _NORMALIZATION_MAP: list[tuple[list[str], str]] = [
-    (["label_created", "label created", "已创建面单", "已下单"], "label_created"),
-    (["已揽收", "揽收", "picked up", "picked_up", "collected", "pick up"], "picked_up"),
-    (["运输中", "in transit", "in_transit", "transit", "on the way", "shipped", "in delivery"], "in_transit"),
-    (["清关中", "清关", "customs clearance", "customs", "cleared customs", "customs_clearance"], "customs"),
-    (["派送中", "out for delivery", "out_for_delivery", "on delivery", "delivery attempted"], "out_for_delivery"),
-    (["已签收", "签收", "delivered", "delivery successful", "completed"], "delivered"),
-    (["异常", "exception", "delivery exception", "delivery_exception", "failed", "undeliverable", "returned"], "exception"),
+    (["label_created", "label created", '\u5df2\u521b\u5efa\u9762\u5355', '\u5df2\u4e0b\u5355'], "label_created"),
+    (['\u5df2\u63fd\u6536', '\u63fd\u6536', "picked up", "picked_up", "collected", "pick up"], "picked_up"),
+    (['\u8fd0\u8f93\u4e2d', "in transit", "in_transit", "transit", "on the way", "shipped", "in delivery"], "in_transit"),
+    (['\u6e05\u5173\u4e2d', '\u6e05\u5173', "customs clearance", "customs", "cleared customs", "customs_clearance"], "customs"),
+    (['\u6d3e\u9001\u4e2d', "out for delivery", "out_for_delivery", "on delivery", "delivery attempted"], "out_for_delivery"),
+    (['\u5df2\u7b7e\u6536', '\u7b7e\u6536', "delivered", "delivery successful", "completed"], "delivered"),
+    (['\u5f02\u5e38', "exception", "delivery exception", "delivery_exception", "failed", "undeliverable", "returned"], "exception"),
 ]
 
 

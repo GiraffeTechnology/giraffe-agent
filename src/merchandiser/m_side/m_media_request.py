@@ -11,7 +11,6 @@ def request_milestone_media_upload(
 ) -> dict:
     media_desc = ", ".join(required_media) if required_media else "photos"
     msg = (
-        f"请上传 {milestone_type.replace('_', ' ')} 阶段照片：{media_desc}。\n"
         f"Please upload {milestone_type.replace('_', ' ')} stage media: {media_desc}."
     )
     log_m_event(

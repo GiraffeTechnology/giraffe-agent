@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 M-side exception handler — classifies and structures exception reports from supplier messages.
 """
@@ -18,15 +20,15 @@ def _utcnow() -> datetime:
 def _classify_category(message: str) -> str:
     """Classify exception category from message keywords."""
     msg = message.lower()
-    if any(kw in msg for kw in ["material", "材料", "原料", "缺料", "shortage"]):
+    if any(kw in msg for kw in ["material", '\u6750\u6599', '\u539f\u6599', '\u7f3a\u6599', "shortage"]):
         return "material"
-    if any(kw in msg for kw in ["delay", "延误", "延期", "推迟", "schedule", "交期"]):
+    if any(kw in msg for kw in ["delay", '\u5ef6\u8bef', '\u5ef6\u671f', '\u63a8\u8fdf', "schedule", '\u4ea4\u671f']):
         return "schedule"
-    if any(kw in msg for kw in ["quality", "质量", "缺陷", "defect", "qc", "质检"]):
+    if any(kw in msg for kw in ["quality", '\u8d28\u91cf', '\u7f3a\u9677', "defect", "qc", '\u8d28\u68c0']):
         return "quality"
-    if any(kw in msg for kw in ["logistics", "物流", "shipping", "carrier", "运输"]):
+    if any(kw in msg for kw in ["logistics", '\u7269\u6d41', "shipping", "carrier", '\u8fd0\u8f93']):
         return "logistics"
-    if any(kw in msg for kw in ["cost", "price", "成本", "涨价", "surcharge", "费用"]):
+    if any(kw in msg for kw in ["cost", "price", '\u6210\u672c', '\u6da8\u4ef7', "surcharge", '\u8d39\u7528']):
         return "cost"
     return "other"
 
@@ -43,8 +45,8 @@ def _classify_severity(message: str) -> str:
 
     # Blocking
     blocking_kw = [
-        "无法交货", "cannot deliver", "no material", "机器故障", "machine broken",
-        "buyer must decide", "买家需要决定", "完全无法", "产能已满.*无法接单",
+        '\u65e0\u6cd5\u4ea4\u8d27', "cannot deliver", "no material", '\u673a\u5668\u6545\u969c', "machine broken",
+        "buyer must decide", '\u4e70\u5bb6\u9700\u8981\u51b3\u5b9a', '\u5b8c\u5168\u65e0\u6cd5', '\u4ea7\u80fd\u5df2\u6ee1.*\u65e0\u6cd5\u63a5\u5355',
     ]
     for kw in blocking_kw:
         if re.search(kw, message, re.IGNORECASE):
@@ -52,9 +54,9 @@ def _classify_severity(message: str) -> str:
 
     # High severity
     high_kw = [
-        r"delay.*\d+\s*weeks?", r"延误.*\d+\s*周",
-        "qc failed", "质量不合格", "涨价", "major cost",
-        r"延误.*[7-9]\d?\s*天", r"delay.*[7-9]\d?\s*days?",
+        r"delay.*\d+\s*weeks?", '\u5ef6\u8bef.*\\d+\\s*\u5468',
+        "qc failed", '\u8d28\u91cf\u4e0d\u5408\u683c', '\u6da8\u4ef7', "major cost",
+        '\u5ef6\u8bef.*[7-9]\\d?\\s*\u5929', r"delay.*[7-9]\d?\s*days?",
     ]
     for kw in high_kw:
         if re.search(kw, message, re.IGNORECASE):
@@ -62,9 +64,9 @@ def _classify_severity(message: str) -> str:
 
     # Medium
     medium_kw = [
-        r"delay.*[2-6]\s*天", r"延误.*[2-6]\s*天",
-        "outsourc", "外协", "packaging issue", "包装问题",
-        "延误", "delay",
+        'delay.*[2-6]\\s*\u5929', '\u5ef6\u8bef.*[2-6]\\s*\u5929',
+        "outsourc", '\u5916\u534f', "packaging issue", '\u5305\u88c5\u95ee\u9898',
+        '\u5ef6\u8bef', "delay",
     ]
     for kw in medium_kw:
         if re.search(kw, message, re.IGNORECASE):
@@ -78,11 +80,11 @@ def _extract_proposed_options(message: str) -> list[str]:
     options = []
 
     # Look for numbered options
-    numbered = re.findall(r"(?:方案|option|选项|建议)\s*[：:]\s*(.+?)(?:\n|$)", message)
+    numbered = re.findall('(?:\u65b9\u6848|option|\u9009\u9879|\u5efa\u8bae)\\s*[\uff1a:]\\s*(.+?)(?:\\n|$)', message)
     options.extend(numbered[:3])
 
-    # Look for "can" / "能" suggestions
-    suggestions = re.findall(r"(?:可以|能够|建议|suggest|can|recommend)\s*(.{5,40}?)(?:[。,，\n]|$)", message)
+    # Look for suggestions phrased with English or Chinese equivalents of "can".
+    suggestions = re.findall('(?:\u53ef\u4ee5|\u80fd\u591f|\u5efa\u8bae|suggest|can|recommend)\\s*(.{5,40}?)(?:[\u3002,\uff0c\\n]|$)', message)
     for s in suggestions[:2]:
         if s not in options:
             options.append(s.strip())

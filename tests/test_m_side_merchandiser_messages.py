@@ -10,23 +10,24 @@ from src.merchandiser.side_router import route_merchandiser_message, _build_m_si
 def test_m_progress_check_template():
     msg = render(M_PROGRESS_CHECK, stage="cutting")
     assert "cutting" in msg
-    assert "A." in msg or "已完成" in msg
+    assert "A. Completed" in msg
 
 
 def test_m_media_upload_template():
-    msg = render(M_MEDIA_UPLOAD, milestone_type="final_qc", media_desc="3张照片")
+    # Preserve the original Chinese parameter to verify Unicode interpolation.
+    msg = render(M_MEDIA_UPLOAD, milestone_type="final_qc", media_desc="3\u5f20\u7167\u7247")
     assert "final_qc" in msg
-    assert "3张照片" in msg
+    assert "3\u5f20\u7167\u7247" in msg
 
 
 def test_m_logistics_handover_template():
     msg = M_LOGISTICS_HANDOVER
-    assert "物流" in msg or "运单" in msg or "快递" in msg
+    assert "carrier" in msg and "tracking number" in msg
 
 
 def test_m_material_delay_response_template():
     msg = M_MATERIAL_DELAY_RESPONSE
-    assert "布料" in msg or "交期" in msg
+    assert "backup fabric" in msg and "delivery" in msg
 
 
 def test_route_m_side_production():
@@ -51,23 +52,23 @@ def test_route_m_side_logistics():
 
 def test_build_m_side_material_delay():
     msg = _build_m_side_message("material_delay_reported", {})
-    assert "布料" in msg or "交期" in msg
+    assert "backup fabric" in msg and "delivery" in msg
 
 
 def test_build_m_side_milestone():
     msg = _build_m_side_message("milestone_update", {})
-    assert "进度" in msg or "照片" in msg
+    assert "production progress" in msg and "photos" in msg
 
 
 def test_build_m_side_logistics():
     msg = _build_m_side_message("logistics_handover", {})
-    assert "物流" in msg or "运单" in msg
+    assert "carrier" in msg and "tracking number" in msg
 
 
 def test_build_m_side_fallback():
     msg = _build_m_side_message("unknown_event_xyz", {})
     assert len(msg) > 0
-    assert "请更新" in msg
+    assert "Please update" in msg
 
 
 def test_route_uses_task_type_fallback():

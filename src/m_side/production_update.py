@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 M-side production update handler.
 """
@@ -28,13 +30,13 @@ def submit_production_update(
     """
     # Detect status from message
     status = "in_progress"
-    if re.search(r"完成|finished|done|100%|completed", message, re.IGNORECASE):
+    if re.search('\u5b8c\u6210|finished|done|100%|completed', message, re.IGNORECASE):
         status = "completed"
-    elif re.search(r"延误|delay|delayed|推迟", message, re.IGNORECASE):
+    elif re.search('\u5ef6\u8bef|delay|delayed|\u63a8\u8fdf', message, re.IGNORECASE):
         status = "delayed"
-    elif re.search(r"开机|开工|started|begin|start", message, re.IGNORECASE):
+    elif re.search('\u5f00\u673a|\u5f00\u5de5|started|begin|start', message, re.IGNORECASE):
         status = "in_progress"
-    elif re.search(r"材料.*到|material.*arrived|备料", message, re.IGNORECASE):
+    elif re.search('\u6750\u6599.*\u5230|material.*arrived|\u5907\u6599', message, re.IGNORECASE):
         status = "in_progress"
 
     update = ProductionUpdate(
@@ -78,12 +80,12 @@ def _update_milestone_status(order: OrderExecutionContext, message: str) -> None
     msg_lower = message.lower()
 
     milestone_hints = {
-        "material_confirmation": ["材料.*到", "material.*arrived", "备料完成"],
-        "production_start": ["开工", "开机", "started production", "begin production"],
-        "mid_production_update": [r"\d+%", "progress", "进度"],
-        "qc_confirmation": ["qc", "质检", "inspection", "检验"],
-        "packaging_ready": ["包装", "packaging", "packed"],
-        "logistics_handover": ["发货", "shipped", "logistics", "快递"],
+        "material_confirmation": ['\u6750\u6599.*\u5230', "material.*arrived", '\u5907\u6599\u5b8c\u6210'],
+        "production_start": ['\u5f00\u5de5', '\u5f00\u673a', "started production", "begin production"],
+        "mid_production_update": [r"\d+%", "progress", '\u8fdb\u5ea6'],
+        "qc_confirmation": ["qc", '\u8d28\u68c0', "inspection", '\u68c0\u9a8c'],
+        "packaging_ready": ['\u5305\u88c5', "packaging", "packed"],
+        "logistics_handover": ['\u53d1\u8d27', "shipped", "logistics", '\u5feb\u9012'],
     }
 
     for milestone_name, patterns in milestone_hints.items():

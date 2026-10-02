@@ -8,7 +8,7 @@ def send_upstream_followup(
     upstream_actor_id: str,
     dependency_type: str,
 ) -> dict:
-    msg = f"请确认 {dependency_type.replace('_', ' ')} 的进度和交货时间。"
+    msg = f"Please confirm progress and the delivery time for {dependency_type.replace('_', ' ')}."
     log_m_event(
         event_type="M_UPSTREAM_FOLLOWUP_SENT",
         b_workspace_id=project_id,

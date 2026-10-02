@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 M-side capacity checker — infers capacity signal from supplier messages and profile.
 """
@@ -22,17 +24,17 @@ def infer_capacity_signal(
 
     # Look for capacity notes
     capacity_notes = None
-    if re.search(r"产能已满|backlog|over.?capac", combined, re.IGNORECASE):
+    if re.search('\u4ea7\u80fd\u5df2\u6ee1|backlog|over.?capac', combined, re.IGNORECASE):
         capacity_available = False
         capacity_notes = "Supplier reports full capacity"
-    elif re.search(r"有空档|有余量|available capacity", combined, re.IGNORECASE):
+    elif re.search('\u6709\u7a7a\u6863|\u6709\u4f59\u91cf|available capacity', combined, re.IGNORECASE):
         capacity_available = True
         capacity_notes = "Capacity available"
 
     # Earliest start date
     earliest_start = None
     start_match = re.search(
-        r"(?:下周[一二三四五六日]|下周|next week|next Monday|next Tuesday|下周开工|最快下周)",
+        '(?:\u4e0b\u5468[\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u65e5]|\u4e0b\u5468|next week|next Monday|next Tuesday|\u4e0b\u5468\u5f00\u5de5|\u6700\u5feb\u4e0b\u5468)',
         combined,
         re.IGNORECASE,
     )
@@ -41,7 +43,7 @@ def infer_capacity_signal(
 
     # Production days
     production_days = None
-    prod_match = re.search(r"大货\s*(\d+)\s*天|production.*?(\d+)\s*days?", combined, re.IGNORECASE)
+    prod_match = re.search('\u5927\u8d27\\s*(\\d+)\\s*\u5929|production.*?(\\d+)\\s*days?', combined, re.IGNORECASE)
     if prod_match:
         val = prod_match.group(1) or prod_match.group(2)
         production_days = int(val) if val else None
@@ -53,9 +55,9 @@ def infer_capacity_signal(
 
     # Bottlenecks
     bottlenecks = []
-    if re.search(r"外协|outsourc", combined, re.IGNORECASE):
+    if re.search('\u5916\u534f|outsourc', combined, re.IGNORECASE):
         bottlenecks.append("anodizing/outsourced process")
-    if re.search(r"排队|queue|backlog", combined, re.IGNORECASE):
+    if re.search('\u6392\u961f|queue|backlog', combined, re.IGNORECASE):
         bottlenecks.append("production queue")
 
     return CapacitySignal(

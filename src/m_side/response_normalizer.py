@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 M-side supplier response normalizer — deterministic regex-based parser.
 Converts natural-language supplier replies into structured SupplierResponsePacket fields.
@@ -31,14 +33,14 @@ def _combined_text(texts: list[str]) -> str:
 
 def _parse_can_make(text: str) -> bool | None:
     yes_patterns = [
-        r"可以做", r"可以接", r"能做", r"能接", r"接单", r"可以生产",
+        '\u53ef\u4ee5\u505a', '\u53ef\u4ee5\u63a5', '\u80fd\u505a', '\u80fd\u63a5', '\u63a5\u5355', '\u53ef\u4ee5\u751f\u4ea7',
         r"\bcan make\b", r"\bwe can\b", r"\byes\b", r"\bconfirm\b",
-        r"可以", r"没问题",
+        '\u53ef\u4ee5', '\u6ca1\u95ee\u9898',
     ]
     no_patterns = [
-        r"不能做", r"无法做", r"做不了", r"不接", r"无法接单", r"产能已满",
+        '\u4e0d\u80fd\u505a', '\u65e0\u6cd5\u505a', '\u505a\u4e0d\u4e86', '\u4e0d\u63a5', '\u65e0\u6cd5\u63a5\u5355', '\u4ea7\u80fd\u5df2\u6ee1',
         r"\bcannot make\b", r"\bcan't make\b", r"\bno capacity\b",
-        r"抱歉.*无法", r"抱歉.*不能", r"当前产能已满",
+        '\u62b1\u6b49.*\u65e0\u6cd5', '\u62b1\u6b49.*\u4e0d\u80fd', '\u5f53\u524d\u4ea7\u80fd\u5df2\u6ee1',
     ]
     for pat in no_patterns:
         if re.search(pat, text, re.IGNORECASE):
@@ -50,11 +52,11 @@ def _parse_can_make(text: str) -> bool | None:
 
 
 def _parse_lead_time(text: str) -> int | None:
-    """Extract lead time in days. Supports days/weeks/天/周."""
+    """Extract lead time in days. Supports day/week units in English and Chinese."""
     # Look for "total X days" type patterns first
     total_patterns = [
-        r"总交期\s*(\d+)\s*天",
-        r"总共\s*(\d+)\s*天",
+        '\u603b\u4ea4\u671f\\s*(\\d+)\\s*\u5929',
+        '\u603b\u5171\\s*(\\d+)\\s*\u5929',
         r"total.*?(\d+)\s*days?",
     ]
     for pat in total_patterns:
@@ -64,10 +66,10 @@ def _parse_lead_time(text: str) -> int | None:
 
     # Generic days pattern
     day_patterns = [
-        r"大货\s*(\d+)\s*天",
-        r"(\d+)\s*天交货",
-        r"交期.*?(\d+)\s*天",
-        r"(\d+)\s*(?:天|days?|日)(?:\s*交货)?",
+        '\u5927\u8d27\\s*(\\d+)\\s*\u5929',
+        '(\\d+)\\s*\u5929\u4ea4\u8d27',
+        '\u4ea4\u671f.*?(\\d+)\\s*\u5929',
+        '(\\d+)\\s*(?:\u5929|days?|\u65e5)(?:\\s*\u4ea4\u8d27)?',
     ]
     for pat in day_patterns:
         m = re.search(pat, text, re.IGNORECASE)
@@ -78,7 +80,7 @@ def _parse_lead_time(text: str) -> int | None:
 
     # Weeks pattern
     week_patterns = [
-        r"(\d+)\s*(?:周|weeks?)",
+        '(\\d+)\\s*(?:\u5468|weeks?)',
     ]
     for pat in week_patterns:
         m = re.search(pat, text, re.IGNORECASE)
@@ -91,9 +93,9 @@ def _parse_lead_time(text: str) -> int | None:
 def _parse_sample_lead_time(text: str) -> int | None:
     """Extract sample/prototype lead time."""
     patterns = [
-        r"样品\s*(\d+)\s*天",
+        '\u6837\u54c1\\s*(\\d+)\\s*\u5929',
         r"sample.*?(\d+)\s*days?",
-        r"打样\s*(\d+)\s*天",
+        '\u6253\u6837\\s*(\\d+)\\s*\u5929',
     ]
     for pat in patterns:
         m = re.search(pat, text, re.IGNORECASE)
@@ -109,9 +111,9 @@ def _parse_unit_price(text: str) -> tuple[float | None, str | None]:
         r"USD\s*(\d+\.?\d*)",
         r"\$\s*(\d+\.?\d*)",
         r"(\d+\.?\d*)\s*USD",
-        r"(\d+\.?\d*)\s*美元",
-        r"单价\s*USD\s*(\d+\.?\d*)",
-        r"单价\s*(\d+\.?\d*)\s*(?:USD|美元)",
+        '(\\d+\\.?\\d*)\\s*\u7f8e\u5143',
+        '\u5355\u4ef7\\s*USD\\s*(\\d+\\.?\\d*)',
+        '\u5355\u4ef7\\s*(\\d+\\.?\\d*)\\s*(?:USD|\u7f8e\u5143)',
     ]
     for pat in usd_patterns:
         m = re.search(pat, text, re.IGNORECASE)
@@ -122,8 +124,8 @@ def _parse_unit_price(text: str) -> tuple[float | None, str | None]:
     rmb_patterns = [
         r"RMB\s*(\d+\.?\d*)",
         r"CNY\s*(\d+\.?\d*)",
-        r"(\d+\.?\d*)\s*(?:RMB|CNY|元|人民币)",
-        r"单价\s*(\d+\.?\d*)\s*元",
+        '(\\d+\\.?\\d*)\\s*(?:RMB|CNY|\u5143|\u4eba\u6c11\u5e01)',
+        '\u5355\u4ef7\\s*(\\d+\\.?\\d*)\\s*\u5143',
     ]
     for pat in rmb_patterns:
         m = re.search(pat, text, re.IGNORECASE)
@@ -148,8 +150,8 @@ def _parse_moq(text: str) -> int | None:
     """Extract minimum order quantity."""
     patterns = [
         r"MOQ\s*[:：]?\s*(\d+)",
-        r"最低.*?(\d+)\s*(?:件|pcs|pieces)",
-        r"(\d+)\s*(?:件|pcs).*MOQ",
+        '\u6700\u4f4e.*?(\\d+)\\s*(?:\u4ef6|pcs|pieces)',
+        '(\\d+)\\s*(?:\u4ef6|pcs).*MOQ',
     ]
     for pat in patterns:
         m = re.search(pat, text, re.IGNORECASE)
@@ -161,14 +163,14 @@ def _parse_moq(text: str) -> int | None:
 def _parse_material_available(text: str) -> bool | None:
     """Detect material availability."""
     available_patterns = [
-        r"材料.*?有现货", r"有现货", r"现货充足",
+        '\u6750\u6599.*?\u6709\u73b0\u8d27', '\u6709\u73b0\u8d27', '\u73b0\u8d27\u5145\u8db3',
         r"material.*?available", r"in stock",
-        r"有货", r"货充足",
+        '\u6709\u8d27', '\u8d27\u5145\u8db3',
     ]
     unavailable_patterns = [
-        r"材料.*?缺", r"缺料", r"材料短缺", r"材料在途",
+        '\u6750\u6599.*?\u7f3a', '\u7f3a\u6599', '\u6750\u6599\u77ed\u7f3a', '\u6750\u6599\u5728\u9014',
         r"material.*?shortage", r"out of stock",
-        r"无货", r"缺货",
+        '\u65e0\u8d27', '\u7f3a\u8d27',
     ]
     for pat in unavailable_patterns:
         if re.search(pat, text, re.IGNORECASE):
@@ -182,11 +184,11 @@ def _parse_material_available(text: str) -> bool | None:
 def _parse_red_flags(text: str) -> list[str]:
     """Detect risk flags from supplier message."""
     flags = []
-    outsource_patterns = [r"外协", r"outsourc", r"third.?party"]
-    delay_patterns = [r"延误", r"delay", r"延期"]
-    shortage_patterns = [r"缺料", r"shortage", r"material.*unavailable"]
-    capacity_patterns = [r"产能.*满", r"排队", r"backlog", r"over.?capac"]
-    holiday_patterns = [r"假期", r"holiday", r"spring festival", r"spring break"]
+    outsource_patterns = ['\u5916\u534f', r"outsourc", r"third.?party"]
+    delay_patterns = ['\u5ef6\u8bef', r"delay", '\u5ef6\u671f']
+    shortage_patterns = ['\u7f3a\u6599', r"shortage", r"material.*unavailable"]
+    capacity_patterns = ['\u4ea7\u80fd.*\u6ee1', '\u6392\u961f', r"backlog", r"over.?capac"]
+    holiday_patterns = ['\u5047\u671f', r"holiday", r"spring festival", r"spring break"]
 
     tl = text.lower()
     for pat in outsource_patterns:
@@ -215,7 +217,7 @@ def _parse_red_flags(text: str) -> list[str]:
 
 def _parse_qc_available(text: str) -> bool | None:
     """Detect QC capability."""
-    patterns = [r"\bQC\b", r"质检", r"检验", r"inspection", r"照片", r"photo", r"视频", r"video"]
+    patterns = [r"\bQC\b", '\u8d28\u68c0', '\u68c0\u9a8c', r"inspection", '\u7167\u7247', r"photo", '\u89c6\u9891', r"video"]
     for pat in patterns:
         if re.search(pat, text, re.IGNORECASE):
             return True
@@ -234,7 +236,7 @@ def _parse_logistics(text: str) -> LogisticsCommitment:
     if re.search(r"\bDDP\b", text, re.IGNORECASE):
         lc.ddp_supported = True
         lc.logistics_notes = (lc.logistics_notes + "/DDP") if lc.logistics_notes else "DDP"
-    if re.search(r"快递|courier|express", text, re.IGNORECASE):
+    if re.search('\u5feb\u9012|courier|express', text, re.IGNORECASE):
         lc.logistics_notes = (lc.logistics_notes + "/courier") if lc.logistics_notes else "courier"
     return lc
 
@@ -323,7 +325,7 @@ def normalize_supplier_response_text(
     )
 
     # Parse earliest start date
-    start_match = re.search(r"(?:下周[一二三四五六日]|下周|next week|Monday|Tuesday|Wednesday)", combined)
+    start_match = re.search('(?:\u4e0b\u5468[\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u65e5]|\u4e0b\u5468|next week|Monday|Tuesday|Wednesday)', combined)
     if start_match:
         capacity_signal.earliest_start_date = start_match.group(0)
 

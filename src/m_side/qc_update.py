@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 M-side QC update handler.
 """
@@ -28,11 +30,11 @@ def submit_qc_update(
     """
     # Detect QC status from message
     qc_status = "pending"
-    if re.search(r"合格|passed|pass|ok|通过|approved", message, re.IGNORECASE):
+    if re.search('\u5408\u683c|passed|pass|ok|\u901a\u8fc7|approved', message, re.IGNORECASE):
         qc_status = "passed"
-    elif re.search(r"不合格|failed|fail|reject|拒绝|不通过", message, re.IGNORECASE):
+    elif re.search('\u4e0d\u5408\u683c|failed|fail|reject|\u62d2\u7edd|\u4e0d\u901a\u8fc7', message, re.IGNORECASE):
         qc_status = "failed"
-    elif re.search(r"需要确认|需买家确认|buyer.*confirm|needs.*confirmation", message, re.IGNORECASE):
+    elif re.search('\u9700\u8981\u786e\u8ba4|\u9700\u4e70\u5bb6\u786e\u8ba4|buyer.*confirm|needs.*confirmation', message, re.IGNORECASE):
         qc_status = "needs_buyer_confirmation"
 
     qc_update = QCUpdate(

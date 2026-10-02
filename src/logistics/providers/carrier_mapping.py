@@ -1,17 +1,19 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """Carrier name → carrier code mapping (configurable, not exhaustive)."""
 
 from __future__ import annotations
 CARRIER_NAME_TO_CODE: dict[str, str] = {
-    "顺丰": "SF",
+    '\u987a\u4e30': "SF",
     "sf express": "SF",
     "sf": "SF",
-    "中通": "ZTO",
+    '\u4e2d\u901a': "ZTO",
     "zto": "ZTO",
-    "圆通": "YTO",
+    '\u5706\u901a': "YTO",
     "yto": "YTO",
-    "申通": "STO",
+    '\u7533\u901a': "STO",
     "sto": "STO",
-    "韵达": "YD",
+    '\u97f5\u8fbe': "YD",
     "yd": "YD",
     "ems": "EMS",
     "dhl": "DHL",

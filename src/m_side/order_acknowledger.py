@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 M-side order acknowledger — processes supplier order acknowledgement messages.
 Persists order execution context under data/order_execution/.
@@ -50,7 +52,7 @@ def save_order_execution(order: OrderExecutionContext) -> OrderExecutionContext:
 def acknowledge_order(order_execution_id: str, supplier_message: str) -> OrderExecutionContext:
     """
     Supplier acknowledges selected order path and moves execution status forward.
-    Supports: "确认接单" / "Confirm order" type messages.
+    Supports order-confirmation messages in Chinese and English.
     """
     order = get_order_execution(order_execution_id)
 
@@ -63,7 +65,7 @@ def acknowledge_order(order_execution_id: str, supplier_message: str) -> OrderEx
 
     # Parse expected completion date if mentioned
     date_match = re.search(
-        r"(?:预计|expected|complete by|finish by)\s*([A-Za-z0-9月日\s]+\d+)",
+        '(?:\u9884\u8ba1|expected|complete by|finish by)\\s*([A-Za-z0-9\u6708\u65e5\\s]+\\d+)',
         supplier_message,
         re.IGNORECASE,
     )

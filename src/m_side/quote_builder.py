@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 M-side quote builder — extracts SupplierQuote fields from supplier text.
 """
@@ -20,7 +22,7 @@ def build_supplier_quote(response_texts: list[str]) -> SupplierQuote:
     # Tooling fee
     tooling_fee = None
     tf_match = re.search(
-        r"(?:模具费|tooling fee|mold fee)\s*[:：]?\s*(\d+\.?\d*)\s*(USD|RMB|CNY|元|美元)?",
+        '(?:\u6a21\u5177\u8d39|tooling fee|mold fee)\\s*[:\uff1a]?\\s*(\\d+\\.?\\d*)\\s*(USD|RMB|CNY|\u5143|\u7f8e\u5143)?',
         combined,
         re.IGNORECASE,
     )
@@ -30,7 +32,7 @@ def build_supplier_quote(response_texts: list[str]) -> SupplierQuote:
     # Sample fee
     sample_fee = None
     sf_match = re.search(
-        r"(?:打样费|样品费|sample fee)\s*[:：]?\s*(\d+\.?\d*)\s*(USD|RMB|CNY|元|美元)?",
+        '(?:\u6253\u6837\u8d39|\u6837\u54c1\u8d39|sample fee)\\s*[:\uff1a]?\\s*(\\d+\\.?\\d*)\\s*(USD|RMB|CNY|\u5143|\u7f8e\u5143)?',
         combined,
         re.IGNORECASE,
     )
@@ -39,7 +41,7 @@ def build_supplier_quote(response_texts: list[str]) -> SupplierQuote:
 
     # Price validity
     price_valid = None
-    pv_match = re.search(r"(?:报价有效期|price valid).*?(\d+)\s*(?:天|days?)", combined, re.IGNORECASE)
+    pv_match = re.search('(?:\u62a5\u4ef7\u6709\u6548\u671f|price valid).*?(\\d+)\\s*(?:\u5929|days?)', combined, re.IGNORECASE)
     if pv_match:
         price_valid = f"{pv_match.group(1)} days"
 
@@ -47,9 +49,9 @@ def build_supplier_quote(response_texts: list[str]) -> SupplierQuote:
     notes_parts = []
     if moq:
         notes_parts.append(f"MOQ: {moq}")
-    if re.search(r"阳极氧化|anodizing", combined, re.IGNORECASE):
+    if re.search('\u9633\u6781\u6c27\u5316|anodizing', combined, re.IGNORECASE):
         notes_parts.append("anodizing included")
-    if re.search(r"外协|outsourc", combined, re.IGNORECASE):
+    if re.search('\u5916\u534f|outsourc', combined, re.IGNORECASE):
         notes_parts.append("outsourced process")
 
     return SupplierQuote(

@@ -1,3 +1,5 @@
+# Unicode escapes retain the original non-English test inputs and assertions.
+# Keep these vectors multilingual; English-only inputs do not test the same behavior.
 """Tests verifying existing M-side handlers still work correctly after merchandiser integration."""
 import pytest
 from src.m_side.logistics_update import submit_logistics_update
@@ -43,7 +45,7 @@ def test_logistics_update_shipped_sets_order_shipped():
     update = submit_logistics_update(
         order_execution_id=order.order_execution_id,
         supplier_id="sup-handler-001",
-        message="已发货，顺丰快递 SF123456789012",
+        message='\u5df2\u53d1\u8d27\uff0c\u987a\u4e30\u5feb\u9012 SF123456789012',
     )
     loaded = get_order_execution(order.order_execution_id)
     assert loaded.status == "shipped"
@@ -55,7 +57,7 @@ def test_logistics_update_delivered_sets_buyer_signoff_pending():
     update = submit_logistics_update(
         order_execution_id=order.order_execution_id,
         supplier_id="sup-handler-001",
-        message="已签收，客户已收货，delivered",
+        message='\u5df2\u7b7e\u6536\uff0c\u5ba2\u6237\u5df2\u6536\u8d27\uff0cdelivered',
     )
     loaded = get_order_execution(order.order_execution_id)
     assert loaded.status == "buyer_signoff_pending"
@@ -82,7 +84,7 @@ def test_logistics_update_no_match_preserves_status():
     submit_logistics_update(
         order_execution_id=order.order_execution_id,
         supplier_id="sup-handler-001",
-        message="包裹已打包，准备发出",
+        message='\u5305\u88f9\u5df2\u6253\u5305\uff0c\u51c6\u5907\u53d1\u51fa',
     )
     loaded = get_order_execution(order.order_execution_id)
     assert loaded.status == "ready_for_pickup" or loaded.status == original_status
@@ -128,7 +130,7 @@ def test_logistics_update_tracks_tracking_number():
     update = submit_logistics_update(
         order_execution_id=order.order_execution_id,
         supplier_id="sup-handler-001",
-        message="SF快递已发出，单号SF123456789012",
+        message='SF\u5feb\u9012\u5df2\u53d1\u51fa\uff0c\u5355\u53f7SF123456789012',
     )
     assert update.tracking_number is not None
     assert "SF" in (update.tracking_number or "")
@@ -140,6 +142,6 @@ def test_logistics_update_extracts_carrier():
     update = submit_logistics_update(
         order_execution_id=order.order_execution_id,
         supplier_id="sup-handler-001",
-        message="DHL已发出，单号1234567890123",
+        message='DHL\u5df2\u53d1\u51fa\uff0c\u5355\u53f71234567890123',
     )
     assert update.carrier is not None

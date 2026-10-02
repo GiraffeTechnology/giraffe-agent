@@ -4,8 +4,7 @@ from src.m_side.m_event_logger import log_m_event
 
 def send_m_side_progress_check(project_id: str, supplier_actor_id: str, stage: str) -> dict:
     msg = (
-        f"订单进度提醒 ({stage.replace('_', ' ')})：请更新当前生产状态。\n"
-        "Progress check: Please update the current production status."
+        f"Progress check ({stage.replace('_', ' ')}): Please update the current production status."
     )
     log_m_event(
         event_type="M_SIDE_PROGRESS_CHECK_REQUESTED",

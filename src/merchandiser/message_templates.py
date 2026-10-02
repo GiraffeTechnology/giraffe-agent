@@ -23,21 +23,21 @@ B_EXCEPTION_OPTIONS = (
 )
 
 M_PROGRESS_CHECK = (
-    "老板，订单已确认。{stage}阶段需要更新进度。请回复：\n"
-    "A. 已完成\nB. 进行中\nC. 有问题，需要说明"
+    "The order is confirmed. Please update progress for the {stage} stage. Reply:\n"
+    "A. Completed\nB. In progress\nC. There is an issue; please explain"
 )
 
 M_MEDIA_UPLOAD = (
-    "请上传{milestone_type}阶段照片：{media_desc}。拍清楚一点，方便 buyer 确认。"
+    "Please upload photos for the {milestone_type} stage: {media_desc}. Make them clear enough for the buyer to review."
 )
 
 M_LOGISTICS_HANDOVER = (
-    "订单已到物流交接阶段。请回复物流公司、运单号，并上传面单照片。\n"
-    "例如：已发顺丰，单号 SF123456789，今天下午发出。"
+    "The order has reached logistics handover. Please provide the carrier and tracking number, and upload a shipping label photo.\n"
+    "Example: Shipped via SF Express, tracking SF123456789, dispatched this afternoon."
 )
 
 M_MATERIAL_DELAY_RESPONSE = (
-    "请确认是否采用备用布料方案，或继续等待原布料。若影响交期，请说明新的预计完成时间。"
+    "Please confirm whether to use the backup fabric or keep waiting for the original fabric. If delivery is affected, provide the revised expected completion time."
 )
 
 

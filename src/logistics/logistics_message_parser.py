@@ -1,6 +1,8 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 Logistics IM message parser — extracts carrier and tracking number from free-text IM messages.
-Supports Chinese (SF Express, 顺丰, etc.) and English formats.
+Supports Chinese carrier aliases (including SF Express) and English formats.
 """
 from __future__ import annotations
 import re
@@ -31,16 +33,16 @@ _TRACKING_PATTERNS = [
 ]
 
 _KEYWORDS_ZH = {
-    "已发": "shipped",
-    "发出": "shipped",
-    "寄出": "shipped",
-    "单号": "tracking",
-    "运单": "tracking",
-    "快递": "express",
+    '\u5df2\u53d1': "shipped",
+    '\u53d1\u51fa': "shipped",
+    '\u5bc4\u51fa': "shipped",
+    '\u5355\u53f7': "tracking",
+    '\u8fd0\u5355': "tracking",
+    '\u5feb\u9012': "express",
 }
 
 _DATE_PATTERNS = [
-    r'今天',
+    '\u4eca\u5929',
     r'today',
     r'\d{4}-\d{2}-\d{2}',
     r'\d{1,2}/\d{1,2}',

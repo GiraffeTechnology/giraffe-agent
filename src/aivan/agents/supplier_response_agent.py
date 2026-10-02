@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 from __future__ import annotations
 from aivan.schemas.response import SupplierReply
 from aivan.llm.gateway import llm_complete_json
@@ -36,10 +38,10 @@ Extract: unit_price, currency, moq, capacity_per_day, capacity_per_month, lead_t
         pass
 
     text_lower = raw_text.lower()
-    price_match = re.search(r'(?:usd|price|单价|¥|\$)\s*([\d.]+)', text_lower)
+    price_match = re.search('(?:usd|price|\u5355\u4ef7|\xa5|\\$)\\s*([\\d.]+)', text_lower)
     unit_price = float(price_match.group(1)) if price_match else None
 
-    day_match = re.search(r'(\d+)\s*(?:days?|天)', text_lower)
+    day_match = re.search('(\\d+)\\s*(?:days?|\u5929)', text_lower)
     lead_time = int(day_match.group(1)) if day_match else None
 
     moq_match = re.search(r'moq[:\s]*(\d[\d,]*)', text_lower)

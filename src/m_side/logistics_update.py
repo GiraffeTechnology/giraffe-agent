@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 M-side logistics update handler. Extracts tracking numbers and logistics status.
 """
@@ -19,7 +21,7 @@ def _utcnow() -> datetime:
 def _extract_tracking_number(text: str) -> str | None:
     """Extract tracking/waybill number from text."""
     patterns = [
-        r"(?:快递单号|运单号|tracking.*?[:：]?\s*)([A-Z]{2}\d{8,}[A-Z]{0,2})",  # international
+        '(?:\u5feb\u9012\u5355\u53f7|\u8fd0\u5355\u53f7|tracking.*?[:\uff1a]?\\s*)([A-Z]{2}\\d{8,}[A-Z]{0,2})',  # international
         r"(?:SF|JD|YT|ZT|YD|EMS)\d{10,}",  # Chinese express
         r"\b[A-Z]{2}\d{9}[A-Z]{2}\b",  # universal postal
     ]
@@ -61,13 +63,13 @@ def submit_logistics_update(
     """
     # Detect status
     status = "pending"
-    if re.search(r"已发货|shipped|dispatched|交付物流|handed over", message, re.IGNORECASE):
+    if re.search('\u5df2\u53d1\u8d27|shipped|dispatched|\u4ea4\u4ed8\u7269\u6d41|handed over', message, re.IGNORECASE):
         status = "shipped"
-    elif re.search(r"已交付|delivered|到达|arrived", message, re.IGNORECASE):
+    elif re.search('\u5df2\u4ea4\u4ed8|delivered|\u5230\u8fbe|arrived', message, re.IGNORECASE):
         status = "delivered"
-    elif re.search(r"备货完成|ready for pickup|packaging complete|可取货", message, re.IGNORECASE):
+    elif re.search('\u5907\u8d27\u5b8c\u6210|ready for pickup|packaging complete|\u53ef\u53d6\u8d27', message, re.IGNORECASE):
         status = "ready_for_pickup"
-    elif re.search(r"交付物流|handed.*logistics|logistics handover", message, re.IGNORECASE):
+    elif re.search('\u4ea4\u4ed8\u7269\u6d41|handed.*logistics|logistics handover', message, re.IGNORECASE):
         status = "handed_over"
 
     tracking_number = _extract_tracking_number(message)

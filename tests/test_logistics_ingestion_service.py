@@ -1,3 +1,5 @@
+# Unicode escapes retain the original non-English test inputs and assertions.
+# Keep these vectors multilingual; English-only inputs do not test the same behavior.
 """Tests for logistics ingestion service."""
 import pytest
 from src.logistics.logistics_ingestion_service import (
@@ -83,7 +85,7 @@ def test_event_deduplication():
 
 
 def test_ingest_from_im_message_sf_chinese():
-    msg = "老板已发货，顺丰快递，单号SF123456789012，今天下午发出"
+    msg = '\u8001\u677f\u5df2\u53d1\u8d27\uff0c\u987a\u4e30\u5feb\u9012\uff0c\u5355\u53f7SF123456789012\uff0c\u4eca\u5929\u4e0b\u5348\u53d1\u51fa'
     shipment = ingest_logistics_from_im_message(
         project_id=_PROJECT,
         raw_message=msg,

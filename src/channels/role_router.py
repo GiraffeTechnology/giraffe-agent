@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 Role-aware IM router — routes inbound messages to B-side or M-side workflow.
 """
@@ -10,9 +12,9 @@ from src.channels.message_types import InboundMessage
 _TOKEN_PATTERN = re.compile(r"\b(GQ-\w{4,}|GIRAFFE-M-\w{4,})\b", re.IGNORECASE)
 
 _M_SIDE_PHRASES_ZH = [
-    "可以做", "不能做", "报价", "交期", "MOQ", "材料", "产能",
-    "开工", "样品", "大货", "QC", "物流", "EXW", "FOB", "DDP",
-    "接单", "确认", "发货", "质检", "快递",
+    '\u53ef\u4ee5\u505a', '\u4e0d\u80fd\u505a', '\u62a5\u4ef7', '\u4ea4\u671f', "MOQ", '\u6750\u6599', '\u4ea7\u80fd',
+    '\u5f00\u5de5', '\u6837\u54c1', '\u5927\u8d27', "QC", '\u7269\u6d41', "EXW", "FOB", "DDP",
+    '\u63a5\u5355', '\u786e\u8ba4', '\u53d1\u8d27', '\u8d28\u68c0', '\u5feb\u9012',
 ]
 
 _M_SIDE_PHRASES_EN = [

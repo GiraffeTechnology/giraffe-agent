@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 Deterministic buyer requirement parser for B-side AI Buyer.
 No LLM required — uses regex and keyword matching.
@@ -21,9 +23,9 @@ def _parse_quantity(text: str) -> int | None:
         r"(\d[\d,]*)\s*pcs",
         r"(\d[\d,]*)\s*pieces",
         r"(\d[\d,]*)\s*units",
-        r"(\d[\d,]*)\s*个",
-        r"(\d[\d,]*)\s*件",
-        r"(\d[\d,]*)\s*套",
+        '(\\d[\\d,]*)\\s*\u4e2a',
+        '(\\d[\\d,]*)\\s*\u4ef6',
+        '(\\d[\\d,]*)\\s*\u5957',
         # Apparel and general product counts with possible modifier words between number and product
         r"(\d[\d,]*)\s+(?:[^\d,\n]{1,60}?\s+)?(?:shirts?|t-shirts?|garments?|jackets?|trousers?|pants?|dresses?|hoodies?)\b",
         r"(\d[\d,]*)\s+(?:[^\d,\n]{1,40}?\s+)?(?:items?|products?|goods?)\b",

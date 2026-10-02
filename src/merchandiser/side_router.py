@@ -50,9 +50,9 @@ def _build_b_side_message(event_type: str, context: dict) -> str:
 
 def _build_m_side_message(event_type: str, context: dict) -> str:
     if "material_delay" in event_type or "material_shortage" in event_type:
-        return "请确认是否采用备用布料方案，或继续等待原布料。若影响交期，请说明新的预计完成时间。"
+        return "Please confirm whether to use the backup fabric or keep waiting for the original fabric. If delivery is affected, provide the revised expected completion time."
     if "milestone" in event_type:
-        return "请更新生产进度并上传照片。"
+        return "Please update production progress and upload photos."
     if "logistics" in event_type:
-        return "请提供物流公司和运单号信息。"
-    return f"请更新当前状态：{event_type.replace('_', ' ')}。"
+        return "Please provide the carrier and tracking number."
+    return f"Please update the current status: {event_type.replace('_', ' ')}."

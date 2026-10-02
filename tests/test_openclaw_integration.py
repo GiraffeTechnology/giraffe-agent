@@ -1,3 +1,5 @@
+# Unicode escapes retain the original non-English test inputs and assertions.
+# Keep these vectors multilingual; English-only inputs do not test the same behavior.
 """
 pytest tests for OpenClaw B-side and M-side integration.
 """
@@ -23,7 +25,7 @@ from src.openclaw_skill.openclaw_event_adapter import (
 
 class TestIntentDetection:
     def test_approval_zh(self):
-        assert _is_approval("确认发送")
+        assert _is_approval('\u786e\u8ba4\u53d1\u9001')
 
     def test_approval_en(self):
         assert _is_approval("approve")
@@ -31,16 +33,16 @@ class TestIntentDetection:
         assert _is_approval("yes send")
 
     def test_rejection_zh(self):
-        assert _is_rejection("取消")
-        assert _is_rejection("不要发送")
+        assert _is_rejection('\u53d6\u6d88')
+        assert _is_rejection('\u4e0d\u8981\u53d1\u9001')
 
     def test_rejection_en(self):
         assert _is_rejection("reject")
         assert _is_rejection("do not send")
 
     def test_buyer_intent_zh(self):
-        assert _detect_buyer_intent("帮我询价 10000 件白色纯棉衬衣")
-        assert _detect_buyer_intent("我需要采购 5000 件衬衫")
+        assert _detect_buyer_intent('\u5e2e\u6211\u8be2\u4ef7 10000 \u4ef6\u767d\u8272\u7eaf\u68c9\u886c\u8863')
+        assert _detect_buyer_intent('\u6211\u9700\u8981\u91c7\u8d2d 5000 \u4ef6\u886c\u886b')
 
     def test_supplier_reply_intent_en(self):
         assert _detect_supplier_reply_intent(
@@ -49,7 +51,7 @@ class TestIntentDetection:
         assert _detect_supplier_reply_intent("FOB Shenzhen. MOQ 1000 pcs.")
 
     def test_mode_detection_buyer(self):
-        assert _detect_mode_from_intent("帮我询价 10000 件衬衣") == "b_side"
+        assert _detect_mode_from_intent('\u5e2e\u6211\u8be2\u4ef7 10000 \u4ef6\u886c\u8863') == "b_side"
 
     def test_mode_detection_supplier(self):
         assert _detect_mode_from_intent("We can make it. Lead time 30 days. USD 4.50/pc.") == "m_side"
@@ -59,14 +61,14 @@ class TestIntentDetection:
 
 class TestParsing:
     def test_destination_zh_vancouver(self):
-        assert _parse_destination_zh("交温哥华") == "Vancouver"
+        assert _parse_destination_zh('\u4ea4\u6e29\u54e5\u534e') == "Vancouver"
 
     def test_destination_zh_shanghai(self):
-        assert _parse_destination_zh("送往上海") == "Shanghai"
+        assert _parse_destination_zh('\u9001\u5f80\u4e0a\u6d77') == "Shanghai"
 
     def test_deadline_zh_within_days(self):
-        assert _parse_deadline_zh("45 天内交货") == "within 45 days"
-        assert _parse_deadline_zh("30天内") == "within 30 days"
+        assert _parse_deadline_zh('45 \u5929\u5185\u4ea4\u8d27') == "within 45 days"
+        assert _parse_deadline_zh('30\u5929\u5185') == "within 30 days"
 
     def test_deadline_en(self):
         result = _parse_deadline_zh("within 45 days")
@@ -99,7 +101,7 @@ class TestBSideFlow:
         conv_id = f"conv_new_{uuid.uuid4().hex[:8]}"
         result = adapt_openclaw_event(
             self._make_event(
-                "采购助理，帮我询价 10000 件白色纯棉衬衣，45 天内交温哥华。",
+                '\u91c7\u8d2d\u52a9\u7406\uff0c\u5e2e\u6211\u8be2\u4ef7 10000 \u4ef6\u767d\u8272\u7eaf\u68c9\u886c\u8863\uff0c45 \u5929\u5185\u4ea4\u6e29\u54e5\u534e\u3002',
                 conversation_id=conv_id,
             )
         )
@@ -115,7 +117,7 @@ class TestBSideFlow:
         conv_id = f"conv_bind_{uuid.uuid4().hex[:8]}"
         result = adapt_openclaw_event(
             self._make_event(
-                "帮我询价 5000 件纯棉T恤",
+                '\u5e2e\u6211\u8be2\u4ef7 5000 \u4ef6\u7eaf\u68c9T\u6064',
                 conversation_id=conv_id,
             )
         )
@@ -128,7 +130,7 @@ class TestBSideFlow:
         conv_id = f"conv_missing_{uuid.uuid4().hex[:8]}"
         result = adapt_openclaw_event(
             self._make_event(
-                "采购助理，帮我询价 10000 件白色纯棉衬衣，45 天内交温哥华。",
+                '\u91c7\u8d2d\u52a9\u7406\uff0c\u5e2e\u6211\u8be2\u4ef7 10000 \u4ef6\u767d\u8272\u7eaf\u68c9\u886c\u8863\uff0c45 \u5929\u5185\u4ea4\u6e29\u54e5\u534e\u3002',
                 conversation_id=conv_id,
             )
         )
@@ -143,7 +145,7 @@ class TestBSideFlow:
         conv_id = f"conv_followup_{uuid.uuid4().hex[:8]}"
         result1 = adapt_openclaw_event(
             self._make_event(
-                "帮我询价 10000 件白色纯棉衬衣，45 天内交温哥华。",
+                '\u5e2e\u6211\u8be2\u4ef7 10000 \u4ef6\u767d\u8272\u7eaf\u68c9\u886c\u8863\uff0c45 \u5929\u5185\u4ea4\u6e29\u54e5\u534e\u3002',
                 conversation_id=conv_id,
             )
         )
@@ -151,7 +153,7 @@ class TestBSideFlow:
 
         result2 = adapt_openclaw_event(
             self._make_event(
-                "尺码比例 S 20%, M 40%, L 30%, XL 10%，面料 180gsm，单价 5 美元，纸箱包装。",
+                '\u5c3a\u7801\u6bd4\u4f8b S 20%, M 40%, L 30%, XL 10%\uff0c\u9762\u6599 180gsm\uff0c\u5355\u4ef7 5 \u7f8e\u5143\uff0c\u7eb8\u7bb1\u5305\u88c5\u3002',
                 conversation_id=conv_id,
             )
         )
@@ -165,7 +167,7 @@ class TestBSideFlow:
         # Create project with all fields
         result1 = adapt_openclaw_event(
             self._make_event(
-                "帮我询价 10000 件白色纯棉衬衣，45 天内交温哥华。",
+                '\u5e2e\u6211\u8be2\u4ef7 10000 \u4ef6\u767d\u8272\u7eaf\u68c9\u886c\u8863\uff0c45 \u5929\u5185\u4ea4\u6e29\u54e5\u534e\u3002',
                 conversation_id=conv_id,
             )
         )
@@ -174,7 +176,7 @@ class TestBSideFlow:
         # Provide all missing fields
         result2 = adapt_openclaw_event(
             self._make_event(
-                "尺码比例 S 20%, M 40%, L 30%, XL 10%，面料 180gsm，单价 5 美元，纸箱包装。",
+                '\u5c3a\u7801\u6bd4\u4f8b S 20%, M 40%, L 30%, XL 10%\uff0c\u9762\u6599 180gsm\uff0c\u5355\u4ef7 5 \u7f8e\u5143\uff0c\u7eb8\u7bb1\u5305\u88c5\u3002',
                 conversation_id=conv_id,
             )
         )
@@ -192,7 +194,7 @@ class TestBSideFlow:
 
         result1 = adapt_openclaw_event(
             self._make_event(
-                "帮我询价 10000 件白色纯棉衬衣，45 天内交温哥华。",
+                '\u5e2e\u6211\u8be2\u4ef7 10000 \u4ef6\u767d\u8272\u7eaf\u68c9\u886c\u8863\uff0c45 \u5929\u5185\u4ea4\u6e29\u54e5\u534e\u3002',
                 conversation_id=conv_id,
             )
         )
@@ -200,7 +202,7 @@ class TestBSideFlow:
 
         adapt_openclaw_event(
             self._make_event(
-                "尺码比例 S 20%, M 40%, L 30%, XL 10%，面料 180gsm，单价 5 美元，纸箱包装。",
+                '\u5c3a\u7801\u6bd4\u4f8b S 20%, M 40%, L 30%, XL 10%\uff0c\u9762\u6599 180gsm\uff0c\u5355\u4ef7 5 \u7f8e\u5143\uff0c\u7eb8\u7bb1\u5305\u88c5\u3002',
                 conversation_id=conv_id,
             )
         )
@@ -208,7 +210,7 @@ class TestBSideFlow:
         # Approve
         approval_result = adapt_openclaw_event(
             self._make_event(
-                "确认发送",
+                '\u786e\u8ba4\u53d1\u9001',
                 conversation_id=conv_id,
                 project_id=project_id,
             )
@@ -475,7 +477,7 @@ class TestVariableMSalesperson:
             "conversation_id": conv_id,
             "sender_id": "customer_abc",
             "sender_display_name": "Customer ABC",
-            "message_text": "帮我询价 10000 件白色纯棉衬衣，45 天内交温哥华。",
+            "message_text": '\u5e2e\u6211\u8be2\u4ef7 10000 \u4ef6\u767d\u8272\u7eaf\u68c9\u886c\u8863\uff0c45 \u5929\u5185\u4ea4\u6e29\u54e5\u534e\u3002',
             "mode": "b_side",
         })
         assert result["ok"] is True
@@ -512,7 +514,7 @@ class TestVariableMSalesperson:
             "channel_account_id": "trade_salesperson_account",
             "conversation_id": conv_id_customer,
             "sender_id": "customer_xyz",
-            "message_text": "帮我采购 5000 件T恤",
+            "message_text": '\u5e2e\u6211\u91c7\u8d2d 5000 \u4ef6T\u6064',
             "mode": "b_side",
         })
         assert result_customer["mode"] == "b_side"

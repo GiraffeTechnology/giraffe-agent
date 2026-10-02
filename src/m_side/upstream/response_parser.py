@@ -1,3 +1,5 @@
+# Unicode escapes preserve the original multilingual parser vocabulary.
+# This source representation does not translate the accepted input values.
 """
 Upstream Response Parser — parses raw supplier messages into structured UpstreamResponse.
 Uses deterministic regex parsing; no LLM required.
@@ -40,63 +42,63 @@ class UpstreamResponse(BaseModel):
 # ── Regex patterns ─────────────────────────────────────────────────────────────
 
 _CAN_SUPPLY_YES = re.compile(
-    r"(可以|能供|有货|in stock|can supply|can provide|yes|available|我们可以|没问题|能做)",
+    '(\u53ef\u4ee5|\u80fd\u4f9b|\u6709\u8d27|in stock|can supply|can provide|yes|available|\u6211\u4eec\u53ef\u4ee5|\u6ca1\u95ee\u9898|\u80fd\u505a)',
     re.IGNORECASE,
 )
 _CAN_SUPPLY_NO = re.compile(
-    r"(无货|缺货|不能|没有|cannot|can't|no stock|out of stock|unavailable|not available|暂时没有)",
+    "(\u65e0\u8d27|\u7f3a\u8d27|\u4e0d\u80fd|\u6ca1\u6709|cannot|can't|no stock|out of stock|unavailable|not available|\u6682\u65f6\u6ca1\u6709)",
     re.IGNORECASE,
 )
 
 _PRICE_PATTERNS = [
     re.compile(r"(?:usd|us\$|\$)\s*([\d,.]+)", re.IGNORECASE),
     re.compile(r"(?:rmb|cny|¥)\s*([\d,.]+)", re.IGNORECASE),
-    re.compile(r"([\d,.]+)\s*(?:usd|rmb|cny|\$|元|美元)", re.IGNORECASE),
-    re.compile(r"(?:price|价格|单价)[^\d]*([\d,.]+)", re.IGNORECASE),
-    re.compile(r"(?:per meter|per piece|每米|每件)[^\d]*([\d,.]+)", re.IGNORECASE),
+    re.compile('([\\d,.]+)\\s*(?:usd|rmb|cny|\\$|\u5143|\u7f8e\u5143)', re.IGNORECASE),
+    re.compile('(?:price|\u4ef7\u683c|\u5355\u4ef7)[^\\d]*([\\d,.]+)', re.IGNORECASE),
+    re.compile('(?:per meter|per piece|\u6bcf\u7c73|\u6bcf\u4ef6)[^\\d]*([\\d,.]+)', re.IGNORECASE),
 ]
 
 _CURRENCY_PATTERNS = [
     (re.compile(r"\b(usd|us\$|\$)\b", re.IGNORECASE), "USD"),
-    (re.compile(r"\b(rmb|cny|¥|元|人民币)\b", re.IGNORECASE), "CNY"),
+    (re.compile('\\b(rmb|cny|\xa5|\u5143|\u4eba\u6c11\u5e01)\\b', re.IGNORECASE), "CNY"),
 ]
 
 _LEAD_TIME_PATTERNS = [
-    re.compile(r"(\d+)\s*(?:days?|天|日)", re.IGNORECASE),
+    re.compile('(\\d+)\\s*(?:days?|\u5929|\u65e5)', re.IGNORECASE),
     re.compile(r"lead\s*time[^\d]*(\d+)", re.IGNORECASE),
-    re.compile(r"交货[^\d]*(\d+)", re.IGNORECASE),
-    re.compile(r"交期[^\d]*(\d+)", re.IGNORECASE),
+    re.compile('\u4ea4\u8d27[^\\d]*(\\d+)', re.IGNORECASE),
+    re.compile('\u4ea4\u671f[^\\d]*(\\d+)', re.IGNORECASE),
 ]
 
 _MOQ_PATTERNS = [
     re.compile(r"moq[^\d]*([\d,]+)", re.IGNORECASE),
     re.compile(r"minimum[^\d]*([\d,]+)", re.IGNORECASE),
-    re.compile(r"最小起订[^\d]*([\d,]+)", re.IGNORECASE),
-    re.compile(r"起订量[^\d]*([\d,]+)", re.IGNORECASE),
-    re.compile(r"最低[^\d]*([\d,]+)\s*(?:米|件|pcs|meters?|m\b)", re.IGNORECASE),
+    re.compile('\u6700\u5c0f\u8d77\u8ba2[^\\d]*([\\d,]+)', re.IGNORECASE),
+    re.compile('\u8d77\u8ba2\u91cf[^\\d]*([\\d,]+)', re.IGNORECASE),
+    re.compile('\u6700\u4f4e[^\\d]*([\\d,]+)\\s*(?:\u7c73|\u4ef6|pcs|meters?|m\\b)', re.IGNORECASE),
 ]
 
 _QTY_PATTERNS = [
     re.compile(r"stock[^\d]*([\d,]+)", re.IGNORECASE),
     re.compile(r"available[^\d]*([\d,]+)", re.IGNORECASE),
-    re.compile(r"库存[^\d]*([\d,]+)", re.IGNORECASE),
-    re.compile(r"现货[^\d]*([\d,]+)", re.IGNORECASE),
+    re.compile('\u5e93\u5b58[^\\d]*([\\d,]+)', re.IGNORECASE),
+    re.compile('\u73b0\u8d27[^\\d]*([\\d,]+)', re.IGNORECASE),
 ]
 
 _DATE_PATTERNS = [
     re.compile(r"dispatch\s+(?:by\s+|on\s+)?(\d{4}-\d{2}-\d{2})", re.IGNORECASE),
     re.compile(r"ship\s+(?:by\s+|on\s+)?(\d{4}-\d{2}-\d{2})", re.IGNORECASE),
-    re.compile(r"发货[日期]*[：:\s]*(\d{4}[-/]\d{1,2}[-/]\d{1,2})", re.IGNORECASE),
+    re.compile('\u53d1\u8d27[\u65e5\u671f]*[\uff1a:\\s]*(\\d{4}[-/]\\d{1,2}[-/]\\d{1,2})', re.IGNORECASE),
     re.compile(r"(\d{4}-\d{2}-\d{2})", re.IGNORECASE),
 ]
 
 _QUALITY_PATTERNS = [
-    re.compile(r"(?:shrinkage|缩水)[^.。\n]*([\d.]+%?)", re.IGNORECASE),
-    re.compile(r"(?:quality|品质|品级)[：:\s]*([^,，.。\n]{3,40})", re.IGNORECASE),
+    re.compile('(?:shrinkage|\u7f29\u6c34)[^.\u3002\\n]*([\\d.]+%?)', re.IGNORECASE),
+    re.compile('(?:quality|\u54c1\u8d28|\u54c1\u7ea7)[\uff1a:\\s]*([^,\uff0c.\u3002\\n]{3,40})', re.IGNORECASE),
 ]
 
 _SUBSTITUTE_PATTERN = re.compile(
-    r"(?:substitute|alternative|替代品|替代)[：:\s]*([^,，.。\n]{3,60})",
+    '(?:substitute|alternative|\u66ff\u4ee3\u54c1|\u66ff\u4ee3)[\uff1a:\\s]*([^,\uff0c.\u3002\\n]{3,60})',
     re.IGNORECASE,
 )
 

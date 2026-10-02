@@ -169,7 +169,7 @@ def _parse_destination_zh(text: str) -> Optional[str]:
 
 
 def _parse_deadline_zh(text: str) -> Optional[str]:
-    # "45 天内" / "within 45 days"
+    # Chinese phrasing for "within 45 days".
     m = re.search(r"(\d+)\s*天内", text)
     if m:
         return f"within {m.group(1)} days"
@@ -640,12 +640,12 @@ def _parse_supplier_response(message_text: str) -> tuple[dict, list[str]]:
     identified: dict = {}
     tl = message_text.lower()
 
-    # Price: "USD 4.80/pc", "4.80 美元", "$4.80 per piece"
+    # Price: "USD 4.80/pc", 4.80 followed by the Chinese word for US dollars, or "$4.80 per piece".
     price_m = re.search(r"(?:usd|us\$|\$)?\s*(\d+(?:\.\d+)?)\s*(?:/pc|/piece|per\s*pc|per\s*piece|元/件|美元/件)", tl)
     if price_m:
         identified["unit_price"] = f"USD {price_m.group(1)}"
 
-    # Lead time: "38 days", "38 天"
+    # Lead time: English and Chinese forms of "38 days".
     lt_m = re.search(r"(\d+)\s*(?:days?|天)", tl)
     if lt_m:
         identified["lead_time"] = f"{lt_m.group(1)} days"

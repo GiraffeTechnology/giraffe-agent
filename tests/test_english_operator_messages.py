@@ -108,3 +108,71 @@ def test_frontend_example_is_english():
     root = Path(__file__).resolve().parents[1]
     template = (root / "src/aivan/app/templates/index.html").read_text()
     assert "e.g. I need 10,000 white cotton men's shirts..." in template
+
+
+@pytest.mark.parametrize(
+    "category,expected",
+    [
+        ("apparel", {
+            "quantity": "What is the order quantity?",
+            "product_type": "What is the product?",
+            "fabric_material": "What is the fabric or material?",
+            "gsm": "What is the fabric weight in GSM?",
+            "color": "What is the color?",
+            "size_ratio": "What is the size ratio?",
+            "packaging": "What is the packaging type?",
+            "destination": "What is the destination?",
+            "delivery_days": "Within how many days is delivery required?",
+        }),
+        ("cnc", {
+            "quantity": "What is the order quantity?",
+            "material_spec": "What is the material specification?",
+            "tolerance": "What are the tolerance requirements?",
+            "destination": "What is the destination?",
+            "delivery_days": "Within how many days is delivery required?",
+        }),
+    ],
+)
+def test_generic_required_field_questions_are_english(category, expected):
+    from aivan.agents.requirement_agent import _detect_missing_fields
+    from aivan.schemas.requirement import BuyerRequirement
+
+    fields = _detect_missing_fields(BuyerRequirement(category=category))
+    assert [(field.field_name, field.question) for field in fields] == list(expected.items())
+
+
+@pytest.mark.parametrize("allow_external", [False, True])
+@pytest.mark.parametrize("allow_cad", [False, True])
+@pytest.mark.parametrize("allow_bom", [False, True])
+def test_english_process_card_labels_preserve_redaction(
+    monkeypatch, allow_external, allow_cad, allow_bom
+):
+    from src.merchandiser.qc.qc_process_card import QCProcessCard, render_process_card_for_llm
+
+    for name, value in [
+        ("QC_ALLOW_EXTERNAL_LLM", allow_external),
+        ("QC_ALLOW_CAD_TO_LLM", allow_cad),
+        ("QC_ALLOW_BOM_TO_LLM", allow_bom),
+    ]:
+        monkeypatch.setenv(name, str(value).lower())
+    card = QCProcessCard(
+        process_card_id="card-labels", project_id="project-labels", category="apparel",
+        material_spec="100% cotton", color_spec="Navy", size_spec="S/M/L",
+        finish_spec="Matte", defect_criteria="No loose threads", supplier_notes="Inspect seams",
+        unit_price=913.27, supplier_contact="private-contact", contract_terms="private-contract",
+    )
+    before = card.model_dump()
+    expected = [
+        "Process Card (Project: project-labels, Category: apparel)",
+        "Material: 100% cotton" if allow_cad or allow_external else
+        "Material: [redacted — set QC_ALLOW_CAD_TO_LLM=true to include]",
+        "Color: Navy",
+        "Size: S/M/L" if allow_bom or allow_external else
+        "Size: [redacted — set QC_ALLOW_BOM_TO_LLM=true to include]",
+        "Finish: Matte", "Defect criteria: No loose threads", "Supplier notes: Inspect seams",
+    ]
+    rendered = render_process_card_for_llm(card)
+    assert rendered == "\n".join(expected)
+    assert card.model_dump() == before
+    for private_value in ["913.27", "private-contact", "private-contract"]:
+        assert private_value not in rendered

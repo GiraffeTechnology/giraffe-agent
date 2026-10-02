@@ -100,25 +100,25 @@ def render_process_card_for_llm(card: QCProcessCard) -> str:
     allow_cad = os.getenv("QC_ALLOW_CAD_TO_LLM", "false").lower() == "true"
     allow_bom = os.getenv("QC_ALLOW_BOM_TO_LLM", "false").lower() == "true"
 
-    parts = [f"工艺卡 / Process Card (Project: {card.project_id}, Category: {card.category})"]
+    parts = [f"Process Card (Project: {card.project_id}, Category: {card.category})"]
     if card.material_spec:
         if allow_cad or allow_external:
-            parts.append(f"材料规格 / Material: {card.material_spec}")
+            parts.append(f"Material: {card.material_spec}")
         else:
-            parts.append("材料规格 / Material: [redacted — set QC_ALLOW_CAD_TO_LLM=true to include]")
+            parts.append("Material: [redacted — set QC_ALLOW_CAD_TO_LLM=true to include]")
     if card.color_spec:
-        parts.append(f"颜色 / Color: {card.color_spec}")
+        parts.append(f"Color: {card.color_spec}")
     if card.size_spec:
         if allow_bom or allow_external:
-            parts.append(f"尺寸 / Size: {card.size_spec}")
+            parts.append(f"Size: {card.size_spec}")
         else:
-            parts.append("尺寸 / Size: [redacted — set QC_ALLOW_BOM_TO_LLM=true to include]")
+            parts.append("Size: [redacted — set QC_ALLOW_BOM_TO_LLM=true to include]")
     if card.finish_spec:
-        parts.append(f"表面处理 / Finish: {card.finish_spec}")
+        parts.append(f"Finish: {card.finish_spec}")
     if card.defect_criteria:
-        parts.append(f"缺陷标准 / Defect criteria: {card.defect_criteria}")
+        parts.append(f"Defect criteria: {card.defect_criteria}")
     if card.supplier_notes:
-        parts.append(f"工厂备注 / Supplier notes: {card.supplier_notes}")
+        parts.append(f"Supplier notes: {card.supplier_notes}")
     # Never include pricing, contact, or contract terms in LLM calls
     return "\n".join(parts)
 

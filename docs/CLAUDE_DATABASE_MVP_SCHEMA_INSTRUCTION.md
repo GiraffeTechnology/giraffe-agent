@@ -1,4 +1,6 @@
 # CLAUDE CODE INSTRUCTION — Giraffe Agent MVP Database Generation File
+
+This retained reference describes the earlier physical database implementation. Current delivery uses the hot-swappable private data contract: both business history and ongoing process records are authoritative in the selected DB. SQLite/PostgreSQL and these local table layouts are implementation details, not mandatory provider identity. Business text is standard English after giraffe-language-skill translation; only enterprise/user profile information may retain non-English values. Legacy field names such as raw_text are preserved protocol identifiers, not permission to store non-English business content.
 # Version: MVP Database v1.0
 # Purpose: Generate the database layer required for the full Giraffe Agent MVP
 
@@ -1113,7 +1115,7 @@ metadata_json: dict
 
 Purpose:
 
-- Store raw IM messages.
+- Store standard-English IM business records with safe translation/source references. Enterprise/user profile information is the only exception for non-English DB values. Do not store non-English business originals in raw/evidence/audit side fields.
 - Preserve evidence for future learning.
 - Source for dynamic schema observation.
 
@@ -1320,8 +1322,8 @@ created_at
 Examples:
 
 ```text
-fabric_gsm aliases: 克重, gsm, g/m², fabric weight
-surface_roughness_ra aliases: Ra, roughness, 表面粗糙度
+fabric_gsm aliases: fabric weight, gsm, g/m², fabric weight
+surface_roughness_ra aliases: Ra, roughness, surface roughness
 ```
 
 ---
@@ -1459,7 +1461,7 @@ Seed patent notice:
 
 ```text
 China patent: ZL 2023 1 1645939.9 / CN 117670482 B.
-Japan patent: P7644545 / 特許第7644545号.
+Japan patent: P7644545 / Patent No. 7644545.
 Patent owner: Giraffe Technology Holding Limited.
 Free patent license applies globally to individuals, SMEs, educational institutions and research institutions for compliant use.
 Enterprise deployment, platform operation, high-volume commercial production use, third-party system integration, white-label resale, Enterprise CAP, and use of Giraffe commercial assets require separate written permission.
@@ -1811,3 +1813,4 @@ After implementation, output:
 ```
 
 The final database layer must be ready for B-side MVP, M-side MVP, role-switching procurement graph, upstream inquiry loop, CAD-to-CNC Professional Free matching, Supplier Response Rollup, Industrial Execution Graph v0.1, and dynamic self-learning schema.
+

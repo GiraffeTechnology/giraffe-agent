@@ -62,7 +62,7 @@ Preserve `project_id`, `procurement_edge_id`, and `conversation_id` whenever ava
   "conversation_id": "wechat_dm_or_email_thread_id",
   "sender_id": "external_peer_id",
   "sender_display_name": "optional display name",
-  "message_text": "采购助理，帮我询价 10000 件白色纯棉衬衣，45 天内交温哥华。",
+  "message_text": "Please obtain quotations for 10,000 white pure-cotton shirts, delivered to Vancouver within 45 days.",
   "message_type": "text",
   "attachments": [],
   "timestamp": "2026-06-14T00:00:00Z",
@@ -109,3 +109,4 @@ Preserve `project_id`, `procurement_edge_id`, and `conversation_id` whenever ava
 - After approval, `outbound_messages` is populated and `approval_required` is false.
 - Supplier-facing drafts always require human approval.
 - Customer-facing response drafts require approval when they include quotation, delivery promise, contractual commitment, payment terms, commercial terms, or supplier commitment.
+

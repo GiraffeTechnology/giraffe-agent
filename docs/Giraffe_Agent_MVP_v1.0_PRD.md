@@ -5,9 +5,9 @@
 
 |Item                 |Value                                                                                                                                                   |
 |---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-|Document version     |**MVP PRD v1.0 (Consolidated)**                                                                                                                         |
+|Document version     |**Source-aligned dependency and data coordination draft**                                                                                                                         |
 |Date                 |2026-05-23                                                                                                                                              |
-|Status               |Source of truth for B-side MVP, M-side MVP, M-side Role-Switching Agent, Professional Free CAD↔CNC, AI Merchandiser, Logistics Ingestion, Database Layer|
+|Status               |Coordinated common-agent specification. The owner's original product descriptions and later definitions govern current delivery; retained module descriptions do not independently create product scope.|
 |Tech stack           |Python 3.11+ · FastAPI · Pydantic v2 · SQLAlchemy 2.x · Alembic · SQLite → PostgreSQL · uv                                                              |
 |Primary channels     |OpenClaw · WeChat · WhatsApp · Web fallback                                                                                                             |
 |Patent owner         |Giraffe Technology Holding Limited                                                                                                                      |
@@ -36,7 +36,7 @@
 1. [API Surface](#17-api-surface)
 1. [Channel Integrations](#18-channel-integrations)
 1. [End-to-End Reference Flows](#19-end-to-end-reference-flows)
-1. [Acceptance Criteria (Master Checklist)](#20-acceptance-criteria-master-checklist)
+1. [Delivery Checks and Retained Regression Coverage](#20-delivery-checks-and-retained-regression-coverage)
 1. [Constraints & Non-Goals](#21-constraints--non-goals)
 1. [Getting Started](#22-getting-started)
 1. [Testing Strategy](#23-testing-strategy)
@@ -47,11 +47,23 @@
 
 ## 1. Executive Summary
 
-Giraffe Agent is a **project-aware, role-switching procurement execution agent** built for small and medium-sized buyers, manufacturers, and supplier networks. It is **not** a CRM, ERP, marketplace, supplier portal, or chatbot. It is the missing **execution layer** between IM-based industrial procurement and structured order delivery.
+Giraffe Agent is the common project-aware, role-switching agent foundation. Aivan is its frontend application for inquiry, quotation and order confirmation. abcdYi is its apparel and textile industry application whose frontend calls Aivan; MyAivan is Aivan's web version. OpenClaw-aivan is the IM/email access dependency. GLTG and GPM are called through APIs.
+
+The selected, replaceable private DB is the authoritative source for both business history and ongoing process data. Giraffe Agent, Aivan and abcdYi share this data dependency. `giraffe-db` is the reference provider and may be hot-swapped with a user's private DB through a compatible provider contract. Product identity does not depend on a particular instance, SQL engine, hosting vendor, or physical table layout.
+
+Inquiry revisions, quotations, decisions, approvals, order confirmations, execution events, model inputs and outputs, and their lineage must be recorded in that selected DB. Conversation context, browser state, LLM memory and in-memory stores may support presentation or processing; they are not the authoritative record. A failed write must remain visibly failed or pending rather than being reported as persisted business state.
+
+The owner's two designated simulated databases are valid sources for product testing and acceptance. Acceptance cannot be refused solely because their records are simulated rather than production customer transactions. Preserve synthetic labels and provenance, execute the actual selected service/API/persistence path, and report skipped or unexecuted checks accurately. Selecting a different provider must preserve tenant and authorization boundaries, stable record relationships, and truthful read/write behavior.
+
+Standard English is the product working and interaction language. Non-English input passes through `giraffe-language-skill` before entering a business workflow. Requested non-English output is translated dynamically by that same module from the English result. GLTG, GPM, Aivan, abcdYi and Giraffe Agent consume standard-English business packets rather than running parallel raw multilingual business paths.
+
+The selected private DB stores business history, process records and results in standard English. Enterprise and user profile information is the only exception that may retain non-English profile values. Raw business text, localized output, evidence payloads, audit fields and side tables do not create additional exceptions. Language tags, translation trace IDs, source references and hashes may be retained without duplicating non-English business content. This documentation update does not delete or migrate existing data.
+
+This coordination retains existing module descriptions and code as reviewable implementation assets. In particular, older CAD/CNC and industrial-platform material is not automatically a prerequisite for the current apparel/textile delivery. Candidate scope extensions require source evidence before being reactivated as current requirements; no implementation is deleted.
 
 The product solves three problems that classical procurement software does not:
 
-1. **Pre-confirmation decision support** — the **AI Buyer** structures buyer requirements from IM, drafts bilingual supplier inquiries, ingests supplier replies, and simulates Top-3 delivery paths.
+1. **Pre-confirmation decision support** — the **AI Buyer** structures buyer requirements from IM, drafts standard-English with requested presentation translated by giraffe-language-skill supplier inquiries, ingests supplier replies, and simulates Top-3 delivery paths.
 1. **Recursive role switching** — a manufacturer is M-side to its buyer **and** B-side to its fabric/material/subcontract/QC/logistics suppliers in the *same* project. The agent identifies these roles per edge and rolls upstream evidence into a credible buyer-facing response.
 1. **Post-confirmation execution** — the **AI Merchandiser** runs supplier acceptance, milestones, media confirmation, exceptions, logistics handover, tracking ingestion (Cainiao-like aggregator), buyer sign-off, and Supplier Memory updates.
 
@@ -74,8 +86,8 @@ Certain workflows, business methods, system designs, data structures, role-based
 
 The relevant patent family includes, without limitation:
 
-- **China invention patent**: ZL 2023 1 1645939.9, publication / grant number CN 117670482 B, titled *“基于多方配合的C2M模式的纺织品及服装定制运营平台系统”*.
-- **Japan patent**: P7644545 / 特許第7644545号, application number P2024-57581, titled *“協働型C2Mモデルに基づく繊維及びアパレルカスタマイズ運用プラットフォームシステム”*.
+- **China invention patent**: ZL 2023 1 1645939.9, publication / grant number CN 117670482 B, titled *“Textile and Apparel Customization Operation Platform System Based on a Multi-party Collaborative C2M Model”*.
+- **Japan patent**: P7644545 / Patent No. 7644545, application number P2024-57581, titled *“Textile and Apparel Customization Operation Platform System Based on a Collaborative C2M Model”*.
 
 ### 2.2 Global Free Patent License Scope
 
@@ -108,15 +120,15 @@ Source code may be released under open-source licenses as specified in the repos
 
 Open-source code access and patent permission are **separate legal layers**.
 
-### 2.5 专利提示（中文）
+### 2.5 Patent notice in English
 
-本项目中的部分工作流、系统逻辑、参与者协同机制、动态表单机制、生产监控机制、质量检测机制、角色切换式采购执行流程及多方 C2M / 订单执行流程，可能涉及长颈鹿科技（控股）有限公司拥有的相关专利，包括中国发明专利 **ZL 2023 1 1645939.9 / CN 117670482 B** 及日本专利 **P7644545 / 特許第7644545号**。
+Certain workflows, system logic, participant coordination, dynamic forms, production monitoring, quality inspection, role-switching procurement execution and multi-party C2M/order execution processes in this project may involve patents owned by Giraffe Technology Holding Limited, including China invention patent **ZL 2023 1 1645939.9 / CN 117670482 B** and Japan patent **P7644545 / Patent No. 7644545**.
 
-长颈鹿科技（控股）有限公司向全球范围内的**个人、中小企业（SME）、教育机构及科研机构**，就合规使用相关专利工作流与系统逻辑授予**免费专利许可**。企业级部署、平台化运营、大规模商业生产使用、为第三方提供系统集成或托管服务、白标/OEM/转售、Enterprise CAP、以及使用长颈鹿商标、供应商网络、买方数据、交易数据、订单档案、Industrial Execution Graph 数据或商业运营权，须**另行取得书面许可**。
+Giraffe Technology Holding Limited grants individuals, small and medium-sized enterprises (SMEs), educational institutions and research institutions worldwide a free patent license for compliant use of the relevant patented workflows and system logic. Enterprise deployments, platform operations, large-scale commercial production, third-party systems integration or hosting, white-label/OEM/resale, Enterprise CAP, and use of Giraffe trademarks, supplier networks, buyer data, transaction data, order records, Industrial Execution Graph data or commercial operating rights require separate written authorization.
 
-取得本项目开源代码，并不当然取得超出上述免费专利许可范围之外的任何专利权、商标权、商业运营权、数据权利或平台运营权。
+Access to this project's open-source code does not automatically grant patent, trademark, commercial operating, data or platform operating rights beyond the free patent license described above.
 
-授权联系：**mich@giraffe.technology**
+Authorization contact: **mich@giraffe.technology**
 
 ### 2.6 Required Patent Notice Files
 
@@ -129,7 +141,7 @@ PATENT_NOTICE.md
 src/legal/patent_notice.py
 ```
 
-The `legal_notices` database table MUST seed the bilingual patent notice (see [§13.16](#1316-legal-notice)).
+The `legal_notices` database table MUST seed the standard-English with requested presentation translated by giraffe-language-skill patent notice (see [§13.16](#1316-legal-notice)).
 
 -----
 
@@ -141,7 +153,7 @@ A real, runnable **MVP procurement execution agent** with two phases and one sha
 
 |Phase                   |Module                             |Trigger                         |Output                                                                    |
 |------------------------|-----------------------------------|--------------------------------|--------------------------------------------------------------------------|
-|Pre-confirmation        |**AI Buyer**                       |Buyer IM message / RFQ          |Structured requirement → Bilingual supplier inquiry → Top-3 delivery paths|
+|Pre-confirmation        |**AI Buyer**                       |Buyer IM message / RFQ          |Structured requirement → English supplier inquiry → Top-3 delivery paths|
 |Recursive role switching|**M-side Agent**                   |Inquiry receipt by main supplier|Upstream inquiries → Options (1–3) → Approved Supplier Response Rollup    |
 |Post-confirmation       |**AI Merchandiser**                |Buyer order confirmation        |Milestones, media, exceptions, logistics, sign-off, Supplier Memory       |
 |Cross-cutting           |**Industrial Execution Graph v0.1**|Every state transition          |Append-only event log + procurement edges                                 |
@@ -290,7 +302,7 @@ flowchart TD
     B --> C[Structured Requirement]
     C --> D{Missing fields?}
     D -- yes --> E[Clarification via IM] --> C
-    D -- no --> F[Bilingual Supplier Inquiry Draft]
+    D -- no --> F[English Supplier Inquiry Draft]
     F --> G[Dispatch to N suppliers]
     G --> H[M-side Workspace per supplier]
     H --> I{Main supplier needs upstream?}
@@ -329,7 +341,7 @@ The B-side MVP is the first product surface. It MUST be deployable as an OpenCla
 1. System converts the message into a **StructuredRequirement**.
 1. System identifies missing fields and asks one-at-a-time IM clarification questions.
 1. Buyer answers; the StructuredRequirement is updated.
-1. System generates a **bilingual SupplierInquiryDraft**.
+1. System generates a **standard-English with requested presentation translated by giraffe-language-skill SupplierInquiryDraft**.
 1. Buyer can dispatch to suppliers manually (or via M-side bridge).
 1. Buyer can paste supplier replies back through IM or Web; system normalizes them.
 1. System runs **Delivery Feasibility Simulation**.
@@ -371,31 +383,31 @@ otherwise                              → general
 
 Scoring MUST be deterministic. LLM reasoning is only an explainability layer.
 
-### 6.5 Bilingual Supplier Inquiry Template
+### 6.5 Standard English Supplier Inquiry Template
 
-Chinese template (mirror in English):
+Standard-English template. Requested non-English presentation is generated dynamically by giraffe-language-skill:
 
 ```text
-【Giraffe Agent 询盘】
-询盘编号：{rfq_id}
-产品：{product_category} — {product_description}
-数量：{quantity} {unit}
-材料：{material}
-规格/工艺：{dimensions_or_specs}; {process_requirements}
-交货：{destination}，{target_delivery_date}前
-保密级别：L{cap_level}
+[Giraffe Agent Inquiry]
+Inquiry ID: {rfq_id}
+Product: {product_category} — {product_description}
+Quantity: {quantity} {unit}
+Material: {material}
+Specifications/processes: {dimensions_or_specs}; {process_requirements}
+Delivery: {destination}, before {target_delivery_date}
+Confidentiality level: L{cap_level}
 
-请回复以下信息：
-1. 是否可以接单？
-2. 报价
-3. 最小起订量 (MOQ)
-4. 产能状态
-5. 物料备货情况
-6. 生产周期
-7. 打样周期（如需）
-8. 质检方式
-9. 物流方式 (EXW / FOB / DDP)
-10. 主要风险或备注
+Please provide the following information:
+1. Can you accept the order?
+2. quotation
+3. Minimum order quantity (MOQ)
+4. Capacity status
+5. Material stock status
+6. Production lead time
+7. Sample lead time (if needed)
+8. Quality inspection method
+9. Delivery terms (EXW / FOB / DDP)
+10. Main risks or notes
 ```
 
 -----
@@ -430,7 +442,7 @@ inquiry_received → supplier_identified → clarification_pending → response_
 1. **Invitation token mode** — supplier receives a short token (e.g., `GIRAFFE-M-8K2Q`, `GQ-7421`).
 1. **Manual mapping mode** — operator maps supplier name → workspace.
 
-Supplier can reply `接受 GQ-7421` / `Accept GQ-7421` to bind their IM session.
+Supplier can reply `Accept GQ-7421` / `Accept GQ-7421` to bind their IM session.
 
 ### 7.4 SupplierResponsePacket Structure
 
@@ -463,7 +475,7 @@ class SupplierResponsePacket(BaseModel):
 Minimum deterministic parsing support:
 
 - Currencies: RMB / CNY / USD / EUR / HKD
-- Lead time: `days`, `weeks`, `日期`
+- Lead time: `days`, `weeks`, `date`
 - MOQ, can/cannot make, material available/unavailable
 - Outsourcing risk, tooling fee, sample fee
 - QC / photo / video capability
@@ -475,8 +487,8 @@ Minimum deterministic parsing support:
 Example supplier reply that must parse cleanly:
 
 ```text
-可以做，6061材料有现货，最快下周三开工，样品7天，大货25天，
-单价4.8美元，MOQ 500，阳极氧化要外协，可能多3天。
+We can make it. 6061 material is in stock. The earliest start is next Wednesday. Samples take 7 days and bulk production 25 days.
+Unit price is USD 4.80, MOQ 500. Anodizing requires a subcontractor and may add 3 days.
 ```
 
 -----
@@ -498,7 +510,7 @@ When Manufacturer M receives an inquiry from Buyer B, the M-side agent MUST:
 1. Determine whether M can answer internally.
 1. Identify upstream dependencies via the **Dependency Planner**.
 1. Ask M whether to contact upstream / subcontractor suppliers.
-1. Generate **UpstreamInquiry** records (bilingual EN/ZH).
+1. Generate **UpstreamInquiry** records (standard English; requested non-English presentation uses giraffe-language-skill).
 1. Dispatch them via configured channels.
 1. Parse upstream responses into **UpstreamResponse** records.
 1. Generate **1–3 UpstreamOption** entries per dependency: `BEST`, `FASTEST`, `SAFEST`, `LOWEST_COST`, `BACKUP`.
@@ -679,10 +691,10 @@ Event: `material_delay_reported`
 
 > The supplier reported a fabric delay. Two options are available: wait 3 extra days or switch to backup fabric.
 
-**M-side message (supplier-facing, Chinese):**
+**M-side message (standard-English source; translate dynamically when requested):**
 
 ```text
-请确认是否采用备用布料方案，或继续等待原布料。若影响交期，请说明新的预计完成时间。
+Please confirm whether to use the alternative fabric or wait for the original fabric. If delivery is affected, provide the revised expected completion time.
 ```
 
 ### 10.3 Milestone Plans
@@ -726,13 +738,13 @@ A. Confirm received  B. Not received  C. Received with issue
 ### 10.6 M-side Example Messages
 
 ```text
-老板，订单 SHIRT-100 已确认。今天需要确认布料是否到仓。请回复：
-A. 已到仓  B. 未到仓  C. 有问题，需要说明
+Order SHIRT-100 is confirmed. Please confirm today whether the fabric has arrived at the warehouse:
+A. Received at the warehouse  B. Not yet received  C. There is an issue; please explain
 
-请上传裁剪阶段照片：正面、背面、细节各一张。拍清楚一点，方便 buyer 确认。
+Please upload three clear cutting-stage photos: front, back and detail, so the buyer can review them.
 
-订单已到物流交接阶段。请回复物流公司、运单号，并上传面单照片。
-例如：已发顺丰，单号 SF123456789，今天下午发出。
+The order is ready for logistics handover. Please provide the carrier and tracking number and upload a photo of the shipping label.
+Example: Sent by SF Express, tracking number SF123456789, dispatched this afternoon.
 ```
 
 -----
@@ -886,9 +898,9 @@ LOGISTICS_ENABLE_MANUAL_FALLBACK=true
 
 ```python
 {
-  "顺丰": "SF",   "SF Express": "SF",
-  "中通": "ZTO",  "圆通": "YTO",
-  "申通": "STO",  "韵达": "YD",
+  "SF Express": "SF",   "SF Express": "SF",
+  "ZTO Express": "ZTO",  "YTO Express": "YTO",
+  "STO Express": "STO",  "Yunda Express": "YD",
   "EMS": "EMS",   "DHL": "DHL",
   "FedEx": "FEDEX", "UPS": "UPS",
 }
@@ -899,8 +911,8 @@ LOGISTICS_ENABLE_MANUAL_FALLBACK=true
 ### 12.5 IM Text → Logistics Info Extraction
 
 ```text
-"已发顺丰，单号 SF123456789，今天下午发出"
-→ { carrier_name:"顺丰", carrier_code:"SF", tracking_number:"SF123456789" }
+"Sent by SF Express, tracking number SF123456789, dispatched this afternoon"
+→ { carrier_name:"SF Express", carrier_code:"SF", tracking_number:"SF123456789" }
 
 "DHL shipped today, tracking no. 1234567890"
 → { carrier_name:"DHL", carrier_code:"DHL", tracking_number:"1234567890" }
@@ -913,15 +925,15 @@ label_created · picked_up · in_transit · customs
 out_for_delivery · delivered · exception · unknown
 ```
 
-Chinese / English mapping:
+English workflow mapping after input translation:
 
 ```text
-已揽收/picked up      → picked_up
-运输中/in transit     → in_transit
-清关中/customs clearance → customs
-派送中/out for delivery  → out_for_delivery
-已签收/delivered      → delivered
-异常/delivery exception  → exception
+picked up/picked up      → picked_up
+in transit/in transit     → in_transit
+customs clearance/customs clearance → customs
+out for delivery/out for delivery  → out_for_delivery
+delivered/delivered      → delivered
+delivery exception/delivery exception  → exception
 ```
 
 ### 12.7 Idempotency & Dedup
@@ -957,7 +969,9 @@ exception         → EXCEPTION_RAISED
 
 ## 13. Module 8 — Database Layer
 
-The database is **project-aware** and PostgreSQL-portable. SQLite for local MVP. All tables use string UUID primary keys; timezone-aware timestamps; `metadata_json` instead of `metadata` to avoid SQLAlchemy conflicts.
+The selected private DB is project-aware, extensible and authoritative for both business history and ongoing process data. It can be replaced by a compatible user-owned provider. The reference implementation below uses SQLite/PostgreSQL-portable SQLAlchemy tables, string UUID keys, timezone-aware timestamps and `metadata_json`; these physical choices do not define the product or require every replacement provider to share that physical schema.
+
+Workflow state affecting business decisions, drafts/approvals, confirmations, execution events and model records must persist through the selected DB contract. In-memory and DB-off fixtures remain useful test utilities but do not establish durable acceptance. Business text is standard English, except enterprise/user profile information; original-language business text cannot be persisted via raw/evidence/audit fields.
 
 ### 13.1 Tech Stack
 
@@ -990,7 +1004,7 @@ MetadataJSONMixin
 |Table                    |Key Fields                                                                                                                        |
 |-------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 |`structured_requirements`|`requirement_id`, `project_id`, `specs_json`, `missing_fields_json`, `confidence_score`                                           |
-|`supplier_inquiries`     |`inquiry_id`, `edge_id`, `from_actor_id`, `to_actor_id`, bilingual message text, `requested_fields_json`                          |
+|`supplier_inquiries`     |`inquiry_id`, `edge_id`, `from_actor_id`, `to_actor_id`, standard-English with requested presentation translated by giraffe-language-skill message text, `requested_fields_json`                          |
 |`supplier_responses`     |`response_id`, `edge_id`, `can_supply`, `price`, `lead_time_days`, `capacity_basis_json`, `material_basis_json`, `risk_flags_json`|
 
 ### 13.5 M-side Upstream Tables
@@ -998,12 +1012,15 @@ MetadataJSONMixin
 |Table               |Key Fields                                                                                         |
 |--------------------|---------------------------------------------------------------------------------------------------|
 |`dependency_needs`  |`dependency_id`, `dependency_type`, `required_specs_json`, `risk_level`, `candidate_actor_ids_json`|
-|`upstream_inquiries`|`upstream_inquiry_id`, `parent_main_supplier_actor_id`, `upstream_actor_id`, bilingual text        |
+|`upstream_inquiries`|`upstream_inquiry_id`, `parent_main_supplier_actor_id`, `upstream_actor_id`, standard-English with requested presentation translated by giraffe-language-skill text        |
 |`upstream_responses`|`upstream_response_id`, `can_supply`, `matched_specs_json`, `risk_flags_json`                      |
 |`upstream_options`  |`option_id`, `option_label` (BEST/FASTEST/SAFEST/LOWEST_COST/BACKUP), `score`, `response_ids_json` |
 |`approval_requests` |`approval_request_id`, `approval_mode`, `status`, `approved_option_id`                             |
 
 ### 13.6 Supplier Response Rollup
+
+The field listing below preserves existing compatibility identifiers. Localized business-output fields such as `recommended_response_to_buyer_zh` do not authorize non-English business storage under the current DB contract. Translate requested output dynamically from the authoritative English record; reconcile the legacy implementation separately.
+
 
 `supplier_response_rollups` — Main supplier’s final structured response back to B-side. Includes upstream evidence and (when present) CAD-to-CNC capability evidence. Key fields:
 
@@ -1034,7 +1051,7 @@ upstream_dependency_basis_json
 |`manufacturing_feature_sets`|Embedded MachinaCheck-like output: required processes, axis count, work envelope, tolerance class, etc.           |
 |`shop_capability_profiles`  |Manufacturer’s machines, tooling, QC equipment, material inventory, schedule.                                     |
 |`cad_cnc_match_results`     |The 7 fit dimensions + required dependencies + confidence + explanation.                                          |
-|`capability_fit_reports`    |Buyer-facing bilingual summary + internal summary.                                                                |
+|`capability_fit_reports`    |Buyer-facing standard-English with requested presentation translated by giraffe-language-skill summary + internal summary.                                                                |
 
 ### 13.8 Professional Free Rule (Artifact Defaults)
 
@@ -1054,7 +1071,7 @@ warning_acknowledged MUST be true before CADRequirementPacket creation
 |`conversation_threads`|Thread context: project, edge, channel_type, thread_type, status, correlation_token.|
 |`role_switch_frames`  |Per-message role+direction+purpose+thread linkage.                                  |
 |`outbound_messages`   |Draft → approval → ready → sent → failed.                                           |
-|`inbound_messages`    |Raw + parsed_target + parsed_result + confidence + status.                          |
+|`inbound_messages`    |Standard-English message + parsed target/result + confidence/status + translation/source refs.                          |
 |`merchandiser_tasks`  |Side-assigned tasks (B/M/UPSTREAM_M/SYSTEM).                                        |
 |`order_milestones`    |Type, sequence, expected/actual times, evidence requirements.                       |
 |`media_evidence`      |Image / video / document / shipping_label per milestone with buyer review status.   |
@@ -1072,7 +1089,7 @@ warning_acknowledged MUST be true before CADRequirementPacket creation
 |Table             |Purpose                                                                               |
 |------------------|--------------------------------------------------------------------------------------|
 |`channel_sessions`|Project/edge/actor bound IM session state.                                            |
-|`messages`        |Raw + normalized IM messages with `parsed_intent`, `parsed_entities_json`, confidence.|
+|`messages`        |Standard-English IM records with `parsed_intent`, `parsed_entities_json`, confidence and safe translation/source refs.|
 
 ### 13.12 Industrial Execution Graph
 
@@ -1113,13 +1130,13 @@ cad_cnc_match_results.project_id
 
 ### 13.16 Legal Notice
 
-`legal_notices` MUST seed the bilingual patent notice from §2 with: China patent ZL 2023 1 1645939.9, Japan patent P7644545, owner, free license scope, authorization contact `mich@giraffe.technology`.
+`legal_notices` MUST seed the standard-English with requested presentation translated by giraffe-language-skill patent notice from §2 with: China patent ZL 2023 1 1645939.9, Japan patent P7644545, owner, free license scope, authorization contact `mich@giraffe.technology`.
 
 -----
 
 ## 14. Module 9 — Dynamic Self-Learning Schema
 
-> **AI may observe and propose new fields, but it MUST NOT directly alter physical database tables during runtime.**
+> **The DB supports extensible logical data and ongoing business-process records. AI may observe and propose fields through the managed schema mechanism; it does not directly mutate physical database tables at runtime.**
 
 ### 14.1 Lifecycle
 
@@ -1151,8 +1168,8 @@ Fields affecting price, delivery date, tolerance, QC, compliance, safety, or buy
 ### 14.4 Examples
 
 ```text
-fabric_gsm           aliases: 克重, gsm, g/m², fabric weight
-surface_roughness_ra aliases: Ra, roughness, 表面粗糙度
+fabric_gsm           aliases: fabric weight, gsm, g/m², fabric weight
+surface_roughness_ra aliases: Ra, roughness, surface roughness
 shrinkage_rate
 color_fastness_grade
 cmm_required
@@ -1744,7 +1761,9 @@ WHATSAPP_VERIFY_TOKEN, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID, WHATSAPP
 
 Requirements: `hub.verify_token` on GET; signature verification when `WHATSAPP_APP_SECRET` present; parse text + media metadata; mock mode required.
 
-### 18.4 IM Router Intent Heuristics (deterministic, LLM optional)
+### 18.4 English workflow routing after translation
+
+Non-English input first passes through `giraffe-language-skill`. The following heuristics operate on the standard-English packet. Raw multilingual aliases belong in that translation module, not a parallel product extraction path.
 
 ```text
 contains product/quantity/delivery keywords  → submit_buyer_requirement
@@ -1763,8 +1782,7 @@ starts with /help                             → help
 1. Message contains supplier-response phrases AND active B-side workspace is awaiting pasted responses → B-side supplier-response intake.
 1. Otherwise → B-side AI Buyer.
 
-Supplier response phrases (zh): `可以做`, `不能做`, `报价`, `交期`, `MOQ`, `材料`, `产能`, `开工`, `样品`, `大货`, `QC`, `物流`, `EXW`, `FOB`, `DDP`.
-English equivalents: `we can make`, `cannot make`, `quote`, `lead time`, `MOQ`, `material available`, `capacity`, `sample`, `mass production`, `QC`, `shipping`.
+Standard-English supplier response phrases: `we can make`, `cannot make`, `quote`, `lead time`, `MOQ`, `material available`, `capacity`, `sample`, `mass production`, `QC`, `shipping`.
 
 -----
 
@@ -1847,7 +1865,7 @@ Verifies that every major inbound/outbound has a `RoleSwitchFrame` and is attach
 
 ### 19.6 `scripts/run_logistics_cainiao_like_api_mvp.py`
 
-12-step flow: IM text “已发顺丰，单号 SF123456789，今天下午发出” → carrier+tracking extraction → shipment creation → Cainiao-like mock provider returns events → normalization → dedup → order state update → B-side update → delivered → buyer sign-off request.
+12-step flow: IM text “Sent by SF Express, tracking number SF123456789, dispatched this afternoon” → carrier+tracking extraction → shipment creation → Cainiao-like mock provider returns events → normalization → dedup → order state update → B-side update → delivered → buyer sign-off request.
 
 ### 19.7 `scripts/run_integrated_post_confirmation_mvp.py`
 
@@ -1864,7 +1882,9 @@ scripts/run_dynamic_schema_learning_test.py
 
 -----
 
-## 20. Acceptance Criteria (Master Checklist)
+## 20. Delivery Checks and Retained Regression Coverage
+
+Current Aivan/abcdYi delivery is evaluated against the owner-confirmed workflow and dependency/data/language contracts. The checks below retain useful implementation coverage and identify provider-specific or isolated-fixture checks explicitly. Broader Giraffe Agent framework capabilities and other verticals remain preserved; their existence does not make them prerequisites for this Aivan/abcdYi delivery.
 
 ### 20.1 Patent / Licensing
 
@@ -1873,7 +1893,7 @@ scripts/run_dynamic_schema_learning_test.py
 - [ ] Patent notice states enterprise / platform / high-volume / third-party integration / OEM resale / Enterprise CAP / Giraffe commercial assets require separate written permission.
 - [ ] Patent notice states open-source access ≠ rights beyond free license scope.
 - [ ] Authorization contact `mich@giraffe.technology` is present.
-- [ ] `legal_notices` table seeds bilingual notice.
+- [ ] `legal_notices` table seeds standard-English with requested presentation translated by giraffe-language-skill notice.
 
 ### 20.2 B-side MVP
 
@@ -1904,15 +1924,17 @@ scripts/run_dynamic_schema_learning_test.py
 - [ ] Approved options → SupplierResponseRollup → submitted to B-side feasibility engine.
 - [ ] Industrial Execution Graph logs all role-switching and dependency events.
 
-### 20.5 Professional Free CAD↔CNC
+### 20.5 Retained CAD and CNC Regression Coverage
 
-- [ ] Professional Free **disables** file encryption / watermark / secure viewer / Enterprise CAP flags.
-- [ ] File confidentiality warning is shown before CAD / STEP / BOM handling.
-- [ ] `CADRequirementPacket`, `ManufacturingFeatureSet`, `ShopCapabilityProfile`, `CADCNCMachiningMatchResult`, `CapabilityFitReport` all persist.
-- [ ] Match result reports all 7 fit dimensions.
-- [ ] Match gaps generate upstream / subcontractor / QC dependencies.
-- [ ] Rollup includes CAD-to-CNC evidence; B-side feasibility engine consumes it.
-- [ ] **No** real CAD parser / MachinaCheck API / ERP / MES / QMS / encryption service required for MVP.
+The following checks describe preserved broader-framework/other-vertical capability. Keep the code and useful regression coverage. This CAD/CNC group is not a shared prerequisite for the current Aivan/abcdYi delivery. Its original authorization is not determined by the two supplied product descriptions, and this document does not declare the broader framework capability unauthorized or prohibit its future use.
+
+- Retained check: Professional Free **disables** file encryption / watermark / secure viewer / Enterprise CAP flags.
+- Retained check: File confidentiality warning is shown before CAD / STEP / BOM handling.
+- Retained check: `CADRequirementPacket`, `ManufacturingFeatureSet`, `ShopCapabilityProfile`, `CADCNCMachiningMatchResult`, `CapabilityFitReport` all persist.
+- Retained check: Match result reports all 7 fit dimensions.
+- Retained check: Match gaps generate upstream / subcontractor / QC dependencies.
+- Retained check: Rollup includes CAD-to-CNC evidence; B-side feasibility engine consumes it.
+- Retained check: **No** real CAD parser / MachinaCheck API / ERP / MES / QMS / encryption service required for MVP.
 
 ### 20.6 AI Merchandiser
 
@@ -1949,14 +1971,20 @@ scripts/run_dynamic_schema_learning_test.py
 - [ ] API errors recorded; workflow does not crash.
 - [ ] Webhook route + signature verification placeholder exist; **signature cannot be bypassed in production**.
 
-### 20.9 Database
+### 20.9 Private Data Contract and Reference Provider Checks
 
-- [ ] Initializes locally with SQLite; Alembic migration creates all tables.
-- [ ] Seed creates actors, projects, dynamic schemas, shop capability profile, patent notice.
-- [ ] Same actor can be MAIN_M_SIDE and UPSTREAM_B_SIDE in the same project.
-- [ ] Procurement graph supports parent-child edges.
-- [ ] All CAD-CNC / merchandiser / logistics / IM tables persist.
-- [ ] Schema is PostgreSQL-compatible (JSON → JSONB on migration).
+Current logical contract:
+
+- [ ] The selected compatible private DB records the required historical facts and ongoing process state, preserving tenant ownership, record relationships, audit and truthful write/readback results.
+- [ ] Required business state survives the applicable reload/restart path; conversation or in-memory context is not treated as authoritative persistence.
+- [ ] Same-actor role changes and parent-child procurement relationships remain represented and traceable where used by the selected workflow.
+- [ ] Business data is standard English after translation; only enterprise/user profile information may retain non-English values.
+- [ ] Owner-designated simulated DBs are accepted as legitimate data sources; supported provider replacement is verified through the selected adapter/API contract.
+
+Preserved reference-provider regression coverage:
+
+- SQLite initialization, Alembic creation of the reference tables, and PostgreSQL JSON/JSONB compatibility remain checks for those existing implementations. They do not require a compatible user-owned provider to use that physical schema or engine.
+- Existing actor/project/schema/legal-notice seeds and CAD/CNC, merchandiser, logistics and IM table tests remain preserved. Other-vertical tables are not required merely to complete this Aivan/abcdYi workflow.
 
 ### 20.10 Dynamic Schema
 
@@ -1971,9 +1999,9 @@ scripts/run_dynamic_schema_learning_test.py
 - [ ] Role-switching, merchandiser, logistics, dependency, approval events all logged.
 - [ ] Event log survives restart; E2E scripts print event log path.
 
-### 20.12 Local MVP Constraints
+### 20.12 Isolated Fixture Coverage
 
-- [ ] All E2E scripts run locally **without** real logistics API, WeChat, WhatsApp, OpenClaw, ERP, MES, QMS, MachinaCheck, S3, MinIO, or encryption service.
+Retain local fixture scripts that run without real logistics, messaging, ERP/MES/QMS, CAD, object-storage or encryption services. This coverage verifies the isolated paths those scripts actually exercise. It is not acceptance evidence for the actual Aivan-to-GLTG/GPM/private-DB APIs or for real channel delivery. The selected product integration must separately exercise its real service interfaces, using the designated simulated DB data where appropriate. Report skipped integrations and test doubles explicitly; do not require unrelated real service accounts to run isolated tests.
 
 -----
 
@@ -2074,7 +2102,7 @@ Submit M-side supplier message:
 curl -X POST http://localhost:8000/api/m-side/workspaces/{m_workspace_id}/message \
   -H "Content-Type: application/json" \
   -d '{
-    "text": "可以做，6061材料有现货，最快下周三开工，样品7天，大货25天，单价4.8美元，MOQ 500，阳极氧化要外协，可能多3天。"
+    "text": "We can make it. 6061 material is in stock. The earliest start is next Wednesday. Samples take 7 days and bulk production 25 days. Unit price is USD 4.80, MOQ 500. Anodizing requires a subcontractor and may add 3 days."
   }'
 ```
 
@@ -2112,6 +2140,9 @@ The fallback web UI MUST surface:
 -----
 
 ## 23. Testing Strategy
+
+Use either of the owner-designated simulated databases as a valid acceptance data source. Preserve simulation labels and run the actual selected APIs, business writes/readback and applicable restart/reload tests. Production-customer data is not required. Distinguish model-unit fixtures, API transport doubles, skipped tests and the real service path. These requirements do not authorize bypassing tenant isolation, human approval or protocol validation.
+
 
 ### 23.1 Test Suite Layout
 

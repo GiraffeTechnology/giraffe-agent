@@ -159,7 +159,7 @@ This test covers:
   "conversation_id": "wechat_dm_or_email_thread_id",
   "sender_id": "external_peer_id",
   "sender_display_name": "optional display name",
-  "message_text": "采购助理，帮我询价 10000 件白色纯棉衬衣，45 天内交温哥华。",
+  "message_text": "Please obtain quotations for 10,000 white pure-cotton shirts, delivered to Vancouver within 45 days.",
   "message_type": "text",
   "attachments": [],
   "timestamp": "2026-06-14T00:00:00Z",
@@ -189,7 +189,7 @@ This test covers:
   "b_workspace_id": "bw_xxxx",
   "mode": "b_side",
   "status": "missing_fields",
-  "reply_text": "已创建采购项目 ...",
+  "reply_text": "Procurement project created ...",
   "missing_fields": ["size_ratio", "fabric_weight"],
   "approval_required": false,
   "message_drafts": [],
@@ -235,11 +235,11 @@ automatically.
 - Returned as `message_drafts` with `approval_required=true`
 - `outbound_messages` is empty before approval
 
-**To approve:** The salesperson sends `确认发送` (or `approve` / `send it` /
+**To approve:** The salesperson sends `approve sending` (or `approve` / `send it` /
 `yes send`) in the same conversation. Giraffe marks the draft as approved
 and returns `outbound_messages` for OpenClaw to dispatch.
 
-**To reject:** The salesperson sends `取消` (or `reject` / `do not send`).
+**To reject:** The salesperson sends `reject` (or `reject` / `do not send`).
 Giraffe marks the draft as rejected. No message is sent.
 
 **Customer-facing commercial responses** also require approval when they
@@ -292,3 +292,4 @@ Giraffe does not require a minimum number of suppliers:
 >
 > This guide configures the routing and logic only. Channel plugins and
 > credentials are managed entirely by OpenClaw — not by Giraffe.
+

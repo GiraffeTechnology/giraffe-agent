@@ -11,7 +11,7 @@ This repository is provided as open-source software. Please refer to the `LICENS
 Certain workflows and system logic in this project may be covered by patents owned by **Giraffe Technology Holding Limited**, including:
 
 - China patent: **ZL 2023 1 1645939.9 / CN 117670482 B**
-- Japan patent: **P7644545 / 特許第7644545号**
+- Japan patent: **P7644545 / Patent No. 7644545**
 
 Open-source code access and patent permission are **separate legal layers**.
 

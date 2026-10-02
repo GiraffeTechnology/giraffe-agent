@@ -1,5 +1,7 @@
 # AIVAN Second-Round Regression Test Report
 
+Historical evidence note: original non-English documentation examples have been translated into English for readability. Recorded outcomes refer to the original test inputs at the source revision, not to a new run of the translated examples. Source code and test fixtures have not been changed.
+
 **Branch:** `claude/aivan-full-test-audit-3otmli`  
 **Date:** 2026-06-15  
 **Auditor:** Claude Code (automated)  
@@ -303,7 +305,7 @@ GIRAFFE_DB_MODE=on AIVAN_DB_URL=sqlite:///./data/aivan_server_retest.db
 
 **Chinese inquiry test:**
 ```
-需要采购10000件白色纯棉男士衬衣，发往温哥华，45天内交货，目标价USD 4.80，DDP，空运优先。规格：180gsm，S/M/L/XL，独立包装。
+Source 10,000 white pure-cotton men's shirts for Vancouver, delivery within 45 days, target price USD 4.80, DDP, air freight preferred. Specifications: 180 gsm, sizes S/M/L/XL, individually packed.
 ```
 Result: Project created, lead_time=45 days, fabric_weight=180gsm identified. Missing fields: unit_price, moq, payment_terms.
 
@@ -414,3 +416,4 @@ Round 2 regression testing confirms:
 7. Plugin, TypeScript, DB integrity all clean.
 
 The codebase is ready for merge and production promotion.
+

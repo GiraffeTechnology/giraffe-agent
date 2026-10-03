@@ -32,4 +32,6 @@ Deployment control must identify the actual configured service entry points and 
 
 ## Verification for this candidate
 
-The full local suite passed: 664 tests, with two optional live-GLTG tests skipped. The subprocess E2E test used the existing repository CI GLTG fixture server on loopback; this is explicitly test-double evidence, not actual GLTG acceptance. Twelve new default-language checks passed alongside existing security, approval and compatibility checks. Python compile and whitespace checks passed. Exact-head CI remains required before merge.
+The full local suite passed: 665 tests, with two optional live-GLTG tests skipped. The subprocess E2E test used the existing repository CI GLTG fixture server on loopback; this is explicitly test-double evidence, not actual GLTG acceptance. Thirteen new default-language checks passed alongside existing security, approval and compatibility checks. Python compile and whitespace checks passed. Exact-head CI remains required before merge.
+
+The standalone mock QC comparison script also passed all 26 assertions and now runs as a subprocess regression in the default-language suite. The real-Qwen smoke script was not exercised against a model: its existing missing-key guard reported SKIPPED. Its source assertions now require English canonical feedback and an empty legacy localized field.

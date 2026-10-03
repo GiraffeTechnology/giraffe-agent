@@ -104,3 +104,19 @@ def test_escaped_input_recognition_vectors_retain_their_semantics():
         "quantity": 100, "gsm": 180, "delivery_days": 45,
         "target_unit_price": 4.8, "incoterms": "DDP", "logistics_preference": "air",
     }
+
+
+def test_existing_qc_comparison_smoke_script_uses_canonical_mock_output():
+    import os
+    from pathlib import Path
+    import subprocess
+    import sys
+
+    result = subprocess.run(
+        [sys.executable, "scripts/run_qc_llm_comparison_mvp.py"],
+        cwd=Path(__file__).resolve().parents[1],
+        env={**os.environ, "LLM_ENABLE_REAL_CALLS": "false"},
+        capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "26 passed, 0 failed" in result.stdout

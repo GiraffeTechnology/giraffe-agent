@@ -54,9 +54,9 @@ try:
     assert report.fallback_used is False, "Expected real Qwen call, not mock"
     assert report.overall_result in ("pass", "needs_fix", "buyer_review_required", "reject", "unknown"), \
         f"Unexpected result: {report.overall_result}"
-    assert isinstance(report.m_side_feedback_zh, str) and len(report.m_side_feedback_zh) > 0, \
-        "Missing Chinese M-side feedback"
-    assert isinstance(report.m_side_feedback_en, str), "Missing English M-side feedback"
+    assert report.m_side_feedback_zh == "", "Canonical report must not contain localized feedback"
+    assert isinstance(report.m_side_feedback_en, str) and report.m_side_feedback_en.strip(), \
+        "Missing canonical English M-side feedback"
 
     print(f"  overall_result:     {report.overall_result}")
     print(f"  overall_score:      {report.overall_score:.2f}")

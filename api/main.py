@@ -325,7 +325,7 @@ def submit_response_to_b_side(m_workspace_id: str):
 # ─── M-side order execution endpoints ─────────────────────────────────────────
 
 class AcknowledgeOrderRequest(BaseModel):
-    message: str = "确认接单"
+    message: str = "Order acknowledged."
 
 
 @app.post("/api/m-side/orders/{order_execution_id}/acknowledge")

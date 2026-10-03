@@ -19,17 +19,17 @@ MOCK_RESPONSES = {
         "logistics_preference": "air",
         "missing_fields": [],
         "confidence": 0.95,
-        "language": "zh",
+        "language": "en",
     },
     "missing_field_clarification": {
         "missing_fields": [
-            {"field_name": "gsm", "description": "Fabric weight", "question": "面料克重/GSM？"},
-            {"field_name": "size_ratio", "description": "Size breakdown", "question": "尺码比例？"},
-            {"field_name": "packaging", "description": "Packaging", "question": "包装方式？"},
-            {"field_name": "target_unit_price", "description": "Target price", "question": "目标单价？"},
-            {"field_name": "incoterms", "description": "Trade terms", "question": "物流条款（FOB/DDP）？"},
+            {"field_name": "gsm", "description": "Fabric weight", "question": "What is the fabric weight in GSM?"},
+            {"field_name": "size_ratio", "description": "Size breakdown", "question": "What is the size breakdown?"},
+            {"field_name": "packaging", "description": "Packaging", "question": "What packaging is required?"},
+            {"field_name": "target_unit_price", "description": "Target price", "question": "What is the target unit price?"},
+            {"field_name": "incoterms", "description": "Trade terms", "question": "What delivery terms are preferred (FOB/DDP)?"},
         ],
-        "message_text": "已收到您的询盘。为了帮您准确询价，还需要确认：\n1. 面料克重/GSM？\n2. 尺码比例？\n3. 包装方式？\n4. 目标单价或预算？\n5. 物流条款偏好（FOB/DDP）？",
+        "message_text": "Your inquiry has been received. Please confirm the following details:\n1. What is the fabric weight in GSM?\n2. What is the size breakdown?\n3. What packaging is required?\n4. What is the target unit price or budget?\n5. What delivery terms are preferred (FOB/DDP)?",
         "confidence": 0.9,
     },
     "supplier_inquiry_drafting": {
@@ -63,8 +63,8 @@ MOCK_RESPONSES = {
         "queries": [
             "white cotton men's shirt 180gsm manufacturer MOQ 10000",
             "100% cotton men's shirt factory 180gsm bulk order",
-            "白色 纯棉 男士 衬衣 180gsm 工厂 10000件",
-            "男士衬衫 纯棉 180gsm 外贸 工厂",
+            "white cotton men's shirts 180gsm factory 10000 pieces",
+            "cotton men's shirts 180gsm export factory",
         ]
     },
     "supplier_risk_search_planning": {

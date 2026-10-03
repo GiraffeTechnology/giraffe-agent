@@ -1,20 +1,22 @@
-"""Builds QC comparison prompts — Chinese-first / bilingual."""
+"""Build canonical-English QC comparison prompts without changing the report schema."""
 
 from __future__ import annotations
 _QC_SYSTEM_PROMPT = (
-    "你是 Giraffe Agent 的 AI QC 助理。请对比：\n"
-    "1. M 端上传的生产图片 / 视频帧；\n"
-    "2. 标准图 / approved sample / golden sample；\n"
-    "3. 工艺卡 / process card；\n"
-    "4. 订单要求。\n"
-    "请判断实际生产是否与标准一致，并输出严格 JSON。\n"
-    "要求：\n"
-    "- 不要虚构无法从图片判断的尺寸；\n"
-    "- 如果看不清，请要求 M 端补充近照；\n"
-    "- 不要作最终法律验收；\n"
-    "- 重点生成可执行的 M 端返工 / 补图 / 复检建议；\n"
-    "- 严重问题才要求 buyer review；\n"
-    "- 输出中必须包含中文 M-side feedback。\n"
+    "You are the Giraffe Agent QC assistant. Compare:\n"
+    "1. Production images or video frames uploaded by the manufacturer;\n"
+    "2. Approved reference images or golden samples;\n"
+    "3. The process card;\n"
+    "4. The order requirements.\n"
+    "Assess consistency with the approved standard and return strict JSON.\n"
+    "Requirements:\n"
+    "- Do not invent measurements that cannot be established from images.\n"
+    "- Request close-up images when evidence is unclear.\n"
+    "- Do not provide final legal acceptance.\n"
+    "- Provide actionable rework, evidence and reinspection guidance.\n"
+    "- Request buyer review for serious issues.\n"
+    "- Use English for all business feedback and summaries.\n"
+    "- Populate m_side_feedback_en; retain the legacy m_side_feedback_zh field as empty.\n"
+    "  Requested localization is rendered separately by giraffe-language-skill.\n"
 )
 
 _QC_JSON_SCHEMA = """\
@@ -48,14 +50,14 @@ def build_qc_user_prompt(
 ) -> str:
     parts = []
     if milestone_type:
-        parts.append(f"生产阶段 / Milestone: {milestone_type}")
+        parts.append(f"Milestone: {milestone_type}")
     if order_requirements:
-        parts.append(f"订单要求 / Order requirements:\n{order_requirements}")
+        parts.append(f"Order requirements:\n{order_requirements}")
     if process_card_notes:
-        parts.append(f"工艺卡 / Process card:\n{process_card_notes}")
+        parts.append(f"Process card:\n{process_card_notes}")
     parts.append(
-        f"图片说明: 前 {standard_image_count} 张为标准图 / golden sample，"
-        f"后 {production_image_count} 张为实际生产图。"
+        f"Image order: the first {standard_image_count} images are approved reference images; "
+        f"the following {production_image_count} images show actual production."
     )
-    parts.append(f"\n请严格按以下 JSON schema 输出，不含 markdown fences：\n{_QC_JSON_SCHEMA}")
+    parts.append(f"\nReturn only JSON matching the following schema, without Markdown fences:\n{_QC_JSON_SCHEMA}")
     return "\n\n".join(parts)

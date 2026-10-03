@@ -84,7 +84,7 @@ def _deterministic_parse(raw_text: str) -> dict:
     result: dict = {}
     text_lower = raw_text.lower()
 
-    qty_match = re.search(r'(\d[\d,]*)\s*(?:件|pcs|pieces|units)', raw_text)
+    qty_match = re.search(r'(\d[\d,]*)\s*(?:\u4ef6|pcs|pieces|units)', raw_text)
     if qty_match:
         result["quantity"] = int(qty_match.group(1).replace(",", ""))
 
@@ -92,11 +92,11 @@ def _deterministic_parse(raw_text: str) -> dict:
     if gsm_match:
         result["gsm"] = int(gsm_match.group(1))
 
-    day_match = re.search(r'(\d+)\s*(?:days?|天|日)', text_lower)
+    day_match = re.search(r'(\d+)\s*(?:days?|\u5929|\u65e5)', text_lower)
     if day_match:
         result["delivery_days"] = int(day_match.group(1))
 
-    price_match = re.search(r'(?:usd|美元|＄|\$)\s*([\d.]+)', text_lower)
+    price_match = re.search(r'(?:usd|\u7f8e\u5143|＄|\$)\s*([\d.]+)', text_lower)
     if price_match:
         result["target_unit_price"] = float(price_match.group(1))
 
@@ -105,9 +105,9 @@ def _deterministic_parse(raw_text: str) -> dict:
     elif "fob" in text_lower:
         result["incoterms"] = "FOB"
 
-    if "air" in text_lower or "空运" in text_lower:
+    if "air" in text_lower or "\u7a7a\u8fd0" in text_lower:
         result["logistics_preference"] = "air"
-    elif "sea" in text_lower or "海运" in text_lower:
+    elif "sea" in text_lower or "\u6d77\u8fd0" in text_lower:
         result["logistics_preference"] = "sea"
 
     return result

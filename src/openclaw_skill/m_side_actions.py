@@ -50,7 +50,7 @@ def handle_m_side_submit_supplier_response(params: dict) -> dict:
         next_msg = (
             next_q
             if next_q
-            else '已整理为结构化供应商响应。请确认是否提交给买方：回复"确认提交"。'
+            else 'The supplier response is ready. Please confirm whether to submit it to the buyer.'
         )
 
         return format_ok({
@@ -83,7 +83,7 @@ def handle_m_side_get_pending_question(params: dict) -> dict:
 def handle_m_side_submit_order_acknowledgement(params: dict) -> dict:
     """Handler: m_side_submit_order_acknowledgement."""
     order_execution_id = params.get("order_execution_id")
-    message = params.get("message", "确认接单")
+    message = params.get("message", "Order acknowledged.")
     if not order_execution_id:
         return format_error("order_execution_id is required")
     try:

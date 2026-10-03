@@ -1,4 +1,4 @@
-"""Tests for QC M-side feedback flow — Chinese-first output."""
+"""Tests for QC M-side feedback flow — canonical English output with the legacy field preserved."""
 import pytest
 from src.merchandiser.qc.qc_comparison_engine import compare_media_against_standard
 from src.merchandiser.qc.qc_prompt_builder import build_qc_system_prompt, build_qc_user_prompt
@@ -9,22 +9,20 @@ _PROJECT = "proj-qc-feedback-01"
 _MILESTONE = "MILE-QC-FEEDBACK-001"
 
 
-def test_mock_qc_result_has_chinese_feedback():
-    assert _MOCK_QC_RESULT["m_side_feedback_zh"] != ""
-    assert any(ord(c) > 127 for c in _MOCK_QC_RESULT["m_side_feedback_zh"]), \
-        "m_side_feedback_zh must contain Chinese characters"
+def test_mock_qc_result_has_canonical_english_feedback():
+    assert _MOCK_QC_RESULT["m_side_feedback_zh"] == ""
+    assert "Images received" in _MOCK_QC_RESULT["m_side_feedback_en"]
 
 
-def test_compare_returns_chinese_feedback():
+def test_compare_keeps_localized_feedback_empty():
     report = compare_media_against_standard(
         project_id=_PROJECT,
         milestone_id=_MILESTONE,
         production_images=[],
         provider_name="mock",
     )
-    assert report.m_side_feedback_zh != ""
-    assert any(ord(c) > 127 for c in report.m_side_feedback_zh), \
-        "m_side_feedback_zh must contain Chinese characters"
+    assert report.m_side_feedback_zh == ""
+    assert report.m_side_feedback_en != ""
 
 
 def test_compare_returns_english_feedback():
@@ -47,10 +45,10 @@ def test_compare_returns_b_side_summary():
     assert isinstance(report.b_side_summary, str)
 
 
-def test_system_prompt_is_chinese_first():
+def test_system_prompt_is_canonical_english():
     prompt = build_qc_system_prompt()
-    assert any(ord(c) > 127 for c in prompt), "System prompt must contain Chinese"
-    assert "QC" in prompt or "qc" in prompt.lower() or "质检" in prompt or "助理" in prompt
+    assert "Use English for all business feedback and summaries." in prompt
+    assert "m_side_feedback_zh field as empty" in prompt
 
 
 def test_user_prompt_includes_milestone_type():
@@ -89,13 +87,14 @@ def test_qc_result_score_range():
     assert 0.0 <= report.overall_score <= 1.0
 
 
-def test_mock_provider_image_compare_returns_chinese_feedback():
+def test_mock_provider_image_compare_keeps_localized_feedback_empty():
     provider = MockLLMProvider()
     result = provider.compare_images(
         images=["tests/fixtures/multimodal/red_square.png"],
-        question="质检对比",
+        question="Compare QC evidence",
     )
-    assert result.result_json.get("m_side_feedback_zh", "") != ""
+    assert result.result_json["m_side_feedback_zh"] == ""
+    assert result.result_json["m_side_feedback_en"] != ""
 
 
 def test_qc_engine_image_comparison_uses_provider_interface():
@@ -122,4 +121,5 @@ def test_qc_engine_video_frame_comparison_uses_provider_interface():
         provider_name="mock",
     )
     assert report.frames_used == 2
-    assert report.m_side_feedback_zh != ""
+    assert report.m_side_feedback_zh == ""
+    assert report.m_side_feedback_en != ""

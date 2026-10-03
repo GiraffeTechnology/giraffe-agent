@@ -6,15 +6,15 @@ from __future__ import annotations
 from src.core_schema.m_side_types import MSideWorkspace
 
 _CLARIFICATION_QUESTIONS_ZH = {
-    "can_make": "您好！请问贵司是否可以生产此产品？（是/否）",
-    "earliest_start": "请问最早什么时候可以开工？",
-    "lead_time": "请问预计总交期是多少天？",
-    "material_available": "所需材料是否有现货？（有/无）",
-    "unit_price": "请问单价是多少？（请注明货币）",
-    "moq": "请问最低订购量（MOQ）是多少？",
-    "qc_available": "贵司是否可以提供质检报告或图片/视频更新？",
-    "logistics_terms": "贵司支持哪种交货条款？（EXW / FOB / DDP / 快递）",
-    "risk_flags": "是否有需要提前说明的风险或限制？（如外协、材料短缺等）",
+    "can_make": "\u60a8\u597d！\u8bf7\u95ee\u8d35\u53f8\u662f\u5426\u53ef\u4ee5\u751f\u4ea7\u6b64\u4ea7\u54c1？（\u662f/\u5426）",
+    "earliest_start": "\u8bf7\u95ee\u6700\u65e9\u4ec0\u4e48\u65f6\u5019\u53ef\u4ee5\u5f00\u5de5？",
+    "lead_time": "\u8bf7\u95ee\u9884\u8ba1\u603b\u4ea4\u671f\u662f\u591a\u5c11\u5929？",
+    "material_available": "\u6240\u9700\u6750\u6599\u662f\u5426\u6709\u73b0\u8d27？（\u6709/\u65e0）",
+    "unit_price": "\u8bf7\u95ee\u5355\u4ef7\u662f\u591a\u5c11？（\u8bf7\u6ce8\u660e\u8d27\u5e01）",
+    "moq": "\u8bf7\u95ee\u6700\u4f4e\u8ba2\u8d2d\u91cf（MOQ）\u662f\u591a\u5c11？",
+    "qc_available": "\u8d35\u53f8\u662f\u5426\u53ef\u4ee5\u63d0\u4f9b\u8d28\u68c0\u62a5\u544a\u6216\u56fe\u7247/\u89c6\u9891\u66f4\u65b0？",
+    "logistics_terms": "\u8d35\u53f8\u652f\u6301\u54ea\u79cd\u4ea4\u8d27\u6761\u6b3e？（EXW / FOB / DDP / \u5feb\u9012）",
+    "risk_flags": "\u662f\u5426\u6709\u9700\u8981\u63d0\u524d\u8bf4\u660e\u7684\u98ce\u9669\u6216\u9650\u5236？（\u5982\u5916\u534f\u3001\u6750\u6599\u77ed\u7f3a\u7b49）",
 }
 
 _CLARIFICATION_QUESTIONS_EN = {
@@ -37,7 +37,7 @@ def _detect_missing_fields(workspace: MSideWorkspace) -> list[str]:
 
     if pkt is None:
         # No response at all — all fields missing
-        return list(_CLARIFICATION_QUESTIONS_ZH.keys())
+        return list(_CLARIFICATION_QUESTIONS_EN.keys())
 
     if pkt.capacity_signal.can_make is None:
         missing.append("can_make")
@@ -67,12 +67,12 @@ def _detect_missing_fields(workspace: MSideWorkspace) -> list[str]:
 def generate_supplier_questions(workspace: MSideWorkspace) -> list[dict]:
     """
     Generate a list of pending clarification questions for missing supplier fields.
-    Uses supplier's language preference (zh by default).
+    Questions enter the workflow in canonical English; localization is a boundary concern.
     """
     missing = _detect_missing_fields(workspace)
-    lang = "zh"  # Default; could check supplier profile
+    lang = "en"
 
-    questions_map = _CLARIFICATION_QUESTIONS_ZH if lang == "zh" else _CLARIFICATION_QUESTIONS_EN
+    questions_map = _CLARIFICATION_QUESTIONS_EN
 
     questions = []
     for field in missing:

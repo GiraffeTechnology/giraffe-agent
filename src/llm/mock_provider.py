@@ -17,7 +17,7 @@ _MOCK_QC_RESULT = {
     "process_card_violations": [],
     "buyer_confirmation_required": False,
     "human_review_required": False,
-    "m_side_feedback_zh": "【Mock】图片已收到，外观检查通过，无明显异常。",
+    "m_side_feedback_zh": "",  # Legacy field retained; canonical feedback is English.
     "m_side_feedback_en": "[Mock] Images received. Visual check passed. No obvious deviations detected.",
     "b_side_summary": "[Mock] QC passed — production appears consistent with standard.",
 }

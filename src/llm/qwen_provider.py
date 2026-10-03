@@ -135,7 +135,7 @@ class QwenProvider(MultimodalLLMProviderBase):
     ) -> LLMJsonResult:
         full_prompt = prompt
         if schema_hint:
-            full_prompt = f"{prompt}\n\n请严格按以下 JSON schema 输出，不要添加额外文字：\n{schema_hint}"
+            full_prompt = f"{prompt}\n\nReturn only JSON matching the following schema, without additional text:\n{schema_hint}"
         result = self.complete_text(full_prompt, system_prompt=system_prompt)
         data = _extract_json_from_text(result.text)
         return LLMJsonResult(

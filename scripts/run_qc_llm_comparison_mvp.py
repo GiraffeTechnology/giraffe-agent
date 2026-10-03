@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 QC LLM Comparison MVP — verifies end-to-end QC flow with mock provider.
-Always passes without real API key. Used in CI.
+Uses deterministic mock output without real API keys.
 
 Run: uv run python scripts/run_qc_llm_comparison_mvp.py
 """
@@ -61,8 +61,8 @@ img_result = provider.compare_images(
     question="Are these images identical?",
 )
 check("compare_images returns result", img_result is not None)
-check("result has m_side_feedback_zh", bool(img_result.result_json.get("m_side_feedback_zh")))
-check("Chinese feedback present", any(ord(c) > 127 for c in img_result.result_json.get("m_side_feedback_zh", "")))
+check("legacy localized feedback remains empty", img_result.result_json.get("m_side_feedback_zh") == "")
+check("canonical English feedback present", bool(img_result.result_json.get("m_side_feedback_en")))
 
 print("\n--- Step 6: Mock provider video frame comparison ---")
 vid_result = provider.compare_video_frames(
@@ -96,7 +96,7 @@ report2 = compare_media_against_standard(
     provider_name="mock",
 )
 check("report2.image_count == 2", report2.image_count == 2)
-check("report2.m_side_feedback_zh not empty", bool(report2.m_side_feedback_zh))
+check("report2 legacy localized field remains empty", report2.m_side_feedback_zh == "")
 check("report2.m_side_feedback_en not empty", bool(report2.m_side_feedback_en))
 check("report2.b_side_summary is str", isinstance(report2.b_side_summary, str))
 
@@ -126,7 +126,7 @@ report4 = compare_media_against_standard(
     provider_name="mock",
 )
 check("frames_used == 2", report4.frames_used == 2)
-check("video report has chinese feedback", any(ord(c) > 127 for c in report4.m_side_feedback_zh))
+check("video report has canonical English feedback", bool(report4.m_side_feedback_en) and report4.m_side_feedback_zh == "")
 
 print("\n" + "=" * 70)
 print(f"QC LLM COMPARISON MVP COMPLETE: {passed} passed, {failed} failed")

@@ -30,7 +30,7 @@ All currently tracked repository content and all newly written GitHub text must 
 
 Update PRDs, README and this guidance consistently. Reconcile conflicting requirements in the documents rather than adding an override paragraph while leaving contradictory current rules in place. Inventory code believed to come from scope expansion, preserve its paths and exact revision/blob identities, and do not delete it. Distinguish confirmed conflicts from candidates whose original authorization is not established.
 
-This documentation/preservation pass does not restart paused development tasks. The owner will resume the original development work after this update. It does not authorize new feature work, deployments, data migrations, service startup, secret access or deletion of existing records.
+A documentation/preservation change is not evidence of runtime completion. Implementation and deployment follow the current explicit user authorization, not a persistent freeze inferred from a previous documentation pass.
 
 ## Verification and truthful status
 
@@ -38,10 +38,20 @@ Preserve applicable existing model, contract, tenant/security, persistence and r
 
 Do not add requirements for production customer records, a fixed cloud/DB vendor, an independent dependency-product launch or unrelated all-module readiness. Do not remove necessary authorization, human commercial approval, tenant isolation, data integrity or tested API behavior merely because a previous document called them a gate.
 
-## CTYun TCP port 443 reservation
+## Current authorization and continued execution
 
-On CTYun hosts, TCP port 443 is reserved for SSH. Do not configure HTTP, HTTPS, web servers, reverse proxies, or TLS listeners to bind to TCP port 443. Do not stop, rebind, replace, or otherwise disrupt SSH to free that port.
+Later explicit user instructions supersede conflicting historical task freezes and agent-authored approval gates. A past documentation-only pass is not a continuing development or deployment ban. Execute the current authorized delivery step within its scope; do not request a second approval solely because an older task or document prohibited it.
 
-Before selecting a web or bridge port, inspect the existing deployment and operations configuration and reuse an explicitly confirmed allocation. Do not guess a replacement port. If the allocation is unclear, report the missing configuration rather than changing a service binding.
+Distinguish missing configuration, tool/session failures, actual permission denials and product defects. A browser-tool failure is not proof that the user is logged out or that console access is forbidden. When a normal approval request was evaluated against obsolete instructions, present the precise current authorization through the supported review mechanism. Never bypass an actual platform denial or transfer credentials to evade it.
 
-This constraint applies only to CTYun hosts; do not extend it to SIN or other environments without an explicit instruction. Recording this rule does not authorize server access or changes to SSH, firewalls, credentials, network settings, or security settings.
+Resolve concrete issues within the authorized scope and continue independent executable work. Do not add formal-contract gates, same-schema requirements, dependency-product launch prerequisites or additional approval layers. Preserve required human commercial decisions, tenant isolation, data integrity, release conditions and truthful test evidence. Documentation edits alone do not authorize unrelated production actions, purchases, destructive changes or account/security changes.
+
+Do not recreate cancelled monitors, polling schedules or recovery tasks without a new explicit user request.
+
+## Protected ports and authorized allocation
+
+TCP port 443 remains reserved for SSH on the designated CTYun and Aliyun-SIN deployment hosts. Never stop or rebind SSH to make room for HTTP/HTTPS. Preserve port 8443, mail/MX configuration and occupied service ports.
+
+For an authorized deployment, inspect current listeners and configuration, then select a verified unused port other than 443. The user's unused-port authorization does not require a separate allocation approval. The approved MyAivan HTTPS entry on port 9444 remains a valid target; a failed route must be diagnosed rather than treated as a blanket prohibition on deployment.
+
+Server, console and network actions must match the current explicit authorization. Port selection does not authorize unrelated security/account changes, credential disclosure or disruption of existing services.

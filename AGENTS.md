@@ -37,11 +37,3 @@ This documentation/preservation pass does not restart paused development tasks. 
 Preserve applicable existing model, contract, tenant/security, persistence and real API integration tests. Run the checks relevant to a later authorized implementation change and report actual results, exact revisions, failures and skipped/unexecuted stages. A documentation-only update must not claim implementation or runtime acceptance. Synthetic data provenance is compatible with acceptance; mocked service behavior is not evidence that an actual API integration ran.
 
 Do not add requirements for production customer records, a fixed cloud/DB vendor, an independent dependency-product launch or unrelated all-module readiness. Do not remove necessary authorization, human commercial approval, tenant isolation, data integrity or tested API behavior merely because a previous document called them a gate.
-
-## CTYun TCP port 443 reservation
-
-On CTYun hosts, TCP port 443 is reserved for SSH. Do not configure HTTP, HTTPS, web servers, reverse proxies, or TLS listeners to bind to TCP port 443. Do not stop, rebind, replace, or otherwise disrupt SSH to free that port.
-
-Before selecting a web or bridge port, inspect the existing deployment and operations configuration and reuse an explicitly confirmed allocation. Do not guess a replacement port. If the allocation is unclear, report the missing configuration rather than changing a service binding.
-
-This constraint applies only to CTYun hosts; do not extend it to SIN or other environments without an explicit instruction. Recording this rule does not authorize server access or changes to SSH, firewalls, credentials, network settings, or security settings.

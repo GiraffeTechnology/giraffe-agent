@@ -50,8 +50,8 @@ Do not recreate cancelled monitors, polling schedules or recovery tasks without 
 
 ## Protected ports and authorized allocation
 
-TCP port 443 remains reserved for SSH on the designated CTYun and Aliyun-SIN deployment hosts. Never stop or rebind SSH to make room for HTTP/HTTPS. Preserve port 8443, mail/MX configuration and occupied service ports.
+Port reservations come from deployment configuration, not the environment name. Preserve the configured reservedPorts list and currently occupied service ports. Never stop or rebind SSH, mail services or shared listeners to make room for HTTP/HTTPS; preserve mail/MX configuration.
 
-For an authorized deployment, inspect current listeners and configuration, then select a verified unused port other than 443. The user's unused-port authorization does not require a separate allocation approval. The approved MyAivan HTTPS entry on port 9444 remains a valid target; a failed route must be diagnosed rather than treated as a blanket prohibition on deployment.
+For an authorized deployment, inspect current listeners and configuration, then select a verified free port that is not reserved by deployment configuration. The user's unused-port authorization does not require a separate allocation approval. The approved MyAivan HTTPS entry on port 9444 remains a valid target; a failed route must be diagnosed rather than treated as a blanket prohibition on deployment.
 
 Server, console and network actions must match the current explicit authorization. Port selection does not authorize unrelated security/account changes, credential disclosure or disruption of existing services.

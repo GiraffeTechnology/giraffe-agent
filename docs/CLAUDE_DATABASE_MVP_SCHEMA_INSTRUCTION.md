@@ -1,4 +1,4 @@
-# CLAUDE CODE INSTRUCTION — Giraffe Agent MVP Database Generation File
+# Giraffe Agent MVP Database Generation File
 
 This retained reference describes the earlier physical database implementation. Current delivery uses the hot-swappable private data contract: both business history and ongoing process records are authoritative in the selected DB. SQLite/PostgreSQL and these local table layouts are implementation details, not mandatory provider identity. Business text is standard English after giraffe-language-skill translation; only enterprise/user profile information may retain non-English values. Legacy field names such as raw_text are preserved protocol identifiers, not permission to store non-English business content.
 # Version: MVP Database v1.0

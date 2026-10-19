@@ -1,4 +1,4 @@
-# CLAUDE CODE INSTRUCTION — Integrated MVP Addendum
+# Integrated MVP Addendum
 # M-side Send/Receive Role Switching + AI Merchandiser + Cainiao-like Logistics API
 # Version: Integrated Addendum v1.0
 

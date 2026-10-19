@@ -26,11 +26,9 @@ Do not casually rename protocol fields, IDs, enums or evidence identifiers when 
 
 All currently tracked repository content and all newly written GitHub text must be English. This repository-content requirement is separate from the product language and DB rules above. It applies to documentation, comments, UI text, prompts, examples, tests and data representations as applicable. Do not rewrite Git history. Existing non-English tracked content must be inventoried and converted through a controlled change that preserves compatibility identifiers and the behavior of multilingual translation/rejection tests. Protocol identifiers and test semantics require deliberate migration or an English-readable representation; they are not a blanket exemption from the English repository requirement. Report any content not yet converted rather than claiming repository-wide completion.
 
-## Current documentation and preservation work
+## Documentation consistency
 
 Update PRDs, README and this guidance consistently. Reconcile conflicting requirements in the documents rather than adding an override paragraph while leaving contradictory current rules in place. Inventory code believed to come from scope expansion, preserve its paths and exact revision/blob identities, and do not delete it. Distinguish confirmed conflicts from candidates whose original authorization is not established.
-
-This documentation/preservation pass does not restart paused development tasks. The owner will resume the original development work after this update. It does not authorize new feature work, deployments, data migrations, service startup, secret access or deletion of existing records.
 
 ## Verification and truthful status
 

@@ -1,4 +1,4 @@
-# CLAUDE CODE INSTRUCTION — M-side Professional Free MVP v4
+# M-side Professional Free MVP v4
 # CAD-to-CNC / Machining Center Parameter Matching with Embedded MachinaCheck-like Capability
 
 ## 0. Executive Summary

@@ -1,4 +1,4 @@
-# CLAUDE CODE INSTRUCTION — M-side MVP Role-Switching Procurement Agent v2
+# M-side MVP Role-Switching Procurement Agent v2
 
 ## 0. Executive Summary
 
@@ -133,7 +133,7 @@ Open-source code access and patent permission are separate legal layers.
 
 ### 1A.6 Patent Notice Files Required
 
-Claude Code must create or update the following files:
+The implementation uses the following files:
 
 ```text
 README.md
